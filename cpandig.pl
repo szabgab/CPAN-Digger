@@ -9,10 +9,14 @@ use Log::Log4perl::Level ();
 
 my $recent = 10;
 my $debug;
+my $help;
 GetOptions(
     'recent=s' => \$recent,
     'debug'    => \$debug,
-) or die;
+    'help'     => \$help,
+) or usage();
+usage() if $help;
+
 my %known_licenses = map {$_ => 1} qw(perl_5);
 
 my $log_level = $debug ? 'DEBUG' : 'INFO';
@@ -57,3 +61,12 @@ while ( my $item = $rset->next ) {
 
 say "--------------";
 say $report;
+
+sub usage {
+    die "Usage: $0
+       --recent N
+       --debug
+
+       --help
+";
+}

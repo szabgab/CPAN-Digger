@@ -6,6 +6,7 @@ use Getopt::Long qw(GetOptions);
 use Data::Dumper qw(Dumper);
 use Log::Log4perl ();
 use Log::Log4perl::Level ();
+use DateTime;
 
 my $recent = 10;
 my $debug;
@@ -19,10 +20,36 @@ usage() if $help;
 
 my %known_licenses = map {$_ => 1} qw(perl_5);
 my $report = '';
+my $html = '
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+     content="width=device-width, initial-scale=1, user-scalable=yes">
+  <title>CPAN Digger</title>
+</head>
+<body>
+<h1>CPAN Digger</h1>
+<ul>
+   <li>Help module authors to ensure that each module that has a public VCS also include a link to it in the meta files.</li>
+   <li>Help module authors to link to the preferred bug tracking system.</li>
+   <li>Help the projects to have CI system connected to their VCS.</li>
+   <li>Help module authors to add a license field to the meta files.</li>
+   <li>Help with the new (?) <b>contributing</b> file.</li>
+</ul>
+';
+
 
 collect();
 report();
 
+$html .= sprintf qq{<hr>Last updated: %s
+   <a href="https://github.com/szabgab/cpan-digger-new">Source</a>
+</body></html>
+}, DateTime->now;
+open my $fh, '>', 'index.html' or die;
+print $fh $html;
 
 sub collect {
     my $log_level = $debug ? 'DEBUG' : 'INFO';
@@ -52,9 +79,10 @@ sub collect {
                 $logger->debug('      repository: ', $resources{repository}{url});
             } else {
                 $logger->warn('No repository for ', $item->distribution);
-                $subreport .= "resoureces.repository is missing\n";
+                $subreport .= "resources.repository is missing\n";
             }
 
+            add_to_html($subreport, $item);
             if ($subreport) {
                 $report .= $item->distribution . "\n";
                 $report .= $item->version . "\n";
@@ -63,6 +91,22 @@ sub collect {
                 $report .= $subreport . "\n\n";
             }
     }
+}
+
+sub add_to_html {
+    my ($subreport, $item) = @_;
+    $html .= qq{<div>\n};
+    $html .= sprintf qq{<h2>%s</h2>\n}, $item->distribution;
+    $html .= sprintf qq{<a href="https://metacpan.org/release/%s/%s">%s</a><br>\n}, $item->author, $item->name, $item->distribution;
+    $html .= sprintf qq{<a href="https://metacpan.org/author/%s">%s</a><br>\n}, $item->author, $item->author;
+    my %resources = %{ $item->resources };
+    if ($resources{repository}) {
+        $html .= sprintf qq{<a href="%s">repository</a><br>\n}, $resources{repository}{url};
+    } else {
+        $html .= qq{<div class="error">No resources.repository<br>\n};
+    }
+
+    $html .= qq{</div>\n};
 }
 
 sub report {

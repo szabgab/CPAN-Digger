@@ -7,6 +7,7 @@ use Data::Dumper qw(Dumper);
 use Log::Log4perl ();
 use Log::Log4perl::Level ();
 use DateTime;
+use LWP::UserAgent;
 
 my $recent = 10;
 my $debug;
@@ -28,6 +29,11 @@ my $html = '
   <meta name="viewport"
      content="width=device-width, initial-scale=1, user-scalable=yes">
   <title>CPAN Digger</title>
+<style>
+.error {
+   background-color: red;
+}
+</style>
 </head>
 <body>
 <h1>CPAN Digger</h1>
@@ -101,7 +107,43 @@ sub add_to_html {
     $html .= sprintf qq{<a href="https://metacpan.org/author/%s">%s</a><br>\n}, $item->author, $item->author;
     my %resources = %{ $item->resources };
     if ($resources{repository}) {
-        $html .= sprintf qq{<a href="%s">repository</a><br>\n}, $resources{repository}{url};
+        #for my $k (qw(url web)) {
+        #    if ($resources{repository}{$k}) {
+        #        $html .= sprintf qq{<a href="%s">%s %s</a><br>\n}, $resources{repository}{$k}, $k, $resources{repository}{$k};
+        #    }
+        #}
+        # Try to get the web link
+        my $url = $resources{repository}{web};
+        if (not $url) {
+            $url = $resources{repository}{url};
+            $url =~ s{^git://}{https://};
+            $url =~ s{\.git$}{};
+        }
+        my $name = "repository";
+        if ($url =~ m{^https?://github.com/}) {
+            $name = 'GitHub';
+        }
+        if ($url =~ m{^https?://gitlab.com/}) {
+            $name = 'GitLab';
+        }
+        $html .= sprintf qq{<a href="%s">%s</a><br>\n}, $url, $name;
+        if ($name eq "repository") {
+            $html .= qq{<div class="error">Unknown repo type</div>\n};
+        }
+
+        if ($name eq 'GitHub') {
+            # TODO: not everyone uses 'master'!
+            # TODO: WE might either one to use the API, or clone the repo for other operations as well.
+            my $travis_yml = qq{$url/blob/master/.travis.yml};
+            my $ua = LWP::UserAgent->new(timeout => 10);
+            my $response = $ua->get($travis_yml);
+            if ($response->is_success) {
+                $html .= sprintf qq{<a href="%s">travis.yml</a><br>}, $travis_yml;
+            } else {
+                $html .= qq{<div class="error">Missing Travis-CI configuration file</div>};
+            }
+        }
+
     } else {
         $html .= qq{<div class="error">No resources.repository<br>\n};
     }

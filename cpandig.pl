@@ -43,6 +43,7 @@ my $html = '
    <li>Help the projects to have CI system connected to their VCS.</li>
    <li>Help module authors to add a license field to the meta files.</li>
    <li>Help with the new (?) <b>contributing</b> file.</li>
+   <li>Suggest to add a Travis-CI badge to the README.md</li>
 </ul>
 ';
 

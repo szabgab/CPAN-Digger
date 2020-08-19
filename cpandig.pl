@@ -12,6 +12,7 @@ use Log::Log4perl::Level ();
 use LWP::UserAgent;
 use MetaCPAN::Client ();
 use Path::Tiny qw(path);
+use Template;
 
 my $recent = 10;
 my $debug;
@@ -24,43 +25,16 @@ GetOptions(
 usage() if $help;
 
 my %known_licenses = map {$_ => 1} qw(perl_5);
-my $html = '
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport"
-     content="width=device-width, initial-scale=1, user-scalable=yes">
-  <title>CPAN Digger</title>
-<style>
-.error {
-   background-color: red;
-}
-</style>
-</head>
-<body>
-<h1>CPAN Digger</h1>
-<ul>
-   <li>Help module authors to ensure that each module that has a public VCS also include a link to it in the meta files.</li>
-   <li>Help module authors to link to the preferred bug tracking system.</li>
-   <li>Help the projects to have CI system connected to their VCS.</li>
-   <li>Help module authors to add a license field to the meta files.</li>
-   <li>Help with the new (?) <b>contributing</b> file.</li>
-   <li>Suggest to add a Travis-CI badge to the README.md</li>
-</ul>
-';
 
 my $dbh = get_db();
 my $sth_get_distro = $dbh->prepare('SELECT * FROM dists WHERE distribution=?');
-my $sth_insert = $dbh->prepare('INSERT INTO dists (distribution, version, author, vcs_url, vcs_name, travis) VALUES (?, ?, ?, ?, ?, ?)');
+my $sth_get_every_distro = $dbh->prepare('SELECT * FROM dists');
+my @fields = qw(distribution version author vcs_url vcs_name travis);
+my $fields = join ', ', @fields;
+my $sth_insert = $dbh->prepare("INSERT INTO dists ($fields) VALUES (?, ?, ?, ?, ?, ?)");
 collect();
+generate_html();
 
-$html .= sprintf qq{<hr>Last updated: %s
-   <a href="https://github.com/szabgab/cpan-digger-new">Source</a>
-</body></html>
-}, DateTime->now;
-open my $fh, '>', 'index.html' or die;
-print $fh $html;
 exit;
 ##########################################################################################
 
@@ -108,7 +82,8 @@ sub collect {
             } else {
                 $logger->warn('No repository for ', $item->distribution);
             }
-            say Dumper \%data;
+            #say Dumper \%data;
+            $sth_insert->execute(@data{@fields});
     }
 }
 
@@ -121,20 +96,12 @@ sub get_travis {
     my $ua = LWP::UserAgent->new(timeout => 10);
     my $response = $ua->get($travis_yml);
     return $response->is_success;
-        #$html .= sprintf qq{<a href="%s">travis.yml</a><br>}, $travis_yml;
-    #} else {
-        #$html .= qq{<div class="error">Missing Travis-CI configuration file</div>};
-    #}
 }
 
 sub get_vcs {
     my ($repository) = @_;
     if ($repository) {
-        #for my $k (qw(url web)) {
-        #    if ($repository->{$k}) {
         #        $html .= sprintf qq{<a href="%s">%s %s</a><br>\n}, $repository->{$k}, $k, $repository->{$k};
-        #    }
-        #}
         # Try to get the web link
         my $url = $repository->{web};
         if (not $url) {
@@ -153,31 +120,33 @@ sub get_vcs {
     }
 }
 
-#sub add_to_html {
-#    my ($item) = @_;
-#    $html .= qq{<div>\n};
-#    $html .= sprintf qq{<h2>%s</h2>\n}, $item->distribution;
-#    $html .= sprintf qq{<a href="https://metacpan.org/release/%s/%s">%s</a><br>\n}, $item->author, $item->name, $item->distribution;
-#    $html .= sprintf qq{<a href="https://metacpan.org/author/%s">%s</a><br>\n}, $item->author, $item->author;
-#    my %resources = %{ $item->resources };
-#        $html .= sprintf qq{<a href="%s">%s</a><br>\n}, $url, $name;
-#        if ($name eq "repository") {
+sub generate_html {
+    my ($item) = @_;
+
 #            $html .= qq{<div class="error">Unknown repo type</div>\n};
-#        }
-#         $html .= sprintf qq{<a href="%s">travis.yml</a><br>}, $travis_yml;
-#            } else {
-#
-#    } else {
-#        $html .= qq{<div class="error">No resources.repository<br>\n};
-#    }
-#            if ($response->is_success) {
-#                $html .= sprintf qq{<a href="%s">travis.yml</a><br>}, $travis_yml;
-#            } else {
-#                $html .= qq{<div class="error">Missing Travis-CI configuration file</div>};
-#            }
-#
-#    $html .= qq{</div>\n};
-#}
+
+    $sth_get_every_distro->execute;
+    my @distros;
+    while (my $row = $sth_get_every_distro->fetchrow_hashref) {
+        push @distros, $row;
+    }
+
+    my %data = (
+        timestamp     => DateTime->now,
+        distributions => \@distros,
+    );
+
+    my $tt = Template->new({
+        INCLUDE_PATH => File::Spec->catdir($FindBin::Bin, 'templates'),
+        INTERPOLATE  => 1,
+    }) or die "$Template::ERROR\n";
+
+    my $html;
+    $tt->process('main.tt', \%data, \$html) or die $tt->error(), "\n";
+
+    open my $fh, '>', 'index.html' or die "Could not open file for writing $!";
+    print $fh $html;
+}
 
 sub get_db {
     my $db_file = File::Spec->catdir($FindBin::Bin, 'cpandig.db');

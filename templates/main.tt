@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+     content="width=device-width, initial-scale=1, user-scalable=yes">
+  <title>CPAN Digger</title>
+<style>
+.error {
+   background-color: red;
+}
+</style>
+</head>
+<body>
+<h1>CPAN Digger</h1>
+<ul>
+    <li>Help module authors to ensure that each module that has a public VCS also include a link to it in the meta files.</li>
+    <li>Help module authors to link to the preferred bug tracking system.</li>
+    <li>Help the projects to have CI system connected to their VCS.</li>
+    <li>Help module authors to add a license field to the meta files.</li>
+    <li>Help with the new (?) <b>contributing</b> file.</li>
+    <li>Suggest to add a Travis-CI badge to the README.md</li>
+</ul>
+
+[% FOREACH item IN distributions %]
+<div>
+    <h2>[% item.distribution %]</h2>
+    <a href="https://metacpan.org/release/[% item.distribution %]">[% item.distribution %]</a><br>
+    <a href="https://metacpan.org/author/[% item.author %]">[% item.author %]</a><br>
+    [% IF item.vcs_url %]
+        <a href="[% item.vcs_url %]">[% item.vcs_name %]</a><br>
+    [% ELSE %]
+        <div class="error">No resources.repository</div>
+    [% END %]
+
+    [% IF item.travis %]
+        <a href="[% item.vcs_url %]/blob/master/.travis.yml">travis.yml</a><br>
+    [% ELSE %]
+        <div class="error">Missing Travis-CI configuration file</div>
+    [% END %]
+
+</div>
+[% END %]
+
+<hr>
+Last updated: [% timestamp %] <a href="https://github.com/szabgab/cpan-digger-new">Source</a>
+Supported via <a href="https://www.patreon.com/szabgab">Patreon</a>
+</body></html>
+

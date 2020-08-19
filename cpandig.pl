@@ -1,13 +1,17 @@
 use strict;
 use warnings;
 use 5.010;
-use MetaCPAN::Client ();
-use Getopt::Long qw(GetOptions);
 use Data::Dumper qw(Dumper);
+use DateTime;
+use DBI;
+use File::Spec ();
+use FindBin ();
+use Getopt::Long qw(GetOptions);
 use Log::Log4perl ();
 use Log::Log4perl::Level ();
-use DateTime;
 use LWP::UserAgent;
+use MetaCPAN::Client ();
+use Path::Tiny qw(path);
 
 my $recent = 10;
 my $debug;
@@ -20,7 +24,6 @@ GetOptions(
 usage() if $help;
 
 my %known_licenses = map {$_ => 1} qw(perl_5);
-my $report = '';
 my $html = '
 <!DOCTYPE html>
 <html lang="en">
@@ -47,9 +50,10 @@ my $html = '
 </ul>
 ';
 
-
+my $dbh = get_db();
+my $sth_get_distro = $dbh->prepare('SELECT * FROM dists WHERE distribution=?');
+my $sth_insert = $dbh->prepare('INSERT INTO dists (distribution, version, author, vcs_url, vcs_name, travis) VALUES (?, ?, ?, ?, ?, ?)');
 collect();
-report();
 
 $html .= sprintf qq{<hr>Last updated: %s
    <a href="https://github.com/szabgab/cpan-digger-new">Source</a>
@@ -57,6 +61,8 @@ $html .= sprintf qq{<hr>Last updated: %s
 }, DateTime->now;
 open my $fh, '>', 'index.html' or die;
 print $fh $html;
+exit;
+##########################################################################################
 
 sub collect {
     my $log_level = $debug ? 'DEBUG' : 'INFO';
@@ -68,55 +74,71 @@ sub collect {
     my $rset  = $mcpan->recent($recent);
     my %distros;
     while ( my $item = $rset->next ) {
-    		next if $distros{ $item->distribution };
+    		next if $distros{ $item->distribution }; # We have alreay deal with this in this session
 
-            my $subreport = '';
+            $sth_get_distro->execute($item->distribution);
+            my $row = $sth_get_distro->fetchrow_hashref;
+            next if $row and $row->{version} eq $item->version; # we already have this in the database (shall we call last?)
+            my %data = (
+                distribution => $item->distribution,
+                version      => $item->version,
+                author       => $item->author,
+            );
+
     		$distros{ $item->distribution } = 1;
             $logger->debug('dist: ', $item->distribution);
     		$logger->debug('      ', $item->author);
-            my @licenses = @{ $item->license };
-            $logger->debug('      ', join ' ', @licenses);
+            #my @licenses = @{ $item->license };
+            #$logger->debug('      ', join ' ', @licenses);
             # if there are not licenses =>
             # if there is a license called "unknonws"
             # check against a known list of licenses (grow it later, or look it up somewhere?)
             my %resources = %{ $item->resources };
             #say '  ', join ' ', keys %resources;
             if ($resources{repository}) {
-                #$logger->debug('      repository:', sort keys %{ $resources{repository} });  # web, url, type
-                $logger->debug('      repository: ', $resources{repository}{url});
+                my ($vcs_url, $vcs_name) = get_vcs($resources{repository});
+                if ($vcs_url) {
+                    $data{vcs_url} = $vcs_url;
+                    $data{vcs_name} = $vcs_name;
+                    $logger->debug("      $vcs_name: $vcs_url");
+                    if ($vcs_name eq 'GitHub') {
+                        $data{travis} = get_travis($vcs_url);
+                    }
+                }
             } else {
                 $logger->warn('No repository for ', $item->distribution);
-                $subreport .= "resources.repository is missing\n";
             }
-
-            add_to_html($subreport, $item);
-            if ($subreport) {
-                $report .= $item->distribution . "\n";
-                $report .= $item->version . "\n";
-                $report .= $item->author . "\n";
-                $report .= 'https://metacpan.org/release/' . $item->distribution . "\n";
-                $report .= $subreport . "\n\n";
-            }
+            say Dumper \%data;
     }
 }
 
-sub add_to_html {
-    my ($subreport, $item) = @_;
-    $html .= qq{<div>\n};
-    $html .= sprintf qq{<h2>%s</h2>\n}, $item->distribution;
-    $html .= sprintf qq{<a href="https://metacpan.org/release/%s/%s">%s</a><br>\n}, $item->author, $item->name, $item->distribution;
-    $html .= sprintf qq{<a href="https://metacpan.org/author/%s">%s</a><br>\n}, $item->author, $item->author;
-    my %resources = %{ $item->resources };
-    if ($resources{repository}) {
+
+sub get_travis {
+    my ($url) = @_;
+    # TODO: not everyone uses 'master'!
+    # TODO: WE might either one to use the API, or clone the repo for other operations as well.
+    my $travis_yml = qq{$url/blob/master/.travis.yml};
+    my $ua = LWP::UserAgent->new(timeout => 10);
+    my $response = $ua->get($travis_yml);
+    return $response->is_success;
+        #$html .= sprintf qq{<a href="%s">travis.yml</a><br>}, $travis_yml;
+    #} else {
+        #$html .= qq{<div class="error">Missing Travis-CI configuration file</div>};
+    #}
+}
+
+sub get_vcs {
+    my ($repository) = @_;
+    if ($repository) {
         #for my $k (qw(url web)) {
-        #    if ($resources{repository}{$k}) {
-        #        $html .= sprintf qq{<a href="%s">%s %s</a><br>\n}, $resources{repository}{$k}, $k, $resources{repository}{$k};
+        #    if ($repository->{$k}) {
+        #        $html .= sprintf qq{<a href="%s">%s %s</a><br>\n}, $repository->{$k}, $k, $repository->{$k};
         #    }
         #}
         # Try to get the web link
-        my $url = $resources{repository}{web};
+        my $url = $repository->{web};
         if (not $url) {
-            $url = $resources{repository}{url};
+            $url = $repository->{url};
             $url =~ s{^git://}{https://};
             $url =~ s{\.git$}{};
         }
@@ -127,35 +149,53 @@ sub add_to_html {
         if ($url =~ m{^https?://gitlab.com/}) {
             $name = 'GitLab';
         }
-        $html .= sprintf qq{<a href="%s">%s</a><br>\n}, $url, $name;
-        if ($name eq "repository") {
-            $html .= qq{<div class="error">Unknown repo type</div>\n};
-        }
-
-        if ($name eq 'GitHub') {
-            # TODO: not everyone uses 'master'!
-            # TODO: WE might either one to use the API, or clone the repo for other operations as well.
-            my $travis_yml = qq{$url/blob/master/.travis.yml};
-            my $ua = LWP::UserAgent->new(timeout => 10);
-            my $response = $ua->get($travis_yml);
-            if ($response->is_success) {
-                $html .= sprintf qq{<a href="%s">travis.yml</a><br>}, $travis_yml;
-            } else {
-                $html .= qq{<div class="error">Missing Travis-CI configuration file</div>};
-            }
-        }
-
-    } else {
-        $html .= qq{<div class="error">No resources.repository<br>\n};
+        return $url, $name;
     }
-
-    $html .= qq{</div>\n};
 }
 
-sub report {
-    say "--------------";
-    say $report;
+#sub add_to_html {
+#    my ($item) = @_;
+#    $html .= qq{<div>\n};
+#    $html .= sprintf qq{<h2>%s</h2>\n}, $item->distribution;
+#    $html .= sprintf qq{<a href="https://metacpan.org/release/%s/%s">%s</a><br>\n}, $item->author, $item->name, $item->distribution;
+#    $html .= sprintf qq{<a href="https://metacpan.org/author/%s">%s</a><br>\n}, $item->author, $item->author;
+#    my %resources = %{ $item->resources };
+#        $html .= sprintf qq{<a href="%s">%s</a><br>\n}, $url, $name;
+#        if ($name eq "repository") {
+#            $html .= qq{<div class="error">Unknown repo type</div>\n};
+#        }
+#         $html .= sprintf qq{<a href="%s">travis.yml</a><br>}, $travis_yml;
+#            } else {
+#
+#    } else {
+#        $html .= qq{<div class="error">No resources.repository<br>\n};
+#    }
+#            if ($response->is_success) {
+#                $html .= sprintf qq{<a href="%s">travis.yml</a><br>}, $travis_yml;
+#            } else {
+#                $html .= qq{<div class="error">Missing Travis-CI configuration file</div>};
+#            }
+#
+#    $html .= qq{</div>\n};
+#}
+
+sub get_db {
+    my $db_file = File::Spec->catdir($FindBin::Bin, 'cpandig.db');
+    my $schema_file = File::Spec->catdir($FindBin::Bin, 'schema.sql');
+    my $exists = -e $db_file;
+    my $dbh = DBI->connect( "dbi:SQLite:dbname=$db_file", "", "", {
+        PrintError       => 0,
+        RaiseError       => 1,
+        AutoCommit       => 1,
+        FetchHashKeyName => 'NAME_lc',
+    });
+    if (not $exists) {
+        my $schema = path($schema_file)->slurp;
+        $dbh->do($schema);
+    }
+    return $dbh
 }
+
 
 sub usage {
     die "Usage: $0

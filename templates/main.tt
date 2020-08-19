@@ -35,8 +35,10 @@
 
     [% IF item.travis %]
         <a href="[% item.vcs_url %]/blob/master/.travis.yml">travis.yml</a><br>
+    [% ELSIF item.github_actions %]
+        <a href="[% item.vcs_url %]/tree/master/.github/workflows/">GitHub Actions</a><br>
     [% ELSE %]
-        <div class="error">Missing Travis-CI configuration file</div>
+        <div class="error">No CI configuration file could be found</div>
     [% END %]
 
 </div>

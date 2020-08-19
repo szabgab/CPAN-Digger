@@ -4,5 +4,6 @@ CREATE TABLE dists (
     author       VARCHAR(255),
     vcs_url      VARCHAR(255),
     vcs_name     VARCHAR(255),
-    travis       BOOLEAN
+    travis           BOOLEAN,
+    github_actions   BOOLEAN
 );

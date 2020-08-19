@@ -29,9 +29,9 @@ my %known_licenses = map {$_ => 1} qw(perl_5);
 my $dbh = get_db();
 my $sth_get_distro = $dbh->prepare('SELECT * FROM dists WHERE distribution=?');
 my $sth_get_every_distro = $dbh->prepare('SELECT * FROM dists');
-my @fields = qw(distribution version author vcs_url vcs_name travis);
+my @fields = qw(distribution version author vcs_url vcs_name travis github_actions);
 my $fields = join ', ', @fields;
-my $sth_insert = $dbh->prepare("INSERT INTO dists ($fields) VALUES (?, ?, ?, ?, ?, ?)");
+my $sth_insert = $dbh->prepare("INSERT INTO dists ($fields) VALUES (?, ?, ?, ?, ?, ?, ?)");
 collect();
 generate_html();
 
@@ -77,6 +77,9 @@ sub collect {
                     $logger->debug("      $vcs_name: $vcs_url");
                     if ($vcs_name eq 'GitHub') {
                         $data{travis} = get_travis($vcs_url);
+                        if (not $data{travis}) {
+                            $data{github_actions} = get_github_actions($vcs_url);
+                        }
                     }
                 }
             } else {
@@ -88,15 +91,25 @@ sub collect {
 }
 
 
+sub get_github_actions {
+    my ($url) = @_;
+    return _check_url(qq{$url/tree/master/.github/workflows});
+}
+
 sub get_travis {
     my ($url) = @_;
     # TODO: not everyone uses 'master'!
     # TODO: WE might either one to use the API, or clone the repo for other operations as well.
-    my $travis_yml = qq{$url/blob/master/.travis.yml};
+    return _check_url(qq{$url/blob/master/.travis.yml});
+}
+
+sub _check_url {
+    my ($url) = @_;
     my $ua = LWP::UserAgent->new(timeout => 10);
-    my $response = $ua->get($travis_yml);
+    my $response = $ua->get($url);
     return $response->is_success;
 }
+
 
 sub get_vcs {
     my ($repository) = @_;

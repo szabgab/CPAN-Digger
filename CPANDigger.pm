@@ -2,9 +2,11 @@ package CPANDigger;
 use strict;
 use warnings;
 
+use Log::Log4perl ();
+use LWP::UserAgent;
 use Exporter qw(import);
 
-our @EXPORT_OK = qw(get_github_actions get_travis get_vcs);
+our @EXPORT_OK = qw(get_github_actions get_travis get_vcs get_data);
 
 sub get_github_actions {
     my ($url) = @_;
@@ -46,6 +48,43 @@ sub get_vcs {
         }
         return $url, $name;
     }
+}
+
+sub get_data {
+    my ($item) = @_;
+    my $logger = Log::Log4perl->get_logger();
+    my %data = (
+        distribution => $item->distribution,
+        version      => $item->version,
+        author       => $item->author,
+    );
+
+    $logger->debug('dist: ', $item->distribution);
+    $logger->debug('      ', $item->author);
+    #my @licenses = @{ $item->license };
+    #$logger->debug('      ', join ' ', @licenses);
+    # if there are not licenses =>
+    # if there is a license called "unknonws"
+    # check against a known list of licenses (grow it later, or look it up somewhere?)
+    my %resources = %{ $item->resources };
+    #say '  ', join ' ', keys %resources;
+    if ($resources{repository}) {
+        my ($vcs_url, $vcs_name) = get_vcs($resources{repository});
+        if ($vcs_url) {
+            $data{vcs_url} = $vcs_url;
+            $data{vcs_name} = $vcs_name;
+            $logger->debug("      $vcs_name: $vcs_url");
+            if ($vcs_name eq 'GitHub') {
+                $data{travis} = get_travis($vcs_url);
+                if (not $data{travis}) {
+                    $data{github_actions} = get_github_actions($vcs_url);
+                }
+            }
+        }
+    } else {
+        $logger->warn('No repository for ', $item->distribution);
+    }
+    return %data;
 }
 
 42;

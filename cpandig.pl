@@ -9,13 +9,12 @@ use FindBin ();
 use Getopt::Long qw(GetOptions);
 use Log::Log4perl ();
 use Log::Log4perl::Level ();
-use LWP::UserAgent;
 use MetaCPAN::Client ();
 use Path::Tiny qw(path);
 use Template;
 
 use lib $FindBin::Bin;
-use CPANDigger qw(get_github_actions get_travis get_vcs);
+use CPANDigger qw(get_data);
 
 my $recent = 10;
 my $debug;
@@ -52,43 +51,13 @@ sub collect {
     my %distros;
     while ( my $item = $rset->next ) {
     		next if $distros{ $item->distribution }; # We have alreay deal with this in this session
+            $distros{ $item->distribution } = 1;
 
             $sth_get_distro->execute($item->distribution);
             my $row = $sth_get_distro->fetchrow_hashref;
             next if $row and $row->{version} eq $item->version; # we already have this in the database (shall we call last?)
-            my %data = (
-                distribution => $item->distribution,
-                version      => $item->version,
-                author       => $item->author,
-            );
-
-    		$distros{ $item->distribution } = 1;
-            $logger->debug('dist: ', $item->distribution);
-    		$logger->debug('      ', $item->author);
-            #my @licenses = @{ $item->license };
-            #$logger->debug('      ', join ' ', @licenses);
-            # if there are not licenses =>
-            # if there is a license called "unknonws"
-            # check against a known list of licenses (grow it later, or look it up somewhere?)
-            my %resources = %{ $item->resources };
-            #say '  ', join ' ', keys %resources;
-            if ($resources{repository}) {
-                my ($vcs_url, $vcs_name) = get_vcs($resources{repository});
-                if ($vcs_url) {
-                    $data{vcs_url} = $vcs_url;
-                    $data{vcs_name} = $vcs_name;
-                    $logger->debug("      $vcs_name: $vcs_url");
-                    if ($vcs_name eq 'GitHub') {
-                        $data{travis} = get_travis($vcs_url);
-                        if (not $data{travis}) {
-                            $data{github_actions} = get_github_actions($vcs_url);
-                        }
-                    }
-                }
-            } else {
-                $logger->warn('No repository for ', $item->distribution);
-            }
-            #say Dumper \%data;
+            my %data = get_data($item);
+            #say Dumper %data;
             $sth_insert->execute(@data{@fields});
     }
 }

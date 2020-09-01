@@ -6,11 +6,16 @@ use Log::Log4perl ();
 use LWP::UserAgent;
 use Exporter qw(import);
 
-our @EXPORT_OK = qw(get_github_actions get_travis get_vcs get_data);
+our @EXPORT_OK = qw(get_github_actions get_travis get_circleci get_vcs get_data);
 
 sub get_github_actions {
     my ($url) = @_;
     return _check_url(qq{$url/tree/master/.github/workflows});
+}
+
+sub get_circleci {
+    my ($url) = @_;
+    return _check_url(qq{$url/tree/master/.circleci});
 }
 
 sub get_travis {
@@ -78,6 +83,9 @@ sub get_data {
                 $data{travis} = get_travis($vcs_url);
                 if (not $data{travis}) {
                     $data{github_actions} = get_github_actions($vcs_url);
+                }
+                if (not $data{travis} and not $data{github_actions}) {
+                    $data{circleci} = get_circleci($vcs_url);
                 }
             }
         }

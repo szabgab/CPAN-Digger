@@ -13,6 +13,11 @@ sub get_github_actions {
     return _check_url(qq{$url/tree/master/.github/workflows});
 }
 
+sub get_appveyor {
+    my ($url) = @_;
+    return _check_url(qq{$url/tree/master/.appveyor.yml});
+}
+
 sub get_circleci {
     my ($url) = @_;
     return _check_url(qq{$url/tree/master/.circleci});
@@ -80,18 +85,21 @@ sub get_data {
             $data{vcs_name} = $vcs_name;
             $logger->debug("      $vcs_name: $vcs_url");
             if ($vcs_name eq 'GitHub') {
-                $data{travis} = get_travis($vcs_url);
-                if ($data{travis}) {
-                    $data{has_ci} = 1;
+                if (not $data{has_ci}) {
+                    $data{travis} = get_travis($vcs_url);
+                    $data{has_ci} = 1 if $data{travis};
                 }
                 if (not $data{has_ci}) {
                     $data{github_actions} = get_github_actions($vcs_url);
-                    if ($data{github_actions}) {
-                        $data{has_ci} = 1;
-                    }
+                    $data{has_ci} = 1 if $data{github_actions};
                 }
                 if (not $data{has_ci}) {
                     $data{circleci} = get_circleci($vcs_url);
+                    $data{has_ci} = 1 if $data{circleci};
+                }
+                if (not $data{has_ci}) {
+                    $data{appveyor} = get_appveyor($vcs_url);
+                    $data{has_ci} = 1 if $data{appveyor};
                 }
             }
         }

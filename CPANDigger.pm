@@ -81,10 +81,16 @@ sub get_data {
             $logger->debug("      $vcs_name: $vcs_url");
             if ($vcs_name eq 'GitHub') {
                 $data{travis} = get_travis($vcs_url);
-                if (not $data{travis}) {
-                    $data{github_actions} = get_github_actions($vcs_url);
+                if ($data{travis}) {
+                    $data{has_ci} = 1;
                 }
-                if (not $data{travis} and not $data{github_actions}) {
+                if (not $data{has_ci}) {
+                    $data{github_actions} = get_github_actions($vcs_url);
+                    if ($data{github_actions}) {
+                        $data{has_ci} = 1;
+                    }
+                }
+                if (not $data{has_ci}) {
                     $data{circleci} = get_circleci($vcs_url);
                 }
             }

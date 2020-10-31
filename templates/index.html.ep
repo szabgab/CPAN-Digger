@@ -9,6 +9,7 @@ The most recently uploaded and indexed distributions.
     <tr>
         <td><a href="/dist/<%= $dist->{distribution} %>"><%= $dist->{distribution} %></a></td>
         <td><% if (not $dist->{vcs_url}) { %>NO VCS<% } %></td>
+        <td><% if (not $dist->{has_ci}) { %>NO CI<% } %></td>
     </tr>
 <% } %>
 </table>

@@ -85,22 +85,7 @@ sub get_data {
             $data{vcs_name} = $vcs_name;
             $logger->debug("      $vcs_name: $vcs_url");
             if ($vcs_name eq 'GitHub') {
-                if (not $data{has_ci}) {
-                    $data{travis} = get_travis($vcs_url);
-                    $data{has_ci} = 1 if $data{travis};
-                }
-                if (not $data{has_ci}) {
-                    $data{github_actions} = get_github_actions($vcs_url);
-                    $data{has_ci} = 1 if $data{github_actions};
-                }
-                if (not $data{has_ci}) {
-                    $data{circleci} = get_circleci($vcs_url);
-                    $data{has_ci} = 1 if $data{circleci};
-                }
-                if (not $data{has_ci}) {
-                    $data{appveyor} = get_appveyor($vcs_url);
-                    $data{has_ci} = 1 if $data{appveyor};
-                }
+                analyze_github(\%data);
             }
         }
     } else {
@@ -108,5 +93,30 @@ sub get_data {
     }
     return %data;
 }
+
+
+sub analyze_github {
+    my ($data) = @_;
+
+    my $vcs_url = $data->{vcs_url};
+
+    if (not $data->{has_ci}) {
+        $data->{travis} = get_travis($vcs_url);
+        $data->{has_ci} = 1 if $data->{travis};
+    }
+    if (not $data->{has_ci}) {
+        $data->{github_actions} = get_github_actions($vcs_url);
+        $data->{has_ci} = 1 if $data->{github_actions};
+    }
+    if (not $data->{has_ci}) {
+        $data->{circleci} = get_circleci($vcs_url);
+        $data->{has_ci} = 1 if $data->{circleci};
+    }
+    if (not $data->{has_ci}) {
+        $data->{appveyor} = get_appveyor($vcs_url);
+        $data->{has_ci} = 1 if $data->{appveyor};
+    }
+}
+
 
 42;

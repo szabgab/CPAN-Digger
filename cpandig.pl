@@ -20,8 +20,10 @@ use CPANDigger::DB qw(db_insert_into db_get_distro get_fields);
 my $recent = 10;
 my $debug;
 my $help;
+my $sleep = 0;
 GetOptions(
     'recent=s' => \$recent,
+    'sleep=i'  => \$sleep,
     'debug'    => \$debug,
     'help'     => \$help,
 ) or usage();
@@ -52,7 +54,8 @@ sub collect {
             next if $row and $row->{version} eq $item->version; # we already have this in the database (shall we call last?)
             my %data = get_data($item);
             #say Dumper %data;
-            db_insert_into(@data{@fields})           
+            db_insert_into(@data{@fields})
+            sleep $sleep if $sleep;
     }
 }
 

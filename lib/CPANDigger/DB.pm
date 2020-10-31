@@ -12,9 +12,9 @@ our @EXPORT_OK = ('get_fields', 'get_db', 'db_insert_into', 'db_get_distro', 'db
 my $dbh = get_db();
 my $sth_get_distro = $dbh->prepare('SELECT * FROM dists WHERE distribution=?');
 my $sth_get_every_distro = $dbh->prepare('SELECT * FROM dists');
-my @fields = qw(distribution version author vcs_url vcs_name travis github_actions);
+my @fields = qw(distribution version author vcs_url vcs_name travis github_actions appveyor circleci has_ci);
 my $fields = join ', ', @fields;
-my $sth_insert = $dbh->prepare("INSERT INTO dists ($fields) VALUES (?, ?, ?, ?, ?, ?, ?)");
+my $sth_insert = $dbh->prepare("INSERT INTO dists ($fields) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 sub get_fields {
     return @fields;
 }

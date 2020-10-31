@@ -3,40 +3,14 @@ use strict;
 use warnings;
 
 use Log::Log4perl ();
-use LWP::UserAgent;
+use File::Temp qw(tempdir);
+use Cwd qw(getcwd);
+ 
+my $tempdir = tempdir( CLEANUP => 1 );
+ 
 use Exporter qw(import);
 
-our @EXPORT_OK = qw(get_github_actions get_travis get_circleci get_vcs get_data);
-
-sub get_github_actions {
-    my ($url) = @_;
-    return _check_url(qq{$url/tree/master/.github/workflows});
-}
-
-sub get_appveyor {
-    my ($url) = @_;
-    return _check_url(qq{$url/tree/master/.appveyor.yml});
-}
-
-sub get_circleci {
-    my ($url) = @_;
-    return _check_url(qq{$url/tree/master/.circleci});
-}
-
-sub get_travis {
-    my ($url) = @_;
-    # TODO: not everyone uses 'master'!
-    # TODO: WE might either one to use the API, or clone the repo for other operations as well.
-    return _check_url(qq{$url/blob/master/.travis.yml});
-}
-
-sub _check_url {
-    my ($url) = @_;
-    my $ua = LWP::UserAgent->new(timeout => 10);
-    my $response = $ua->get($url);
-    return $response->is_success;
-}
-
+our @EXPORT_OK = qw(get_vcs get_data);
 
 sub get_vcs {
     my ($repository) = @_;
@@ -97,25 +71,35 @@ sub get_data {
 
 sub analyze_github {
     my ($data) = @_;
+    my $logger = Log::Log4perl->get_logger();
 
     my $vcs_url = $data->{vcs_url};
+    my $repo_name = (split '\/', $vcs_url)[-1];
+    $logger->info("Analyze GitHub repo '$vcs_url' in directory $repo_name");
 
-    if (not $data->{has_ci}) {
-        $data->{travis} = get_travis($vcs_url);
-        $data->{has_ci} = 1 if $data->{travis};
+    my @cmd = ("git", "clone", "--depth", "1", $data->{vcs_url});
+    my $cwd = getcwd();
+    chdir($tempdir);
+    my $exit_code = system(@cmd);
+    chdir($cwd);
+    my $repo = "$tempdir/$repo_name";
+
+    if ($exit_code != 0) {
+        # TODO capture stderr and include in the log
+        $logger->error("Failed to clone $vcs_url");
+        return;
     }
-    if (not $data->{has_ci}) {
-        $data->{github_actions} = get_github_actions($vcs_url);
-        $data->{has_ci} = 1 if $data->{github_actions};
-    }
-    if (not $data->{has_ci}) {
-        $data->{circleci} = get_circleci($vcs_url);
-        $data->{has_ci} = 1 if $data->{circleci};
-    }
-    if (not $data->{has_ci}) {
-        $data->{appveyor} = get_appveyor($vcs_url);
-        $data->{has_ci} = 1 if $data->{appveyor};
-    }
+
+    $data->{travis} = -e "$repo/.travis.yml";
+    $data->{github_actions} = scalar(glob("$repo/.github/workflows/*"));
+    $data->{circleci} = -e "$repo/.circleci";
+    $data->{appveyor} = (-e "$repo/.appveyor.yml") || (-e "$repo/appveyor.yml");
+
+    for my $ci (qw(travis github_actions circleci appveyor)) {
+        if ($data->{$ci}) {
+            $data->{has_ci} = 1 
+        }
+    }   
 }
 
 

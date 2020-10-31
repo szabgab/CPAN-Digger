@@ -54,7 +54,7 @@ sub collect {
             next if $row and $row->{version} eq $item->version; # we already have this in the database (shall we call last?)
             my %data = get_data($item);
             #say Dumper %data;
-            db_insert_into(@data{@fields})
+            db_insert_into(@data{@fields});
             sleep $sleep if $sleep;
     }
 }
@@ -63,8 +63,9 @@ sub collect {
 
 sub usage {
     die "Usage: $0
-       --recent N
+       --recent N         (defaults to 10)
        --debug
+       --sleep SECONDS    (defaults to 0)
 
        --help
 ";

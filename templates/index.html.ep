@@ -1,0 +1,7 @@
+travis,author,version,vcs_name,github_actions,vcs_url,distribution
+<table>
+<% for my $dist (@$distributions) { %>
+   <tr><td><a href="/dist/<%= $dist->{distribution} %>"><%= $dist->{distribution} %></a></td></tr>
+<% } %>
+</table>
+

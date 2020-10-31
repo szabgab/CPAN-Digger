@@ -1,7 +1,15 @@
-travis,author,version,vcs_name,github_actions,vcs_url,distribution
+<h1>CPAN Digger</h1>
+
+<p>
+The most recently uploaded and indexed distributions.
+</p>
+
 <table>
 <% for my $dist (@$distributions) { %>
-   <tr><td><a href="/dist/<%= $dist->{distribution} %>"><%= $dist->{distribution} %></a></td></tr>
+    <tr>
+        <td><a href="/dist/<%= $dist->{distribution} %>"><%= $dist->{distribution} %></a></td>
+        <td><% if (not $dist->{vcs_url}) { %>NO VCS<% } %></td>
+    </tr>
 <% } %>
 </table>
 

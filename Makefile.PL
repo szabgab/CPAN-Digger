@@ -11,8 +11,10 @@ WriteMakefile(
     EXE_FILES     => ['bin/cpan-digger'],
     dist          => { COMPRESS => 'gzip', SUFFIX => 'gz' },
     PREREQ_PM => {
-        'MetaCPAN::Client' => 0,
+        'DBI'              => 0,
+        'DBD::SQLite'      => 0,
         'Log::Log4perl'    => 0,
+        'MetaCPAN::Client' => 0,
     },
     TEST_REQUIRES => {
         'Test::More'    => 0,

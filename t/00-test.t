@@ -9,7 +9,7 @@ use Capture::Tiny qw(capture);
 
 subtest recent => sub {
     my $tempdir = tempdir( CLEANUP => 1 );
-    diag $tempdir;
+    #diag $tempdir;
 
     $ENV{CPAN_DIGGER_HOME} = $tempdir; #File::Spec->join($tempdir, 'cpandigger');
 
@@ -18,8 +18,8 @@ subtest recent => sub {
     };
 
     is $exit, 0;
-    #is $err, '';
-    diag $err;
+    is $err, '';
+    is $out, '';
 };
 
 subtest recent => sub {
@@ -33,8 +33,8 @@ subtest recent => sub {
     };
 
     is $exit, 0;
-    #is $err, '';
-    diag $err;
+    is $err, '';
+    is $out, '';
 };
 
 

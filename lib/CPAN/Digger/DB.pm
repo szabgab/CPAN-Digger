@@ -2,6 +2,8 @@ package CPAN::Digger::DB;
 use strict;
 use warnings;
 
+our $VERSION = '1.00';
+
 use DBI;
 use FindBin ();
 use Path::Tiny qw(path);

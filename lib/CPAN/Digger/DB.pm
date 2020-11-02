@@ -1,4 +1,4 @@
-package CPANDigger::DB;
+package CPAN::Digger::DB;
 use strict;
 use warnings;
 

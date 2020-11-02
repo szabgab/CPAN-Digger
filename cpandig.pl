@@ -14,7 +14,7 @@ use lib $FindBin::Bin;
 use CPANDigger qw(get_data);
 
 use lib "$FindBin::Bin/lib";
-use CPANDigger::DB qw(db_insert_into db_get_distro get_fields);
+use CPAN::Digger::DB qw(db_insert_into db_get_distro get_fields);
 
 
 my $recent = 10;

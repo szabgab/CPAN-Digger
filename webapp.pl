@@ -6,7 +6,7 @@ use DateTime;
 use Template;
 
 use lib "$FindBin::Bin/lib";
-use CPANDigger::DB qw(db_get_every_distro db_get_distro);
+use CPAN::Digger::DB qw(db_get_every_distro db_get_distro);
 
 
 get '/' => sub ($c) {

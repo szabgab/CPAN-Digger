@@ -154,6 +154,10 @@ sub collect {
             db_insert_into(@data{@fields});
             sleep $self->{sleep} if $self->{sleep};
     }
+
+    if ($self->{report}) {
+        print "Text report\n";
+    }
 }
 
 

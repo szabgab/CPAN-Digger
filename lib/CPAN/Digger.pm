@@ -19,8 +19,6 @@ use CPAN::Digger::DB qw(db_insert_into db_get_distro get_fields);
 
 my $tempdir = tempdir( CLEANUP => 1 );
 
-our @EXPORT_OK = qw(get_data);
-
 my %known_licenses = map {$_ => 1} qw(perl_5);
 
 
@@ -57,7 +55,8 @@ sub get_vcs {
 }
 
 sub get_data {
-    my ($item) = @_;
+    my ($self, $item) = @_;
+
     my $logger = Log::Log4perl->get_logger();
     my %data = (
         distribution => $item->distribution,
@@ -80,7 +79,7 @@ sub get_data {
             $data{vcs_url} = $vcs_url;
             $data{vcs_name} = $vcs_name;
             $logger->debug("      $vcs_name: $vcs_url");
-            if ($vcs_name eq 'GitHub') {
+            if ($self->{github} and $vcs_name eq 'GitHub') {
                 analyze_github(\%data);
             }
         }
@@ -143,7 +142,7 @@ sub collect {
 
             my $row = db_get_distro($item->distribution);
             next if $row and $row->{version} eq $item->version; # we already have this in the database (shall we call last?)
-            my %data = get_data($item);
+            my %data = $self->get_data($item);
             #say Dumper %data;
             db_insert_into(@data{@fields});
             sleep $self->{sleep} if $self->{sleep};

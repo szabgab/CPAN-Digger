@@ -11,6 +11,7 @@ WriteMakefile(
     EXE_FILES     => ['bin/cpan-digger'],
     dist          => { COMPRESS => 'gzip', SUFFIX => 'gz' },
     PREREQ_PM => {
+        'Capture::Tiny'    => 0,
         'DBI'              => 0,
         'DBD::SQLite'      => 0,
         'Log::Log4perl'    => 0,
@@ -18,7 +19,6 @@ WriteMakefile(
     },
     TEST_REQUIRES => {
         'Test::More'    => 0,
-        'Capture::Tiny' => 0,
     },
     META_MERGE => {
         'meta-spec' => { version => 2 },

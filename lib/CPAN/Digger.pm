@@ -4,6 +4,7 @@ use warnings FATAL => 'all';
 
 our $VERSION = '1.00';
 
+use Capture::Tiny qw(capture);
 use Log::Log4perl ();
 use File::Temp qw(tempdir);
 use Cwd qw(getcwd);
@@ -100,10 +101,14 @@ sub analyze_github {
     my $repo_name = (split '\/', $vcs_url)[-1];
     $logger->info("Analyze GitHub repo '$vcs_url' in directory $repo_name");
 
-    my @cmd = ("git", "clone", "--depth", "1", $data->{vcs_url});
+    my $git = 'git';
+
+    my @cmd = ($git, "clone", "--depth", "1", $data->{vcs_url});
     my $cwd = getcwd();
     chdir($tempdir);
-    my $exit_code = system(@cmd);
+    my ($out, $err, $exit_code) = capture {
+        system(@cmd);
+    };
     chdir($cwd);
     my $repo = "$tempdir/$repo_name";
 
@@ -158,11 +163,15 @@ sub collect {
     }
 
     if ($self->{report}) {
-        print "Text report\n";
+        #print "Text report\n";
         my $distros = $self->{db}->db_get_every_distro();
         for my $distro (@$distros) {
             #die Dumper $distro;
-            printf "%-40s %s\n", $distro->{distribution}, ($distro->{vcs_url} ? '' : 'NO VCS');
+            printf "%-40s %-7s", $distro->{distribution}, ($distro->{vcs_url} ? '' : 'NO VCS');
+            if ($self->{github}) {
+                printf "%-7s", ($distro->{has_ci} ? '' : 'NO CI');
+            }
+            print "\n";
         }
     }
 }

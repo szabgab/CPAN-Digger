@@ -10,10 +10,8 @@ use Log::Log4perl::Level ();
 use MetaCPAN::Client ();
 
 
-use lib $FindBin::Bin;
-use CPANDigger qw(get_data);
-
 use lib "$FindBin::Bin/lib";
+use CPAN::Digger qw(get_data);
 use CPAN::Digger::DB qw(db_insert_into db_get_distro get_fields);
 
 

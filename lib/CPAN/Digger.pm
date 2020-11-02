@@ -1,4 +1,4 @@
-package CPANDigger;
+package CPAN::Digger;
 use strict;
 use warnings;
 

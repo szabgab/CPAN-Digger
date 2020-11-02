@@ -9,7 +9,7 @@ use Capture::Tiny qw(capture);
 
 subtest recent_in_memory => sub {
     my ($out, $err, $exit) = capture {
-        system($^X, '-Ilib', 'bin/cpan-digger');
+        system($^X, '-Ilib', 'bin/cpan-digger', '--recent', '2');
     };
 
     is $exit, 0;

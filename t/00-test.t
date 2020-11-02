@@ -7,12 +7,7 @@ use File::Spec ();
 use Capture::Tiny qw(capture);
 
 
-subtest recent => sub {
-    my $tempdir = tempdir( CLEANUP => 1 );
-    #diag $tempdir;
-
-    $ENV{CPAN_DIGGER_HOME} = $tempdir; #File::Spec->join($tempdir, 'cpandigger');
-
+subtest recent_in_memory => sub {
     my ($out, $err, $exit) = capture {
         system($^X, '-Ilib', 'bin/cpan-digger');
     };
@@ -22,14 +17,32 @@ subtest recent => sub {
     is $out, '';
 };
 
-subtest recent => sub {
-    my $tempdir = tempdir( CLEANUP => 1 );
-    diag $tempdir;
-
-    $ENV{CPAN_DIGGER_HOME} = $tempdir; #File::Spec->join($tempdir, 'cpandigger');
-
+subtest author_in_memory => sub {
     my ($out, $err, $exit) = capture {
         system($^X, '-Ilib', 'bin/cpan-digger', '--author', 'SZABGAB');
+    };
+
+    is $exit, 0;
+    is $err, '';
+    is $out, '';
+};
+
+subtest author_in_file => sub {
+    my $tempdir = tempdir( CLEANUP => 1 );
+    my $db_file = File::Spec->join($tempdir, 'cpandigger');
+
+    my ($out, $err, $exit) = capture {
+        system($^X, '-Ilib', 'bin/cpan-digger', '--db', $db_file, '--author', 'SZABGAB');
+    };
+
+    ok -e $db_file;
+    is $exit, 0;
+    is $err, '';
+    is $out, '';
+
+    # run it again
+    ($out, $err, $exit) = capture {
+        system($^X, '-Ilib', 'bin/cpan-digger', '--db', $db_file, '--author', 'SZABGAB');
     };
 
     is $exit, 0;

@@ -10,10 +10,10 @@ use CPAN::Digger;
 
 sub run {
     my %args = (
-        author    => undef,
-        github    => undef,
+        author => undef,
+        github => undef,
         recent => 10,
-        debug  => undef,
+        log    => 'OFF',
         help   => undef,
         sleep  => 0,
     );
@@ -24,7 +24,7 @@ sub run {
         'recent=s',
         'sleep=i',
         'github',
-        'debug',
+        'log=s',
         'help',
     ) or usage();
     usage() if $args{help};
@@ -38,7 +38,7 @@ sub usage {
     die "Usage: $0
        --recent N         (defaults to 10)
        --author PAUSEID
-       --debug
+       --log LEVEL        [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF] (default is OFF)
        --sleep SECONDS    (defaults to 0)
        --github           Fetch information from github
 

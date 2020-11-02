@@ -126,7 +126,7 @@ sub analyze_github {
 sub collect {
     my ($self) = @_;
 
-    my $log_level = $self->{debug} ? 'DEBUG' : 'INFO';
+    my $log_level = $self->{log}; # TODO: shall we validate?
     Log::Log4perl->easy_init(Log::Log4perl::Level::to_priority( $log_level ));
     my $logger = Log::Log4perl->get_logger();
     $logger->info('Starting');

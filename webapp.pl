@@ -5,11 +5,12 @@ use DateTime;
 use Template;
 
 use lib "$FindBin::Bin/lib";
-use CPAN::Digger::DB qw(db_get_every_distro db_get_distro);
+use CPAN::Digger::DB ();
 
+my $db = CPAN::Digger::DB->new(db => $ENV{CPAN_DIGGER_DB});
 
 get '/' => sub ($c) {
-    my $distros = db_get_every_distro();
+    my $distros = $db->db_get_every_distro();
 
 
     my %data = (
@@ -19,12 +20,12 @@ get '/' => sub ($c) {
 
     $c->render(template => 'index',
         distributions => $distros,
-        );
+    );
 };
 
 get '/dist/:dist' => sub ($c) {
     my $distribution = $c->stash('dist');;
-    my $distro = db_get_distro($distribution);
+    my $distro = $db->db_get_distro($distribution);
     $c->render(template => 'distribution',
         distribution => $distribution,
         dist => $distro,

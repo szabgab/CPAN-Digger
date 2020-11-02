@@ -8,11 +8,14 @@ To collect data from MetaCPAN and GitHub run:
 
 ```
 perl -I lib bin/cpan-digger
+perl -I lib bin/cpan-digger --db cpandigger.db
 ```
 
 To launch the web application in development mode run:
 
 ```
+CPAN_DIGGER_DB=cpandigger.db morbo webapp.pl
+
 morbo webapp.pl
 ```
 

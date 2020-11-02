@@ -2,6 +2,22 @@
 
 * Find low-hanging fruit to fix in CPAN
 
+## Usage and development
+
+To collect data from MetaCPAN and GitHub run:
+
+```
+perl cpandig.pl
+```
+
+To launch the web application in development mode run:
+
+```
+morbo webapp.pl
+```
+
+Then visit http://localhost:3000/
+
 ## Steps
 
 * Fetch the list of recently uploaded released

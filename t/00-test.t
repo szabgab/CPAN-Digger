@@ -13,10 +13,11 @@ diag $tempdir;
 $ENV{CPAN_DIGGER_HOME} = $tempdir; #File::Spec->join($tempdir, 'cpandigger');
 
 my ($out, $err, $exit) = capture {
-    system($^X, 'bin/cpan-digger');
+    system($^X, '-Ilib', 'bin/cpan-digger');
 };
 
 is $exit, 0;
 #is $err, '';
+diag $err;
 
 done_testing();

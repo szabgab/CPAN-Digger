@@ -6,6 +6,7 @@ use DBI;
 use FindBin ();
 use Path::Tiny qw(path);
 use Exporter qw(import);
+use File::HomeDir ();
 
 our @EXPORT_OK = ('get_fields', 'get_db', 'db_insert_into', 'db_get_distro', 'db_get_every_distro');
 
@@ -20,8 +21,14 @@ sub get_fields {
 }
 
 sub get_db {
-    my $db_file = File::Spec->catdir($FindBin::Bin, 'cpandig.db');
-    my $schema_file = File::Spec->catdir($FindBin::Bin, 'schema.sql');
+    # TODO: set the path to the database using env variable or configuration file?
+    my $home     = $ENV{CPAN_DIGGER_HOME} || File::HomeDir->my_home;
+    my $cpan_digger_dir = File::Spec->catdir($home, '.cpandigger');
+    if (not -e $cpan_digger_dir) {
+        mkdir $cpan_digger_dir or die "Could not create directory '$cpan_digger_dir' $!";
+    }
+    my $db_file = File::Spec->catdir($cpan_digger_dir, 'cpandig.db');
+
     my $exists = -e $db_file;
     my $dbh = DBI->connect( "dbi:SQLite:dbname=$db_file", "", "", {
         PrintError       => 0,
@@ -30,7 +37,8 @@ sub get_db {
         FetchHashKeyName => 'NAME_lc',
     });
     if (not $exists) {
-        my $schema = path($schema_file)->slurp;
+        local $/ = undef;
+        my $schema = <DATA>;
         $dbh->do($schema);
     }
     return $dbh
@@ -57,3 +65,17 @@ sub db_get_every_distro {
 }
 
 42;
+
+__DATA__
+CREATE TABLE dists (
+    distribution VARCHAR(255) NOT NULL UNIQUE,
+    version      VARCHAR(255),
+    author       VARCHAR(255),
+    vcs_url      VARCHAR(255),
+    vcs_name     VARCHAR(255),
+    appveyor         BOOLEAN,
+    circleci         BOOLEAN,
+    travis           BOOLEAN,
+    github_actions   BOOLEAN,
+    has_ci           BOOLEAN
+);

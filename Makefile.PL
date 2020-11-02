@@ -10,6 +10,13 @@ WriteMakefile(
     LICENSE       => 'perl',
     EXE_FILES     => ['bin/cpan-digger'],
     dist          => { COMPRESS => 'gzip', SUFFIX => 'gz' },
+    PREREQ_PM => {
+        'Log::Log4perl' => 0,
+    },
+    TEST_REQUIRES => {
+        'Test::More'    => 0,
+        'Capture::Tiny' => 0,
+    },
     META_MERGE => {
         'meta-spec' => { version => 2 },
         resources   => {

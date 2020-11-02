@@ -137,7 +137,8 @@ sub collect {
     Log::Log4perl->easy_init(Log::Log4perl::Level::to_priority( $log_level ));
     my $logger = Log::Log4perl->get_logger();
     $logger->info('Starting');
-    $logger->info("Recent: $self->{recent}");
+    $logger->info("Recent: $self->{recent}") if $self->{recent};
+    $logger->info("Author: $self->{author}") if $self->{author};
 
     my $mcpan = MetaCPAN::Client->new();
     my $rset;

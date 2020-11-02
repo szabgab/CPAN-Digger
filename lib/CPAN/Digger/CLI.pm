@@ -13,7 +13,7 @@ sub run {
         report => undef,
         author => undef,
         github => undef,
-        recent => 10,
+        recent => undef,
         log    => 'OFF',
         help   => undef,
         sleep  => 0,
@@ -24,7 +24,7 @@ sub run {
         \%args,
         'author=s',
         'db=s',
-        'recent=s',
+        'recent=i',
         'sleep=i',
         'github',
         'log=s',
@@ -32,6 +32,7 @@ sub run {
         'help',
     ) or usage();
     usage() if $args{help};
+    usage() if not ($args{author} xor $args{recent});
 
     my $cd = CPAN::Digger->new(%args);
     $cd->collect();
@@ -39,18 +40,28 @@ sub run {
 
 
 sub usage {
-    die "Usage: $0
-       --recent N         (defaults to 10)
+    die qq{Usage: $0
+    Required exactly one of them:
+       --recent N         (Number of the most recent packages to check)
        --author PAUSEID
+
        --report           (Show text report at the end of processing.)
        --log LEVEL        [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF] (default is OFF)
-       --sleep SECONDS    (defaults to 0)
+
        --github           Fetch information from github
+       --sleep SECONDS    (Wait time between git clone operations, defaults to 0)
 
        --db PATH          (path to SQLite database file, if not supplied using in-memory database)
 
        --help
-";
+
+    Sample usage for authors:
+        $0 --author SZABGAB --report --github --sleep 3
+
+    Sample usage in general:
+        $0 --recent 30 --report --github --sleep 3
+
+};
 }
 
 

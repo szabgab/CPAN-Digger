@@ -1,6 +1,6 @@
 package CPAN::Digger;
 use strict;
-use warnings;
+use warnings FATAL => 'all';
 
 our $VERSION = '1.00';
 
@@ -15,7 +15,7 @@ use Log::Log4perl::Level ();
 use MetaCPAN::Client ();
 
 
-use CPAN::Digger::DB qw(db_insert_into db_get_distro get_fields);
+use CPAN::Digger::DB qw(get_fields);
 
 my $tempdir = tempdir( CLEANUP => 1 );
 
@@ -28,6 +28,8 @@ sub new {
     for my $key (keys %args) {
         $self->{$key} = $args{$key};
     }
+
+    $self->{db} = CPAN::Digger::DB->new(db => $self->{db});
 
     return $self;
 }
@@ -147,16 +149,21 @@ sub collect {
     		next if $distros{ $item->distribution }; # We have already deal with this in this session
             $distros{ $item->distribution } = 1;
 
-            my $row = db_get_distro($item->distribution);
+            my $row = $self->{db}->db_get_distro($item->distribution);
             next if $row and $row->{version} eq $item->version; # we already have this in the database (shall we call last?)
             my %data = $self->get_data($item);
             #say Dumper %data;
-            db_insert_into(@data{@fields});
+            $self->{db}->db_insert_into(@data{@fields});
             sleep $self->{sleep} if $self->{sleep};
     }
 
     if ($self->{report}) {
         print "Text report\n";
+        my $distros = $self->{db}->db_get_every_distro();
+        for my $distro (@$distros) {
+            #die Dumper $distro;
+            printf "%-40s %s\n", $distro->{distribution}, ($distro->{vcs_url} ? '' : 'NO VCS');
+        }
     }
 }
 

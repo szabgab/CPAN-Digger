@@ -1,6 +1,6 @@
 package CPAN::Digger::DB;
 use strict;
-use warnings;
+use warnings FATAL => 'all';
 
 our $VERSION = '1.00';
 
@@ -10,28 +10,44 @@ use Path::Tiny qw(path);
 use Exporter qw(import);
 use File::HomeDir ();
 
-our @EXPORT_OK = ('get_fields', 'get_db', 'db_insert_into', 'db_get_distro', 'db_get_every_distro');
+our @EXPORT_OK = qw(get_fields);
 
-my $dbh = get_db();
-my $sth_get_distro = $dbh->prepare('SELECT * FROM dists WHERE distribution=?');
-my $sth_get_every_distro = $dbh->prepare('SELECT * FROM dists');
 my @fields = qw(distribution version author vcs_url vcs_name travis github_actions appveyor circleci has_ci);
-my $fields = join ', ', @fields;
-my $sth_insert = $dbh->prepare("INSERT INTO dists ($fields) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 sub get_fields {
     return @fields;
 }
 
-sub get_db {
-    # TODO: set the path to the database using env variable or configuration file?
-    my $home     = $ENV{CPAN_DIGGER_HOME} || File::HomeDir->my_home;
-    my $cpan_digger_dir = File::Spec->catdir($home, '.cpandigger');
-    if (not -e $cpan_digger_dir) {
-        mkdir $cpan_digger_dir or die "Could not create directory '$cpan_digger_dir' $!";
-    }
-    my $db_file = File::Spec->catdir($cpan_digger_dir, 'cpandig.db');
 
-    my $exists = -e $db_file;
+sub new {
+    my ($class, %args) = @_;
+
+    my $self = bless {}, $class;
+    for my $key (keys %args) {
+        $self->{$key} = $args{$key};
+    }
+
+    my $dbh = $self->{dbh} = $self->get_db();
+    $self->{sth_get_distro} = $dbh->prepare('SELECT * FROM dists WHERE distribution=?');
+    $self->{sth_get_every_distro} = $dbh->prepare('SELECT * FROM dists');
+    my $fields = join ', ', @fields;
+    my $places = join ', ', ('?') x scalar @fields;
+    $self->{sth_insert} = $dbh->prepare("INSERT INTO dists ($fields) VALUES ($places)");
+
+    return $self;
+}
+
+
+sub get_db {
+    my ($self) = @_;
+
+    # Default to in-memory database
+    my $db_file = ':memory:';
+    my $exists = undef;
+
+    if ($self->{db}) {
+        $db_file = $self->{db};
+        $exists = -e $db_file;
+    }
     my $dbh = DBI->connect( "dbi:SQLite:dbname=$db_file", "", "", {
         PrintError       => 0,
         RaiseError       => 1,
@@ -47,20 +63,24 @@ sub get_db {
 }
 
 sub db_insert_into {
-    $sth_insert->execute(@_);
+    my ($self, @params) = @_;
+    $self->{sth_insert}->execute(@params);
 }
 
 sub db_get_distro {
-    my ($distribution) = @_;
-    $sth_get_distro->execute($distribution);
-    my $row = $sth_get_distro->fetchrow_hashref;
+    my ($self, $distribution) = @_;
+
+    $self->{sth_get_distro}->execute($distribution);
+    my $row = $self->{sth_get_distro}->fetchrow_hashref;
     return $row;
 }
 
 sub db_get_every_distro {
-    $sth_get_every_distro->execute;
+    my ($self) = @_;
+
+    $self->{sth_get_every_distro}->execute;
     my @distros;
-    while (my $row = $sth_get_every_distro->fetchrow_hashref) {
+    while (my $row = $self->{sth_get_every_distro}->fetchrow_hashref) {
         push @distros, $row;
     }
     return \@distros;

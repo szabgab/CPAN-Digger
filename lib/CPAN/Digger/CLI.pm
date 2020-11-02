@@ -1,6 +1,6 @@
 package CPAN::Digger::CLI;
 use strict;
-use warnings;
+use warnings FATAL => 'all';
 
 our $VERSION = '1.00';
 
@@ -17,11 +17,13 @@ sub run {
         log    => 'OFF',
         help   => undef,
         sleep  => 0,
+        db     => undef,
     );
 
     GetOptions(
         \%args,
         'author=s',
+        'db=s',
         'recent=s',
         'sleep=i',
         'github',
@@ -44,6 +46,8 @@ sub usage {
        --log LEVEL        [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF] (default is OFF)
        --sleep SECONDS    (defaults to 0)
        --github           Fetch information from github
+
+       --db PATH          (path to SQLite database file, if not supplied using in-memory database)
 
        --help
 ";

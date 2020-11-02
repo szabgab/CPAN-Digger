@@ -139,7 +139,7 @@ sub collect {
         #print $author;
         $rset = $author->releases;
     } else {
-        my $rset  = $mcpan->recent($self->{recent});
+        $rset  = $mcpan->recent($self->{recent});
     }
     my %distros;
     my @fields = get_fields();

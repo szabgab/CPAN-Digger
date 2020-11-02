@@ -6,18 +6,38 @@ use File::Temp qw(tempdir);
 use File::Spec ();
 use Capture::Tiny qw(capture);
 
-my $tempdir = tempdir( CLEANUP => 1 );
-diag $tempdir;
 
+subtest recent => sub {
+    my $tempdir = tempdir( CLEANUP => 1 );
+    diag $tempdir;
 
-$ENV{CPAN_DIGGER_HOME} = $tempdir; #File::Spec->join($tempdir, 'cpandigger');
+    $ENV{CPAN_DIGGER_HOME} = $tempdir; #File::Spec->join($tempdir, 'cpandigger');
 
-my ($out, $err, $exit) = capture {
-    system($^X, '-Ilib', 'bin/cpan-digger');
+    my ($out, $err, $exit) = capture {
+        system($^X, '-Ilib', 'bin/cpan-digger');
+    };
+
+    is $exit, 0;
+    #is $err, '';
+    diag $err;
 };
 
-is $exit, 0;
-#is $err, '';
-diag $err;
+subtest recent => sub {
+    my $tempdir = tempdir( CLEANUP => 1 );
+    diag $tempdir;
+
+    $ENV{CPAN_DIGGER_HOME} = $tempdir; #File::Spec->join($tempdir, 'cpandigger');
+
+    my ($out, $err, $exit) = capture {
+        system($^X, '-Ilib', 'bin/cpan-digger', '--author', 'SZABGAB');
+    };
+
+    is $exit, 0;
+    #is $err, '';
+    diag $err;
+};
+
+
+
 
 done_testing();

@@ -2,13 +2,15 @@ package CPAN::Digger;
 use strict;
 use warnings;
 
+our $VERSION = '1.00';
+
 use Log::Log4perl ();
 use File::Temp qw(tempdir);
 use Cwd qw(getcwd);
- 
-my $tempdir = tempdir( CLEANUP => 1 );
- 
 use Exporter qw(import);
+
+my $tempdir = tempdir( CLEANUP => 1 );
+
 
 our @EXPORT_OK = qw(get_vcs get_data);
 
@@ -97,10 +99,35 @@ sub analyze_github {
 
     for my $ci (qw(travis github_actions circleci appveyor)) {
         if ($data->{$ci}) {
-            $data->{has_ci} = 1 
+            $data->{has_ci} = 1;
         }
-    }   
+    }
 }
 
 
 42;
+
+
+=head1 NAME
+
+CPAN::Digger - To dig CPAN
+
+=head1 SYNOPSIS
+
+    cpan-digger
+
+=head1 DESCRIPTION
+
+This is a command line program to collect some meta information about CPAN modules.
+
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2020 by L<Gabor Szabo|https://szabgab.com/>
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.26.1 or,
+at your option, any later version of Perl 5 you may have available.
+
+=cut
+

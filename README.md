@@ -7,7 +7,7 @@
 To collect data from MetaCPAN and GitHub run:
 
 ```
-perl cpandig.pl
+perl bin/cpan-digger
 ```
 
 To launch the web application in development mode run:

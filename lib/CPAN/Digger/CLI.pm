@@ -10,6 +10,7 @@ use CPAN::Digger;
 
 sub run {
     my %args = (
+        author    => undef,
         github    => undef,
         recent => 10,
         debug  => undef,
@@ -19,6 +20,7 @@ sub run {
 
     GetOptions(
         \%args,
+        'author=s',
         'recent=s',
         'sleep=i',
         'github',
@@ -35,6 +37,7 @@ sub run {
 sub usage {
     die "Usage: $0
        --recent N         (defaults to 10)
+       --author PAUSEID
        --debug
        --sleep SECONDS    (defaults to 0)
        --github           Fetch information from github

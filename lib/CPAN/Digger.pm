@@ -133,7 +133,14 @@ sub collect {
     $logger->info("Recent: $self->{recent}");
 
     my $mcpan = MetaCPAN::Client->new();
-    my $rset  = $mcpan->recent($self->{recent});
+    my $rset;
+    if ($self->{author}) {
+        my $author = $mcpan->author($self->{author});
+        #print $author;
+        $rset = $author->releases;
+    } else {
+        my $rset  = $mcpan->recent($self->{recent});
+    }
     my %distros;
     my @fields = get_fields();
     while ( my $item = $rset->next ) {

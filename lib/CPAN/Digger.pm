@@ -8,11 +8,31 @@ use Log::Log4perl ();
 use File::Temp qw(tempdir);
 use Cwd qw(getcwd);
 use Exporter qw(import);
+use Data::Dumper qw(Dumper);
+use File::Spec ();
+use Log::Log4perl ();
+use Log::Log4perl::Level ();
+use MetaCPAN::Client ();
+
+
+use CPAN::Digger::DB qw(db_insert_into db_get_distro get_fields);
 
 my $tempdir = tempdir( CLEANUP => 1 );
 
+our @EXPORT_OK = qw(get_data);
 
-our @EXPORT_OK = qw(get_vcs get_data);
+my %known_licenses = map {$_ => 1} qw(perl_5);
+
+
+sub new {
+    my ($class, %args) = @_;
+    my $self = bless {}, $class;
+    for my $key (keys %args) {
+        $self->{$key} = $args{$key};
+    }
+
+    return $self;
+}
 
 sub get_vcs {
     my ($repository) = @_;
@@ -101,6 +121,32 @@ sub analyze_github {
         if ($data->{$ci}) {
             $data->{has_ci} = 1;
         }
+    }
+}
+
+sub collect {
+    my ($self) = @_;
+
+    my $log_level = $self->{debug} ? 'DEBUG' : 'INFO';
+    Log::Log4perl->easy_init(Log::Log4perl::Level::to_priority( $log_level ));
+    my $logger = Log::Log4perl->get_logger();
+    $logger->info('Starting');
+    $logger->info("Recent: $self->{recent}");
+
+    my $mcpan = MetaCPAN::Client->new();
+    my $rset  = $mcpan->recent($self->{recent});
+    my %distros;
+    my @fields = get_fields();
+    while ( my $item = $rset->next ) {
+    		next if $distros{ $item->distribution }; # We have already deal with this in this session
+            $distros{ $item->distribution } = 1;
+
+            my $row = db_get_distro($item->distribution);
+            next if $row and $row->{version} eq $item->version; # we already have this in the database (shall we call last?)
+            my %data = get_data($item);
+            #say Dumper %data;
+            db_insert_into(@data{@fields});
+            sleep $self->{sleep} if $self->{sleep};
     }
 }
 

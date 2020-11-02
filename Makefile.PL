@@ -11,7 +11,8 @@ WriteMakefile(
     EXE_FILES     => ['bin/cpan-digger'],
     dist          => { COMPRESS => 'gzip', SUFFIX => 'gz' },
     PREREQ_PM => {
-        'Log::Log4perl' => 0,
+        'MetaCPAN::Client' => 0,
+        'Log::Log4perl'    => 0,
     },
     TEST_REQUIRES => {
         'Test::More'    => 0,

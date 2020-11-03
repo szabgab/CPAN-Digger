@@ -16,6 +16,7 @@ WriteMakefile(
         'DBD::SQLite'      => 0,
         'Log::Log4perl'    => 0,
         'MetaCPAN::Client' => 0,
+        'Path::Tiny'       => 0,
     },
     TEST_REQUIRES => {
         'Test::More'    => 0,

@@ -1,3 +1,4 @@
+% layout 'main', title => $dist->{distribution};
 
 <h1><%= $dist->{distribution} %></h1>
 

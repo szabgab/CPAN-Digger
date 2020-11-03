@@ -34,7 +34,7 @@ jobs:
       - name: Release tests
         run: |
             cpanm --installdeps --notest .
-#            cpanm --notest Test::Version
             perl Makefile.PL
             make
             make test
+

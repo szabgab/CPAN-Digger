@@ -9,6 +9,7 @@ use Log::Log4perl ();
 use File::Temp qw(tempdir);
 use Cwd qw(getcwd);
 use Exporter qw(import);
+use LWP::UserAgent ();
 use Data::Dumper qw(Dumper);
 use File::Spec ();
 use Log::Log4perl ();
@@ -22,13 +23,13 @@ my $tempdir = tempdir( CLEANUP => 1 );
 
 my %known_licenses = map {$_ => 1} qw(perl_5);
 
-
 sub new {
     my ($class, %args) = @_;
     my $self = bless {}, $class;
     for my $key (keys %args) {
         $self->{$key} = $args{$key};
     }
+    $self->{log} = uc $self->{log};
 
     $self->{db} = CPAN::Digger::DB->new(db => $self->{db});
 

@@ -14,7 +14,7 @@ sub run {
         author => undef,
         github => undef,
         recent => undef,
-        log    => 'OFF',
+        log    => 'INFO',
         help   => undef,
         sleep  => 0,
         db     => undef,
@@ -55,7 +55,7 @@ Usage: $0
        --author PAUSEID
 
        --report           (Show text report at the end of processing.)
-       --log LEVEL        [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF] (default is OFF)
+       --log LEVEL        [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF] (default is INFO)
 
        --github           Fetch information from github
        --sleep SECONDS    (Wait time between git clone operations, defaults to 0)

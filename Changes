@@ -1,4 +1,7 @@
 
+1.03 2020.11.XX
+    - Change default log level to INFO
+
 1.02 2020.11.04
     - List missing prerequisites, skipt RELASES_TEST if module is not available
     - Try to avoid getting stuck if an incorrect URL was listed as VCS.

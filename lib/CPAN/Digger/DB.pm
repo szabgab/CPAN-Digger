@@ -2,7 +2,7 @@ package CPAN::Digger::DB;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 use DBI;
 use FindBin ();

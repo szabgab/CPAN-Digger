@@ -2,7 +2,7 @@ package CPAN::Digger;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 use Capture::Tiny qw(capture);
 use Log::Log4perl ();

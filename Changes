@@ -1,4 +1,8 @@
 
+1.02 2020.11.04
+    - List missing prerequisites, skipt RELASES_TEST if module is not available
+    - Try to avoid getting stuck if an incorrect URL was listed as VCS.
+
 1.01 2020.11.02
     - Fix execution
     - Enable checking the github repositories

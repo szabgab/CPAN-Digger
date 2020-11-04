@@ -18,6 +18,7 @@ sub run {
         help   => undef,
         sleep  => 0,
         db     => undef,
+        version => undef,
     );
 
     GetOptions(
@@ -30,9 +31,15 @@ sub run {
         'log=s',
         'report',
         'help',
+        'version',
     ) or usage();
     usage() if $args{help};
+    if ($args{version}) {
+        print "CPAN::Digger VERSION $VERSION\n";
+        exit();
+    }
     usage() if not ($args{author} xor $args{recent});
+
 
     my $cd = CPAN::Digger->new(%args);
     $cd->collect();
@@ -40,7 +47,9 @@ sub run {
 
 
 sub usage {
-    die qq{Usage: $0
+    die qq{CPAN::Digger VERSION $VERSION
+
+Usage: $0
     Required exactly one of them:
        --recent N         (Number of the most recent packages to check)
        --author PAUSEID
@@ -53,6 +62,7 @@ sub usage {
 
        --db PATH          (path to SQLite database file, if not supplied using in-memory database)
 
+       --version
        --help
 
     Sample usage for authors:

@@ -13,10 +13,10 @@ td {
 
 <table>
     <tr>
-      <td>Distribution</td>
-      <td>VCS</td>
-      <td>CI</td>
-      <td>Author</td>
+      <th>Distribution</th>
+      <th>VCS</th>
+      <th>CI</th>
+      <th>Author</th>
     </tr>
 <% for my $dist (@$distributions) { %>
     <tr>

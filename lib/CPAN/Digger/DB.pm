@@ -12,7 +12,7 @@ use Path::Tiny qw(path);
 
 our @EXPORT_OK = qw(get_fields);
 
-my @fields = qw(distribution version author date vcs_url vcs_name travis github_actions appveyor circleci has_ci);
+my @fields = qw(distribution version author date vcs_url vcs_name travis github_actions appveyor circleci has_ci license issues);
 sub get_fields {
     return @fields;
 }
@@ -102,6 +102,8 @@ CREATE TABLE dists (
     date         VARCHAR(255),
     version      VARCHAR(255),
     author       VARCHAR(255),
+    license      VARCHAR(255),
+    issues       VARCHAR(255),
     vcs_url      VARCHAR(255),
     vcs_name     VARCHAR(255),
     appveyor         BOOLEAN,

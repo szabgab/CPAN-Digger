@@ -19,7 +19,7 @@ use CPAN::Digger::DB qw(get_fields);
 
 my $tempdir = tempdir( CLEANUP => ($ENV{KEEP_TEMPDIR} ? 0 : 1) );
 
-my %known_licenses = map {$_ => 1} qw(perl_5);
+my %known_licenses = map {$_ => 1} qw(artistic_2 lgpl_2_1 perl_5);
 
 sub new {
     my ($class, %args) = @_;
@@ -71,8 +71,16 @@ sub get_data {
 
     $logger->debug('dist: ', $item->distribution);
     $logger->debug('      ', $item->author);
-    #my @licenses = @{ $item->license };
-    #$logger->debug('      ', join ' ', @licenses);
+    my @licenses = @{ $item->license };
+    $data{licenses} = join ' ', @licenses;
+    $logger->debug('      ',  $data{licenses});
+    for my $license (@licenses) {
+        if ($license eq 'unknown') {
+            $logger->error("Unknown license '$license'");
+        } elsif (not exists $known_licenses{$license}) {
+            $logger->warn("Unknown license '$license'. Probably CPAN::Digger needs to be updated");
+        }
+    }
     # if there are not licenses =>
     # if there is a license called "unknonws"
     # check against a known list of licenses (grow it later, or look it up somewhere?)

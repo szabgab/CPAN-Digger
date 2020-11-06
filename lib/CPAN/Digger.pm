@@ -148,6 +148,8 @@ sub analyze_github {
 sub collect {
     my ($self) = @_;
 
+    my @all_the_results;
+
     my $log_level = $self->{log}; # TODO: shall we validate?
     Log::Log4perl->easy_init({
         level => $log_level,
@@ -178,8 +180,12 @@ sub collect {
             next if $row and $row->{version} eq $item->version; # we already have this in the database (shall we call last?)
             my %data = $self->get_data($item);
             #say Dumper %data;
-            $self->{db}->db_insert_into(@data{@fields});
+            push @all_the_results, \%data;
             sleep $self->{sleep} if $self->{sleep};
+    }
+    for my $data_ref (@all_the_results) {
+        my %data = %$data_ref;
+        $self->{db}->db_insert_into(@data{@fields});
     }
 
     if ($self->{report}) {

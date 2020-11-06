@@ -100,18 +100,18 @@ sub analyze_github {
     my $repo_name = (split '\/', $vcs_url)[-1];
     $logger->info("Analyze GitHub repo '$vcs_url' in directory $repo_name");
 
-    my $ua = LWP::UserAgent->new(timeout => 5, max_redirect => 0);
+    my $ua = LWP::UserAgent->new(timeout => 5);
     my $response = $ua->get($vcs_url);
     my $status_line = $response->status_line;
     if ($status_line eq '404 Not Found') {
         $logger->error("Repository '$vcs_url' Received 404 Not Found. Please update the link in the META file");
         return;
     }
-    if ($response->code != 200 and $response->code != 302) {
+    if ($response->code != 200) {
         $logger->error("Repository '$vcs_url'  got a response of '$status_line'. Please report this to the maintainer of CPAN::Digger.");
         return;
     }
-    if ($status_line eq '301 Moved Permanently') {
+    if ($response->redirects) {
         $logger->error("Repository '$vcs_url' is being redirected. Please update the link in the META file");
     }
 

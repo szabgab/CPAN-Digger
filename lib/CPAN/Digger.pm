@@ -82,9 +82,6 @@ sub get_data {
             $data{vcs_url} = $vcs_url;
             $data{vcs_name} = $vcs_name;
             $logger->debug("      $vcs_name: $vcs_url");
-            if ($self->{check_github} and $data{vcs_name} eq 'GitHub') {
-                analyze_github(\%data);
-            }
         }
     } else {
         $logger->error('No repository for ', $item->distribution);
@@ -183,6 +180,15 @@ sub collect {
             push @all_the_results, \%data;
             sleep $self->{sleep} if $self->{sleep};
     }
+
+    # Check on the VCS
+    for my $data_ref (@all_the_results) {
+       if ($self->{check_github} and $data_ref->{vcs_name} eq 'GitHub') {
+           analyze_github($data_ref);
+       }
+    }
+
+    # Add to database
     for my $data_ref (@all_the_results) {
         my %data = %$data_ref;
         $self->{db}->db_insert_into(@data{@fields});

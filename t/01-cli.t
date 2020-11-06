@@ -25,6 +25,15 @@ my @results_recent = (
         'distribution' => 'Princess Fiona',
         'version' => '2.03',
         'resources' => {
+            'bugtracker' => {
+                'web' => 'https://github.com/szabgab/CPAN-Digger/issues',
+            },
+            'homepage' => 'https://perlmaven.com/cpan-digger',
+            'repository' => {
+                'type' => 'git',
+                'url' => 'https://github.com/szabgab/CPAN-Digger.git',
+                'web' => 'https://github.com/szabgab/CPAN-Digger',
+            },
         },
     },
 #   {

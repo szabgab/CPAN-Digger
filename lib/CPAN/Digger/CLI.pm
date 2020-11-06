@@ -19,6 +19,7 @@ sub run {
         sleep  => 0,
         db     => undef,
         version => undef,
+        limit   => undef,
     );
 
     GetOptions(
@@ -26,6 +27,7 @@ sub run {
         'author=s',
         'db=s',
         'recent=i',
+        'limit=i',
         'sleep=i',
         'github',
         'log=s',

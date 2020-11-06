@@ -12,7 +12,7 @@ use Path::Tiny qw(path);
 
 our @EXPORT_OK = qw(get_fields);
 
-my @fields = qw(distribution version author vcs_url vcs_name travis github_actions appveyor circleci has_ci);
+my @fields = qw(distribution version author date vcs_url vcs_name travis github_actions appveyor circleci has_ci);
 sub get_fields {
     return @fields;
 }
@@ -28,7 +28,7 @@ sub new {
 
     my $dbh = $self->{dbh} = $self->get_db();
     $self->{sth_get_distro} = $dbh->prepare('SELECT * FROM dists WHERE distribution=?');
-    $self->{sth_get_every_distro} = $dbh->prepare('SELECT * FROM dists');
+    $self->{sth_get_every_distro} = $dbh->prepare('SELECT * FROM dists ORDER by date DESC');
     my $fields = join ', ', @fields;
     my $places = join ', ', ('?') x scalar @fields;
     $self->{sth_insert} = $dbh->prepare("INSERT INTO dists ($fields) VALUES ($places)");
@@ -99,6 +99,7 @@ sub db_get_every_distro {
 __DATA__
 CREATE TABLE dists (
     distribution VARCHAR(255) NOT NULL UNIQUE,
+    date         VARCHAR(255),
     version      VARCHAR(255),
     author       VARCHAR(255),
     vcs_url      VARCHAR(255),

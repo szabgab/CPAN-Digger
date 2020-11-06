@@ -65,7 +65,9 @@ sub get_data {
         distribution => $item->distribution,
         version      => $item->version,
         author       => $item->author,
+        date         => $item->date,
     );
+    #die Dumper $item;
 
     $logger->debug('dist: ', $item->distribution);
     $logger->debug('      ', $item->author);
@@ -176,16 +178,26 @@ sub collect {
             my $row = $self->{db}->db_get_distro($item->distribution);
             next if $row and $row->{version} eq $item->version; # we already have this in the database (shall we call last?)
             my %data = $self->get_data($item);
-            #say Dumper %data;
+            #die Dumper \%data;
             $self->{db}->db_insert_into(@data{@fields});
-            push @all_the_distributions, $item->distribution;
+            push @all_the_distributions, \%data;
             sleep $self->{sleep} if $self->{sleep};
+    }
+
+    if ($self->{author}) {
+        @all_the_distributions = reverse sort {$a->{date} cmp $b->{date}} @all_the_distributions;
+        if ($self->{limit} and @all_the_distributions > $self->{limit}) {
+            @all_the_distributions = @all_the_distributions[0 .. $self->{limit}-1];
+        }
     }
 
     # Check on the VCS
     if ($self->{check_github}) {
-        for my $distribution (@all_the_distributions) {
+        for my $data (@all_the_distributions) {
+            my $distribution = $data->{distribution};
             my $data_ref = $self->{db}->db_get_distro($distribution);
+            next if not $data_ref->{vcs_name};
+
             if ($self->{check_github} and $data_ref->{vcs_name} eq 'GitHub') {
                 analyze_github($data_ref);
             }
@@ -197,10 +209,13 @@ sub collect {
 
     if ($self->{report}) {
         #print "Text report\n";
-        my $distros = $self->{db}->db_get_every_distro();
-        for my $distro (@$distros) {
+        my @distros = @{ $self->{db}->db_get_every_distro() };
+        if ($self->{limit} and @distros > $self->{limit}) {
+            @distros = @distros[0 .. $self->{limit}-1];
+        }
+        for my $distro (@distros) {
             #die Dumper $distro;
-            printf "%-40s %-7s", $distro->{distribution}, ($distro->{vcs_url} ? '' : 'NO VCS');
+            printf "%s %-40s %-7s", $distro->{date}, $distro->{distribution}, ($distro->{vcs_url} ? '' : 'NO VCS');
             if ($self->{check_github}) {
                 printf "%-7s", ($distro->{has_ci} ? '' : 'NO CI');
             }

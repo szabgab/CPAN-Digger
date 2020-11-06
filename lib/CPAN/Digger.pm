@@ -28,6 +28,7 @@ sub new {
         $self->{$key} = $args{$key};
     }
     $self->{log} = uc $self->{log};
+    $self->{check_github} = delete $self->{github};
 
     $self->{db} = CPAN::Digger::DB->new(db => $self->{db});
 
@@ -81,7 +82,7 @@ sub get_data {
             $data{vcs_url} = $vcs_url;
             $data{vcs_name} = $vcs_name;
             $logger->debug("      $vcs_name: $vcs_url");
-            if ($self->{github} and $vcs_name eq 'GitHub') {
+            if ($self->{check_github} and $data{vcs_name} eq 'GitHub') {
                 analyze_github(\%data);
             }
         }
@@ -187,7 +188,7 @@ sub collect {
         for my $distro (@$distros) {
             #die Dumper $distro;
             printf "%-40s %-7s", $distro->{distribution}, ($distro->{vcs_url} ? '' : 'NO VCS');
-            if ($self->{github}) {
+            if ($self->{check_github}) {
                 printf "%-7s", ($distro->{has_ci} ? '' : 'NO CI');
             }
             print "\n";

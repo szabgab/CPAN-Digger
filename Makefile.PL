@@ -21,6 +21,8 @@ WriteMakefile(
     },
     TEST_REQUIRES => {
         'Test::More'    => 0,
+        'Mock::Quick'   => 0,
+        'Storable'      => 0,
     },
     META_MERGE => {
         'meta-spec' => { version => 2 },

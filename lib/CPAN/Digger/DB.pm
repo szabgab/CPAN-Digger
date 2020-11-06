@@ -32,7 +32,7 @@ sub new {
     my $fields = join ', ', @fields;
     my $places = join ', ', ('?') x scalar @fields;
     $self->{sth_insert} = $dbh->prepare("INSERT INTO dists ($fields) VALUES ($places)");
-
+    $self->{sth_delete} = $dbh->prepare("DELETE FROM dists WHERE distribution=?");
     return $self;
 }
 
@@ -66,6 +66,14 @@ sub db_insert_into {
     my ($self, @params) = @_;
     $self->{sth_insert}->execute(@params);
 }
+
+# TODO have an update here?
+sub db_update {
+    my ($self, $distribution, @params) = @_;
+    $self->{sth_delete}->execute($distribution);
+    $self->{sth_insert}->execute(@params);
+}
+
 
 sub db_get_distro {
     my ($self, $distribution) = @_;

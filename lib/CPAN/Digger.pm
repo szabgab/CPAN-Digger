@@ -145,7 +145,7 @@ sub analyze_github {
 sub collect {
     my ($self) = @_;
 
-    my @all_the_results;
+    my @all_the_distributions;
 
     my $log_level = $self->{log}; # TODO: shall we validate?
     Log::Log4perl->easy_init({
@@ -177,22 +177,23 @@ sub collect {
             next if $row and $row->{version} eq $item->version; # we already have this in the database (shall we call last?)
             my %data = $self->get_data($item);
             #say Dumper %data;
-            push @all_the_results, \%data;
+            $self->{db}->db_insert_into(@data{@fields});
+            push @all_the_distributions, $item->distribution;
             sleep $self->{sleep} if $self->{sleep};
     }
 
     # Check on the VCS
-    for my $data_ref (@all_the_results) {
-       if ($self->{check_github} and $data_ref->{vcs_name} eq 'GitHub') {
-           analyze_github($data_ref);
-       }
+    if ($self->{check_github}) {
+        for my $distribution (@all_the_distributions) {
+            my $data_ref = $self->{db}->db_get_distro($distribution);
+            if ($self->{check_github} and $data_ref->{vcs_name} eq 'GitHub') {
+                analyze_github($data_ref);
+            }
+            my %data = %$data_ref;
+            $self->{db}->db_update($distribution, @data{@fields});
+        }
     }
 
-    # Add to database
-    for my $data_ref (@all_the_results) {
-        my %data = %$data_ref;
-        $self->{db}->db_insert_into(@data{@fields});
-    }
 
     if ($self->{report}) {
         #print "Text report\n";

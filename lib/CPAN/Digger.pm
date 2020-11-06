@@ -17,7 +17,7 @@ use MetaCPAN::Client ();
 
 use CPAN::Digger::DB qw(get_fields);
 
-my $tempdir = tempdir( CLEANUP => 1 );
+my $tempdir = tempdir( CLEANUP => ($ENV{KEEP_TEMPDIR} ? 0 : 1) );
 
 my %known_licenses = map {$_ => 1} qw(perl_5);
 
@@ -125,6 +125,7 @@ sub analyze_github {
     };
     chdir($cwd);
     my $repo = "$tempdir/$repo_name";
+    $logger->debug("REPO path '$repo'");
 
     if ($exit_code != 0) {
         # TODO capture stderr and include in the log
@@ -133,12 +134,15 @@ sub analyze_github {
     }
 
     $data->{travis} = -e "$repo/.travis.yml";
-    $data->{github_actions} = scalar(glob("$repo/.github/workflows/*"));
+    my @ga = glob("$repo/.github/workflows/*");
+    $data->{github_actions} = (scalar(@ga) ? 1 : 0);
     $data->{circleci} = -e "$repo/.circleci";
     $data->{appveyor} = (-e "$repo/.appveyor.yml") || (-e "$repo/appveyor.yml");
 
     for my $ci (qw(travis github_actions circleci appveyor)) {
+        $logger->debug("Is CI '$ci'?");
         if ($data->{$ci}) {
+            $logger->debug("CI '$ci' found!");
             $data->{has_ci} = 1;
         }
     }
@@ -157,6 +161,7 @@ sub collect {
 
     my $logger = Log::Log4perl->get_logger();
     $logger->info('Starting');
+    $logger->info("Tempdir: $tempdir");
     $logger->info("Recent: $self->{recent}") if $self->{recent};
     $logger->info("Author: $self->{author}") if $self->{author};
 

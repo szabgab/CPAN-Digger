@@ -128,6 +128,7 @@ subtest recent_in_memory => sub {
 
     is $err, '', 'STDERR';
     my $expected_out = path('t/files/recent_in_memory.out')->slurp;
+    $out =~ s/^\S+\s+//mg; # remove the dates from each row.
     is $out, $expected_out, 'STDOUT';
     if ($ENV{SAVE}) {
         path('t/files/recent_in_memory.out')->spew($out);

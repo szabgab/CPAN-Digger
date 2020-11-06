@@ -86,7 +86,7 @@ sub get_data {
             }
         }
     } else {
-        $logger->warn('No repository for ', $item->distribution);
+        $logger->error('No repository for ', $item->distribution);
     }
     return %data;
 }
@@ -102,18 +102,17 @@ sub analyze_github {
 
     my $ua = LWP::UserAgent->new(timeout => 5, max_redirect => 0);
     my $response = $ua->get($vcs_url);
-    if ($response->status_line eq '404 Not Found') {
+    my $status_line = $response->status_line;
+    if ($status_line eq '404 Not Found') {
         $logger->error("Repository '$vcs_url' Received 404 Not Found. Please update the link in the META file");
         return;
     }
-    if ($response->status_line eq '301 Moved Permanently') {
-        $logger->error("Repository '$vcs_url' is being redirected. Please update the link in the META file");
-        return;
-    }
-    my $status_line = $response->status_line;
-    if ($response->status_line ne '200 OK') {
+    if ($response->code != 200 and $response->code != 302) {
         $logger->error("Repository '$vcs_url'  got a response of '$status_line'. Please report this to the maintainer of CPAN::Digger.");
         return;
+    }
+    if ($status_line eq '301 Moved Permanently') {
+        $logger->error("Repository '$vcs_url' is being redirected. Please update the link in the META file");
     }
 
     my $git = 'git';

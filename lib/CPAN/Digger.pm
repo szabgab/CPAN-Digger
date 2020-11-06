@@ -11,7 +11,6 @@ use Exporter qw(import);
 use File::Spec ();
 use File::Temp qw(tempdir);
 use Log::Log4perl ();
-use Log::Log4perl::Level ();
 use LWP::UserAgent ();
 use MetaCPAN::Client ();
 
@@ -150,7 +149,11 @@ sub collect {
     my ($self) = @_;
 
     my $log_level = $self->{log}; # TODO: shall we validate?
-    Log::Log4perl->easy_init(Log::Log4perl::Level::to_priority( $log_level ));
+    Log::Log4perl->easy_init({
+        level => $log_level,
+        layout   => '%d{yyyy-MM-dd HH:mm:ss} - %p - %m%n',
+    });
+
     my $logger = Log::Log4perl->get_logger();
     $logger->info('Starting');
     $logger->info("Recent: $self->{recent}") if $self->{recent};

@@ -20,11 +20,13 @@ my @results_recent = (
         'resources' => {
         },
     },
-#   {
-#     'date' => '2020-11-04T10:31:20',
-#     'distribution' => 'Princess Fiona',
-#     'version' => '2.03',
-#   },
+    {
+        'date' => '2020-11-04T10:31:20',
+        'distribution' => 'Princess Fiona',
+        'version' => '2.03',
+        'resources' => {
+        },
+    },
 #   {
 #     'date' => '2020-11-04T09:51:50',
 #     'distribution' => 'Zorg',
@@ -118,7 +120,9 @@ subtest recent_in_memory => sub {
     is $err, '', 'STDERR';
     my $expected_out = path('t/files/recent_in_memory.out')->slurp;
     is $out, $expected_out, 'STDOUT';
-    #path('t/files/recent_in_memory.out')->spew($out);
+    if ($ENV{SAVE}) {
+        path('t/files/recent_in_memory.out')->spew($out);
+    }
 };
 
 done_testing();

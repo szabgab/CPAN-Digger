@@ -5,10 +5,10 @@ use warnings FATAL => 'all';
 our $VERSION = '1.02';
 
 use DBI;
-use FindBin ();
-use Path::Tiny qw(path);
 use Exporter qw(import);
 use File::HomeDir ();
+use FindBin ();
+use Path::Tiny qw(path);
 
 our @EXPORT_OK = qw(get_fields);
 

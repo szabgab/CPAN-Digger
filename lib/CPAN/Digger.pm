@@ -5,15 +5,14 @@ use warnings FATAL => 'all';
 our $VERSION = '1.02';
 
 use Capture::Tiny qw(capture);
-use Log::Log4perl ();
-use File::Temp qw(tempdir);
 use Cwd qw(getcwd);
-use Exporter qw(import);
-use LWP::UserAgent ();
 use Data::Dumper qw(Dumper);
+use Exporter qw(import);
 use File::Spec ();
+use File::Temp qw(tempdir);
 use Log::Log4perl ();
 use Log::Log4perl::Level ();
+use LWP::UserAgent ();
 use MetaCPAN::Client ();
 
 

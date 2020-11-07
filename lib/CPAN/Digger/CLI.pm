@@ -12,7 +12,7 @@ sub run {
     my %args = (
         report => undef,
         author => undef,
-        github => undef,
+        vcs    => undef,
         recent => undef,
         log    => 'INFO',
         help   => undef,
@@ -29,7 +29,7 @@ sub run {
         'recent=i',
         'limit=i',
         'sleep=i',
-        'github',
+        'vcs',
         'log=s',
         'report',
         'help',
@@ -59,7 +59,7 @@ Usage: $0
        --report           (Show text report at the end of processing.)
        --log LEVEL        [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF] (default is INFO)
 
-       --github           Fetch information from github
+       --vcs              Fetch information from github, gitlab
        --sleep SECONDS    (Wait time between git clone operations, defaults to 0)
 
        --db PATH          (path to SQLite database file, if not supplied using in-memory database)
@@ -68,10 +68,10 @@ Usage: $0
        --help
 
     Sample usage for authors:
-        $0 --author SZABGAB --report --github --sleep 3
+        $0 --author SZABGAB --report --vcs --sleep 3
 
     Sample usage in general:
-        $0 --recent 30 --report --github --sleep 3
+        $0 --recent 30 --report --vcs --sleep 3
 
 };
 }

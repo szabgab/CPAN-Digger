@@ -28,7 +28,7 @@ sub new {
         $self->{$key} = $args{$key};
     }
     $self->{log} = uc $self->{log};
-    $self->{check_github} = delete $self->{github};
+    $self->{check_vcs} = delete $self->{vcs};
 
     $self->{db} = CPAN::Digger::DB->new(db => $self->{db});
 
@@ -100,7 +100,7 @@ sub get_data {
 }
 
 
-sub analyze_github {
+sub analyze_vcs {
     my ($data) = @_;
     my $logger = Log::Log4perl->get_logger();
 
@@ -141,20 +141,37 @@ sub analyze_github {
         return;
     }
 
-    $data->{travis} = -e "$repo/.travis.yml";
-    my @ga = glob("$repo/.github/workflows/*");
-    $data->{github_actions} = (scalar(@ga) ? 1 : 0);
-    $data->{circleci} = -e "$repo/.circleci";
-    $data->{appveyor} = (-e "$repo/.appveyor.yml") || (-e "$repo/appveyor.yml");
-    $data->{azure_pipelines} = -e "$repo/azure-pipelines.yml";
+    if ($data->{vcs_name} eq 'GitHub') {
+        analyze_github($data, $repo);
+    }
+    if ($data->{vcs_name} eq 'GitLab') {
+        analyze_gitlab($data, $repo);
+    }
 
-    for my $ci (qw(travis github_actions circleci appveyor azure_pipelines)) {
+    for my $ci (qw(travis github_actions circleci appveyor azure_pipelines gitlab_pipeline)) {
         $logger->debug("Is CI '$ci'?");
         if ($data->{$ci}) {
             $logger->debug("CI '$ci' found!");
             $data->{has_ci} = 1;
         }
     }
+}
+
+sub analyze_gitlab {
+    my ($data, $repo) = @_;
+
+    $data->{gitlab_pipeline} = -e "$repo/.gitlab-ci.yml";
+}
+
+sub analyze_github {
+    my ($data, $repo) = @_;
+
+    $data->{travis} = -e "$repo/.travis.yml";
+    my @ga = glob("$repo/.github/workflows/*");
+    $data->{github_actions} = (scalar(@ga) ? 1 : 0);
+    $data->{circleci} = -e "$repo/.circleci";
+    $data->{appveyor} = (-e "$repo/.appveyor.yml") || (-e "$repo/appveyor.yml");
+    $data->{azure_pipelines} = -e "$repo/azure-pipelines.yml";
 }
 
 sub collect {
@@ -206,16 +223,15 @@ sub collect {
     }
 
     # Check on the VCS
-    if ($self->{check_github}) {
+    if ($self->{check_vcs}) {
         $logger->info("Starting to check GitHub");
         for my $data (@all_the_distributions) {
             my $distribution = $data->{distribution};
             my $data_ref = $self->{db}->db_get_distro($distribution);
             next if not $data_ref->{vcs_name};
 
-            if ($self->{check_github} and $data_ref->{vcs_name} eq 'GitHub') {
-                analyze_github($data_ref);
-            }
+            analyze_vcs($data_ref);
+
             my %data = %$data_ref;
             $self->{db}->db_update($distribution, @data{@fields});
             sleep $self->{sleep} if $self->{sleep};
@@ -232,7 +248,7 @@ sub collect {
         for my $distro (@distros) {
             #die Dumper $distro;
             printf "%s %-40s %-7s", $distro->{date}, $distro->{distribution}, ($distro->{vcs_url} ? '' : 'NO VCS');
-            if ($self->{check_github}) {
+            if ($self->{check_vcs}) {
                 printf "%-7s", ($distro->{has_ci} ? '' : 'NO CI');
             }
             print "\n";

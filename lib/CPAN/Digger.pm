@@ -182,6 +182,7 @@ sub collect {
     } else {
         $rset  = $mcpan->recent($self->{recent});
     }
+    $logger->info("MetaCPAN::Client::ResultSet received with a total of $rset->{total} items");
     my %distros;
     my @fields = get_fields();
     while ( my $item = $rset->next ) {
@@ -194,7 +195,6 @@ sub collect {
             #die Dumper \%data;
             $self->{db}->db_insert_into(@data{@fields});
             push @all_the_distributions, \%data;
-            sleep $self->{sleep} if $self->{sleep};
     }
 
     if ($self->{author}) {
@@ -206,6 +206,7 @@ sub collect {
 
     # Check on the VCS
     if ($self->{check_github}) {
+        $logger->info("Starting to check GitHub");
         for my $data (@all_the_distributions) {
             my $distribution = $data->{distribution};
             my $data_ref = $self->{db}->db_get_distro($distribution);
@@ -216,6 +217,7 @@ sub collect {
             }
             my %data = %$data_ref;
             $self->{db}->db_update($distribution, @data{@fields});
+            sleep $self->{sleep} if $self->{sleep};
         }
     }
 

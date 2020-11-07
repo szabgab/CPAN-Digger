@@ -17,6 +17,7 @@ my @results_recent = (
         'date' => '2020-11-04T12:01:11',
         'distribution' => 'Robin-Hood',
         'version' => '1.01',
+        'license' => [],
         'resources' => {
         },
     },
@@ -24,6 +25,7 @@ my @results_recent = (
         'date' => '2020-11-04T10:31:20',
         'distribution' => 'Princess Fiona',
         'version' => '2.03',
+        'license' => ['perl'],
         'resources' => {
             'bugtracker' => {
                 'web' => 'https://github.com/szabgab/CPAN-Digger/issues',

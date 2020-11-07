@@ -19,7 +19,7 @@ use CPAN::Digger::DB qw(get_fields);
 
 my $tempdir = tempdir( CLEANUP => ($ENV{KEEP_TEMPDIR} ? 0 : 1) );
 
-my %known_licenses = map {$_ => 1} qw(artistic_2 lgpl_2_1 perl_5);
+my %known_licenses = map {$_ => 1} qw(apache_2_0 artistic_2 bsd gpl_3 lgpl_2_1 lgpl_3_0 perl_5); # open_source, unknown
 
 sub new {
     my ($class, %args) = @_;

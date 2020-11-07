@@ -92,6 +92,7 @@ sub _result_set {
     my (@results) = @_;
     my $rs = MetaCPAN::Client::ResultSet->new;
     $rs->{results} = dclone(\@results);
+    $rs->{total} = scalar @results;
     return $rs;
 }
 

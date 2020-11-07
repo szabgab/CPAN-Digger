@@ -146,6 +146,7 @@ sub analyze_github {
     $data->{github_actions} = (scalar(@ga) ? 1 : 0);
     $data->{circleci} = -e "$repo/.circleci";
     $data->{appveyor} = (-e "$repo/.appveyor.yml") || (-e "$repo/appveyor.yml");
+    $data->{azure_pipelines} = -e "$repo/azure-pipelines.yml";
 
     for my $ci (qw(travis github_actions circleci appveyor)) {
         $logger->debug("Is CI '$ci'?");

@@ -2,7 +2,7 @@ package CPAN::Digger;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '1.02';
+our $VERSION = '1.03';
 
 use Capture::Tiny qw(capture);
 use Cwd qw(getcwd);

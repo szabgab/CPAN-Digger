@@ -2,7 +2,7 @@ package CPAN::Digger::DB;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '1.02';
+our $VERSION = '1.03';
 
 use DBI;
 use Exporter qw(import);

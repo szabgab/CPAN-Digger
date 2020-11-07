@@ -1,6 +1,10 @@
 
-1.03 2020.11.XX
+1.03 2020.11.07
     - Change default log level to INFO
+    - Start checking license fields with several valid license keys
+    - add azure_pipelines to the possible CI systems
+    - show author distros ordered by date limited by --limit
+    - show VERSION number in help; allow for the use of --version flag to show version number on its own
 
 1.02 2020.11.04
     - List missing prerequisites, skipt RELASES_TEST if module is not available

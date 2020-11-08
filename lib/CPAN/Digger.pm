@@ -13,6 +13,7 @@ use File::Temp qw(tempdir);
 use Log::Log4perl ();
 use LWP::UserAgent ();
 use MetaCPAN::Client ();
+use DateTime         ();
 
 
 use CPAN::Digger::DB qw(get_fields);
@@ -29,6 +30,13 @@ sub new {
     }
     $self->{log} = uc $self->{log};
     $self->{check_vcs} = delete $self->{vcs};
+    $self->{total} = 0;
+
+    my $dt = DateTime->now;
+    $self->{end_date}       = $dt->ymd;
+    if ($self->{days}) {
+        $self->{start_date}     = $dt->add( days => -$self->{days} )->ymd;
+    }
 
     $self->{db} = CPAN::Digger::DB->new(db => $self->{db});
 
@@ -204,6 +212,13 @@ sub collect {
     my %distros;
     my @fields = get_fields();
     while ( my $item = $rset->next ) {
+            if ($self->{days}) {
+	            next if $item->date lt $self->{start_date};
+	            next if $self->{end_date} le $item->date;
+            }
+
+            $self->{total}++;
+
     		next if $distros{ $item->distribution }; # We have already deal with this in this session
             $distros{ $item->distribution } = 1;
 
@@ -240,7 +255,8 @@ sub collect {
 
 
     if ($self->{report}) {
-        #print "Text report\n";
+        print "Report\n";
+        print "------------\n";
         my @distros = @{ $self->{db}->db_get_every_distro() };
         if ($self->{limit} and @distros > $self->{limit}) {
             @distros = @distros[0 .. $self->{limit}-1];
@@ -252,6 +268,17 @@ sub collect {
                 printf "%-7s", ($distro->{has_ci} ? '' : 'NO CI');
             }
             print "\n";
+        }
+
+        if ($self->{days}) {
+            my $distros = $self->{db}->get_distro_count($self->{start_date}, $self->{end_date});
+            my $authors = $self->{db}->get_author_count($self->{start_date}, $self->{end_date});
+            my $vcs_count = $self->{db}->get_vcs_count($self->{start_date}, $self->{end_date});
+            my $ci_count = $self->{db}->get_ci_count($self->{start_date}, $self->{end_date});
+            printf
+                "Last week there were a total of %s uploads to CPAN of %s distinct distributions by %s different authors. Number of distributions with link to VCS: %s. Number of distros with CI: %s.\n",
+                $self->{total}, $distros, $authors, $vcs_count,
+                $ci_count;
         }
     }
 }

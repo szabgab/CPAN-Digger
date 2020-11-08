@@ -94,6 +94,43 @@ sub db_get_every_distro {
     return \@distros;
 }
 
+sub get_distro_count {
+    my ($self, $start_date, $end_date) = @_;
+
+    my $sth = $self->{dbh}->prepare('SELECT COUNT(*) FROM dists WHERE date >= ? AND date < ?');
+    $sth->execute($start_date, $end_date);
+    my ($total) = $sth->fetchrow_array;
+    return $total;
+}
+
+sub get_author_count {
+    my ($self, $start_date, $end_date) = @_;
+
+    my $sth = $self->{dbh}->prepare('SELECT COUNT(DISTINCT(author)) FROM dists WHERE date >= ? AND date < ?');
+    $sth->execute($start_date, $end_date);
+    my ($total) = $sth->fetchrow_array;
+    return $total;
+}
+
+sub get_vcs_count {
+    my ($self, $start_date, $end_date) = @_;
+
+    my $sth = $self->{dbh}->prepare('SELECT COUNT(*) FROM dists WHERE vcs_name IS NOT NULL AND date >= ? AND date < ?');
+    $sth->execute($start_date, $end_date);
+    my ($total) = $sth->fetchrow_array;
+    return $total;
+}
+
+sub get_ci_count {
+    my ($self, $start_date, $end_date) = @_;
+
+    my $sth = $self->{dbh}->prepare('SELECT COUNT(*) FROM dists WHERE has_ci IS NOT NULL AND date >= ? AND date < ?');
+    $sth->execute($start_date, $end_date);
+    my ($total) = $sth->fetchrow_array;
+    return $total;
+}
+
+
 42;
 
 __DATA__

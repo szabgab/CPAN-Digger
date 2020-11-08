@@ -20,6 +20,7 @@ sub run {
         db     => undef,
         version => undef,
         limit   => undef,
+        days    => undef,
     );
 
     GetOptions(
@@ -34,6 +35,7 @@ sub run {
         'report',
         'help',
         'version',
+	    'days:i',
     ) or usage();
     usage() if $args{help};
     if ($args{version}) {
@@ -53,19 +55,22 @@ sub usage {
 
 Usage: $0
     Required exactly one of them:
-       --recent N         (Number of the most recent packages to check)
-       --author PAUSEID
+        --recent N         (Number of the most recent packages to check)
+        --days N
 
-       --report           (Show text report at the end of processing.)
-       --log LEVEL        [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF] (default is INFO)
+        --author PAUSEID
+        --limit N
 
-       --vcs              Fetch information from github, gitlab
-       --sleep SECONDS    (Wait time between git clone operations, defaults to 0)
+        --report           (Show text report at the end of processing.)
+        --log LEVEL        [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF] (default is INFO)
 
-       --db PATH          (path to SQLite database file, if not supplied using in-memory database)
+        --vcs              Fetch information from github, gitlab
+        --sleep SECONDS    (Wait time between git clone operations, defaults to 0)
 
-       --version
-       --help
+        --db PATH          (path to SQLite database file, if not supplied using in-memory database)
+
+        --version
+        --help
 
     Sample usage for authors:
         $0 --author SZABGAB --report --vcs --sleep 3

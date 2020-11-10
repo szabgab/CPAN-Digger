@@ -59,5 +59,7 @@ jobs:
 
       - name: Create pages
         run: |
-            perl bin/cpan-digger --version
+            perl -Ilib bin/cpan-digger --version
+            perl -Ilib bin/cpan-digger --recent 10 --vcs --html docs
+
 

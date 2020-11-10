@@ -6,7 +6,7 @@ on:
     pull_request:
         branches: '*'
     schedule:
-        - cron: '42 * * * *'
+        - cron: '42 2 * * *'
 
 jobs:
   test-code:
@@ -45,7 +45,7 @@ jobs:
         if: ${{ github.event_name == 'schedule' && matrix.perl-version == '5.30' }}
         run: |
             perl -Ilib bin/cpan-digger --version
-            perl -Ilib bin/cpan-digger --recent 50 --vcs --sleep 2 --html docs
+            perl -Ilib bin/cpan-digger --recent 100 --vcs --sleep 2 --html docs
 
             git config --global user.name 'Gabor Szabo'
             git config --global user.email 'szabgab@users.noreply.github.com'

@@ -182,6 +182,38 @@ sub analyze_github {
     $data->{azure_pipelines} = -e "$repo/azure-pipelines.yml";
 }
 
+sub report {
+    my ($self) = @_;
+
+    return if not $self->{report};
+
+    print "Report\n";
+    print "------------\n";
+    my @distros = @{ $self->{db}->db_get_every_distro() };
+    if ($self->{limit} and @distros > $self->{limit}) {
+        @distros = @distros[0 .. $self->{limit}-1];
+    }
+    for my $distro (@distros) {
+        #die Dumper $distro;
+        printf "%s %-40s %-7s", $distro->{date}, $distro->{distribution}, ($distro->{vcs_url} ? '' : 'NO VCS');
+        if ($self->{check_vcs}) {
+            printf "%-7s", ($distro->{has_ci} ? '' : 'NO CI');
+        }
+        print "\n";
+    }
+
+    if ($self->{days}) {
+        my $distros = $self->{db}->get_distro_count($self->{start_date}, $self->{end_date});
+        my $authors = $self->{db}->get_author_count($self->{start_date}, $self->{end_date});
+        my $vcs_count = $self->{db}->get_vcs_count($self->{start_date}, $self->{end_date});
+        my $ci_count = $self->{db}->get_ci_count($self->{start_date}, $self->{end_date});
+        printf
+            "Last week there were a total of %s uploads to CPAN of %s distinct distributions by %s different authors. Number of distributions with link to VCS: %s. Number of distros with CI: %s.\n",
+            $self->{total}, $distros, $authors, $vcs_count,
+            $ci_count;
+    }
+}
+
 sub collect {
     my ($self) = @_;
 
@@ -254,33 +286,8 @@ sub collect {
     }
 
 
-    if ($self->{report}) {
-        print "Report\n";
-        print "------------\n";
-        my @distros = @{ $self->{db}->db_get_every_distro() };
-        if ($self->{limit} and @distros > $self->{limit}) {
-            @distros = @distros[0 .. $self->{limit}-1];
-        }
-        for my $distro (@distros) {
-            #die Dumper $distro;
-            printf "%s %-40s %-7s", $distro->{date}, $distro->{distribution}, ($distro->{vcs_url} ? '' : 'NO VCS');
-            if ($self->{check_vcs}) {
-                printf "%-7s", ($distro->{has_ci} ? '' : 'NO CI');
-            }
-            print "\n";
-        }
+    $self->report;
 
-        if ($self->{days}) {
-            my $distros = $self->{db}->get_distro_count($self->{start_date}, $self->{end_date});
-            my $authors = $self->{db}->get_author_count($self->{start_date}, $self->{end_date});
-            my $vcs_count = $self->{db}->get_vcs_count($self->{start_date}, $self->{end_date});
-            my $ci_count = $self->{db}->get_ci_count($self->{start_date}, $self->{end_date});
-            printf
-                "Last week there were a total of %s uploads to CPAN of %s distinct distributions by %s different authors. Number of distributions with link to VCS: %s. Number of distros with CI: %s.\n",
-                $self->{total}, $distros, $authors, $vcs_count,
-                $ci_count;
-        }
-    }
 }
 
 

@@ -42,10 +42,10 @@ jobs:
             make test
 
       - name: Create pages
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ github.event_name == 'schedule' && matrix.perl-version == '5.30' }}
         run: |
             perl -Ilib bin/cpan-digger --version
-            perl -Ilib bin/cpan-digger --recent 10 --vcs --html docs
+            perl -Ilib bin/cpan-digger --recent 50 --vcs --sleep 2 --html docs
 
             git config --global user.name 'Gabor Szabo'
             git config --global user.email 'szabgab@users.noreply.github.com'

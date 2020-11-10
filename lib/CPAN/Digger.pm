@@ -14,6 +14,7 @@ use Log::Log4perl ();
 use LWP::UserAgent ();
 use MetaCPAN::Client ();
 use DateTime         ();
+use Template ();
 
 
 use CPAN::Digger::DB qw(get_fields);
@@ -182,6 +183,33 @@ sub analyze_github {
     $data->{azure_pipelines} = -e "$repo/azure-pipelines.yml";
 }
 
+sub html {
+    my ($self) = @_;
+
+    return if not $self->{html};
+    if (not -d $self->{html}) {
+        mkdir $self->{html};
+    }
+    my @distros = @{ $self->{db}->db_get_every_distro() };
+
+    my $tt = Template->new({
+        INCLUDE_PATH => './templates',
+        INTERPOLATE  => 1,
+    }) or die "$Template::ERROR\n";
+
+    my $report;
+    $tt->process('main.tt', {
+        distros => \@distros,
+        version => $VERSION,
+        timestamp => DateTime->now,
+    }, \$report) or die $tt->error(), "\n";
+    my $html_file = File::Spec->catfile($self->{html}, 'index.html');
+    open(my $fh, '>', $html_file) or die "Could not open '$html_file'";
+    print $fh $report;
+    close $fh;
+}
+
+
 sub report {
     my ($self) = @_;
 
@@ -287,7 +315,7 @@ sub collect {
 
 
     $self->report;
-
+    $self->html;
 }
 
 

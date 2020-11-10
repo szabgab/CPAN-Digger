@@ -21,6 +21,7 @@ sub run {
         version => undef,
         limit   => undef,
         days    => undef,
+        html    => undef,
     );
 
     GetOptions(
@@ -36,6 +37,7 @@ sub run {
         'help',
         'version',
 	    'days:i',
+        'html=s',
     ) or usage();
     usage() if $args{help};
     if ($args{version}) {
@@ -62,6 +64,7 @@ Usage: $0
         --limit N
 
         --report           (Show text report at the end of processing.)
+        --html DIR         Create HTML pages in the given directory.
         --log LEVEL        [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF] (default is INFO)
 
         --vcs              Fetch information from github, gitlab

@@ -27,11 +27,11 @@
         <div>VCS: <span class="error">No resources.repository</span></div>
     [% END %]
 
-    <div>License: [% license %]</div>
-    <div>Issues: [% issues %]</div>
+    <div>License: [% item.license %]</div>
+    <div>Issues: [% item.issues %]</div>
 
     [% IF item.has_ci %]
-       <div>CI: 
+       <div>CI:
           [% IF item.travis %]
               Travis
           [% END %]
@@ -57,6 +57,16 @@
 
 </div>
 [% END %]
+
+<h2>Statistics</h2>
+<ul>
+   <li>Total: [% stats.total %]</li>
+   <li>Has VCS: [% stats.has_vcs %]</li>
+   <li>GitHub: [% stats.vcs.GitHub %]</li>
+   <li>GitLab: [% stats.vcs.GitLab %]</li>
+   <li>Has CI: [% stats.has_ci %]</li>
+   <li>GitHub Actions: [% stats.ci.github_actions %]</li>
+</ul>
 
 <!--
 <ul>

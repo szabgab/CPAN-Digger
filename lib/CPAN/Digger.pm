@@ -16,6 +16,8 @@ use MetaCPAN::Client ();
 use DateTime         ();
 use Template ();
 
+my @ci_names = qw(travis github_actions circleci appveyor azure_pipelines gitlab_pipeline);
+
 
 use CPAN::Digger::DB qw(get_fields);
 
@@ -157,7 +159,7 @@ sub analyze_vcs {
         analyze_gitlab($data, $repo);
     }
 
-    for my $ci (qw(travis github_actions circleci appveyor azure_pipelines gitlab_pipeline)) {
+    for my $ci (@ci_names) {
         $logger->debug("Is CI '$ci'?");
         if ($data->{$ci}) {
             $logger->debug("CI '$ci' found!");
@@ -191,6 +193,28 @@ sub html {
         mkdir $self->{html};
     }
     my @distros = @{ $self->{db}->db_get_every_distro() };
+    my %stats = (
+        total => scalar @distros,
+        has_vcs => 0,
+        vcs => {},
+        has_ci => 0,
+        ci => {},
+    );
+    for my $ci (@ci_names) {
+        $stats{ci}{$ci} = 0;
+    }
+    for my $dist (@distros) {
+        if ($dist->{vcs_name}) {
+            $stats{has_vcs}++;
+            $stats{vcs}{ $dist->{vcs_name} }++;
+        }
+        if ($dist->{has_ci}) {
+            $stats{has_ci}++;
+            for my $ci (@ci_names) {
+                $stats{ci}{$ci}++ if $dist->{$ci};
+            }
+        }
+    }
 
     my $tt = Template->new({
         INCLUDE_PATH => './templates',
@@ -202,6 +226,7 @@ sub html {
         distros => \@distros,
         version => $VERSION,
         timestamp => DateTime->now,
+        stats => \%stats,
     }, \$report) or die $tt->error(), "\n";
     my $html_file = File::Spec->catfile($self->{html}, 'index.html');
     open(my $fh, '>', $html_file) or die "Could not open '$html_file'";

@@ -9,7 +9,7 @@ on:
         - cron: '42 5 * * 0'
 
 jobs:
-  perl-job:
+  test-code:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

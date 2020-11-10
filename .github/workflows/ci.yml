@@ -5,8 +5,10 @@ on:
         branches: '*'
     pull_request:
         branches: '*'
+    #schedule:
+    #    - cron: '42 5 * * 0'
     schedule:
-        - cron: '42 5 * * 0'
+        - cron: '*/5 * * * *'
 
 jobs:
   test-code:
@@ -40,4 +42,22 @@ jobs:
             perl Makefile.PL
             make
             make test
+
+  web-page:
+    runs-on: ubuntu-latest
+    needs: test-code
+    strategy:
+      fail-fast: false
+      matrix:
+        perl-version:
+          - '5.30'
+    container:
+      image: perldocker/perl-tester:${{ matrix.perl-version }}     # https://hub.docker.com/r/perldocker/perl-tester
+    name: Perl ${{ matrix.perl-version }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create pages
+        run: |
+            perl bin/cpan-digger --version
 

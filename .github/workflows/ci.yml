@@ -44,7 +44,13 @@ jobs:
             make test
 
       - name: Create pages
+        if: ${{ github.event_name == 'schedule' }}
         run: |
             perl -Ilib bin/cpan-digger --version
             perl -Ilib bin/cpan-digger --recent 10 --vcs --html docs
+
+            git config --global user.name 'Gabor Szabo'
+            git config --global user.email 'szabgab@users.noreply.github.com'
+            git commit -am "Automated Web page generation"
+            git push
 

@@ -22,20 +22,37 @@
     <a href="https://metacpan.org/author/[% item.author %]">[% item.author %]</a><br>
     [% item.date %]<br>
     [% IF item.vcs_url %]
-        <a href="[% item.vcs_url %]">[% item.vcs_name %]</a><br>
+        <div>VCS: <a href="[% item.vcs_url %]">[% item.vcs_name %]</a></div>
     [% ELSE %]
-        <div class="error">No resources.repository</div>
+        <div>VCS: <span class="error">No resources.repository</span></div>
     [% END %]
 
+    <div>License: [% license %]</div>
+    <div>Issues: [% issues %]</div>
+
     [% IF item.has_ci %]
-        [% IF item.travis %]
-            <a href="[% item.vcs_url %]/blob/master/.travis.yml">travis.yml</a><br>
-        [% END %]
-        [% IF item.github_actions %]
-            <a href="[% item.vcs_url %]/tree/master/.github/workflows/">GitHub Actions</a><br>
-        [% END %]
+       <div>CI: 
+          [% IF item.travis %]
+              Travis
+          [% END %]
+          [% IF item.github_actions %]
+              GitHub Actions
+          [% END %]
+          [% IF item.appveyor %]
+              Appveyor
+          [% END %]
+          [% IF item.circleci %]
+              CircleCI
+          [% END %]
+          [% IF item.azure_pipelines %]
+              Acure Pipelines
+          [% END %]
+          [% IF item.gitlab_pipelines %]
+              Gitlab Pipelines
+          [% END %]
+       </div>
     [% ELSE %]
-        <div class="error">No CI configuration file could be found</div>
+        <div>CI: <span class="error">No CI configuration file could be found</span></div>
     [% END %]
 
 </div>

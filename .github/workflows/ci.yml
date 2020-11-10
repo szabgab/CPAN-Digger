@@ -1,14 +1,12 @@
-name: CI Makefile
+name: CI
 
 on:
     push:
         branches: '*'
     pull_request:
         branches: '*'
-    #schedule:
-    #    - cron: '42 5 * * 0'
     schedule:
-        - cron: '*/5 * * * *'
+        - cron: '42 * * * *'
 
 jobs:
   test-code:

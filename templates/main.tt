@@ -27,7 +27,7 @@
         <div>VCS: <span class="error">No resources.repository</span></div>
     [% END %]
 
-    <div>License: [% item.license %]</div>
+    <div>Licenses: <span class="[% IF item.licenses == 'unknown' %]error[% END %]">[% item.licenses %]</span></div>
     <div>Issues: [% item.issues %]</div>
 
     [% IF item.has_ci %]
@@ -44,10 +44,10 @@
           [% IF item.circleci %]
               CircleCI
           [% END %]
-          [% IF item.azure_pipelines %]
+          [% IF item.azure_pipeline %]
               Acure Pipelines
           [% END %]
-          [% IF item.gitlab_pipelines %]
+          [% IF item.gitlab_pipeline %]
               Gitlab Pipelines
           [% END %]
        </div>
@@ -61,11 +61,16 @@
 <h2>Statistics</h2>
 <ul>
    <li>Total: [% stats.total %]</li>
-   <li>Has VCS: [% stats.has_vcs %]</li>
-   <li>GitHub: [% stats.vcs.GitHub %]</li>
-   <li>GitLab: [% stats.vcs.GitLab %]</li>
-   <li>Has CI: [% stats.has_ci %]</li>
-   <li>GitHub Actions: [% stats.ci.github_actions %]</li>
+   <li>Has VCS: [% stats.has_vcs %] ( [% stats.has_vcs_percentage %]% )</li>
+   <li>- GitHub: [% stats.vcs.GitHub %]</li>
+   <li>- GitLab: [% stats.vcs.GitLab %]</li>
+   <li>Has CI: [% stats.has_ci %] ( [% stats.has_ci_percentage %]% )</li>
+   <li>- GitHub Actions: [% stats.ci.github_actions %]</li>
+   <li>- Azure Pipeline: [% stats.ci.azure_pipeline %]</li>
+   <li>- Travis-CI: [% stats.ci.travis %]</li>
+   <li>- CircleCI: [% stats.ci.circleci %]</li>
+   <li>- Appveyor: [% stats.ci.appveyor %]</li>
+   <li>- GitLab Pipeline: [% stats.ci.gitlab_pipeline %]</li>
 </ul>
 
 <!--

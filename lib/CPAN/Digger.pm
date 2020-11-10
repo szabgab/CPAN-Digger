@@ -16,7 +16,7 @@ use MetaCPAN::Client ();
 use DateTime         ();
 use Template ();
 
-my @ci_names = qw(travis github_actions circleci appveyor azure_pipelines gitlab_pipeline);
+my @ci_names = qw(travis github_actions circleci appveyor azure_pipeline gitlab_pipeline);
 
 
 use CPAN::Digger::DB qw(get_fields);
@@ -182,7 +182,7 @@ sub analyze_github {
     $data->{github_actions} = (scalar(@ga) ? 1 : 0);
     $data->{circleci} = -e "$repo/.circleci";
     $data->{appveyor} = (-e "$repo/.appveyor.yml") || (-e "$repo/appveyor.yml");
-    $data->{azure_pipelines} = -e "$repo/azure-pipelines.yml";
+    $data->{azure_pipeline} = -e "$repo/azure-pipelines.yml";
 }
 
 sub html {
@@ -215,6 +215,11 @@ sub html {
             }
         }
     }
+    if ($stats{total}) {
+        $stats{has_vcs_percentage} = int(100 * $stats{has_vcs} / $stats{total});
+        $stats{has_ci_percentage} = int(100 * $stats{has_ci} / $stats{total});
+    }
+
 
     my $tt = Template->new({
         INCLUDE_PATH => './templates',

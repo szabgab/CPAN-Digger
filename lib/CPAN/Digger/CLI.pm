@@ -2,7 +2,7 @@ package CPAN::Digger::CLI;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '1.03';
+our $VERSION = '1.04';
 
 use Getopt::Long qw(GetOptions);
 

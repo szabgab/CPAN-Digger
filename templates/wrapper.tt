@@ -27,7 +27,7 @@
 [% content -%]
     </div>
     <footer>
-CPAN Digger written by <a href="https://twitter.com/szabgab">@szabgab</a> / Code on <a href="https://github.com/szabgab/CPAN-Digger">Github</a>
+CPAN Digger written by <a href="https://twitter.com/szabgab">@szabgab</a> / Code on <a href="https://github.com/szabgab/CPAN-Digger">Github</a> Last updated: [% timestamp %]
     </footer>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>

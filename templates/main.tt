@@ -21,7 +21,7 @@
           <td>[% item.date %]</td>
           <td>
               [% IF item.licenses == 'unknown' %]
-                  <span class="badge badge-danger">[% item.licenses %]No CI</span>
+                  <span class="badge badge-danger"><a href="https://perlmaven.com/how-to-add-the-license-field-to-meta-files-on-cpan">[% item.licenses %]</a></span>
               [% ELSE %]
                   [% item.licenses %]
               [% END %]
@@ -30,7 +30,7 @@
               [% IF item.vcs_url %]
                   <a href="[% item.vcs_url %]">[% item.vcs_name %]</a>
               [% ELSE %]
-                  <span class="badge badge-danger">Missing</span>
+                  <span class="badge badge-danger"><a href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Missing</a></span>
               [% END %]
           </td>
           <td>[% item.issues %]</td>

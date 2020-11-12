@@ -117,9 +117,20 @@ sub get_data {
     } else {
         $logger->error('No repository for ', $item->distribution);
     }
+    $self->get_bugtracker(\%resources, \%data);
+
     return %data;
 }
 
+sub get_bugtracker {
+    my ($self, $resources, $data) = @_;
+
+    my $logger = Log::Log4perl->get_logger();
+    if (not $resources->{bugtracker}) {
+        $logger->error("No bugtracker for $data->{distribution}");
+    }
+    $data->{issues} = $resources->{bugtracker}{web};
+}
 
 sub analyze_vcs {
     my ($data) = @_;

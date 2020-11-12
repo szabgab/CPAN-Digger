@@ -16,7 +16,7 @@ use MetaCPAN::Client ();
 use DateTime         ();
 use Template ();
 
-my @ci_names = qw(travis github_actions circleci appveyor azure_pipeline gitlab_pipeline);
+my @ci_names = qw(travis github_actions circleci appveyor azure_pipeline gitlab_pipeline bitbucket_pipeline);
 
 
 use CPAN::Digger::DB qw(get_fields);
@@ -73,6 +73,9 @@ sub get_vcs {
         }
         if ($url =~ m{^https?://gitlab.com/}) {
             $name = 'GitLab';
+        }
+        if ($url =~ m{^https?://bitbucket.org/}) {
+            $name = 'Bitbucket';
         }
         return $url, $name;
     }
@@ -138,7 +141,7 @@ sub analyze_vcs {
 
     my $vcs_url = $data->{vcs_url};
     my $repo_name = (split '\/', $vcs_url)[-1];
-    $logger->info("Analyze GitHub repo '$vcs_url' in directory $repo_name");
+    $logger->info("Analyze repo '$vcs_url' in directory $repo_name");
 
     my $ua = LWP::UserAgent->new(timeout => 5);
     my $response = $ua->get($vcs_url);
@@ -179,6 +182,10 @@ sub analyze_vcs {
     if ($data->{vcs_name} eq 'GitLab') {
         analyze_gitlab($data, $repo);
     }
+    if ($data->{vcs_name} eq 'Bitbucket') {
+        analyze_bitbucket($data, $repo);
+    }
+
 
     for my $ci (@ci_names) {
         $logger->debug("Is CI '$ci'?");
@@ -188,6 +195,14 @@ sub analyze_vcs {
         }
     }
 }
+
+sub analyze_bitbucket {
+    my ($data, $repo) = @_;
+
+    $data->{bitbucket_pipeline} = -e "$repo/bitbucket-pipelines.yml";
+    $data->{travis} = -e "$repo/.travis.yml";
+}
+
 
 sub analyze_gitlab {
     my ($data, $repo) = @_;

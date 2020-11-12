@@ -54,6 +54,9 @@
                     [% IF item.gitlab_pipeline %]
                         Gitlab Pipelines
                     [% END %]
+                    [% IF item.bitbucket_pipeline %]
+                        Bitbucket Pipelines
+                    [% END %]
               [% ELSE %]
                   <span class="badge badge-danger">No CI</span>
               [% END %]
@@ -91,6 +94,7 @@
    <li>- CircleCI: [% stats.ci.circleci %]</li>
    <li>- Appveyor: [% stats.ci.appveyor %]</li>
    <li>- GitLab Pipeline: [% stats.ci.gitlab_pipeline %]</li>
+   <li>- Bitbucket Pipelines: [% stats.ci.bitbucket_pipeline %]</li>
 </ul>
 
 

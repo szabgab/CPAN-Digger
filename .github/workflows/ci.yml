@@ -42,13 +42,17 @@ jobs:
             make test
 
       - name: Create pages
-        if: ${{ github.event_name == 'schedule' && matrix.perl-version == '5.30' }}
+        if: ${{ matrix.perl-version == '5.30' }}
         run: |
             perl -Ilib bin/cpan-digger --version
             perl -Ilib bin/cpan-digger --recent 100 --vcs --sleep 2 --html docs
 
+      - name: Commit new page
+        run: |
+            GIT_STATUS=$(git status --porcelain)
+            echo $GIT_STATUS
             git config --global user.name 'Gabor Szabo'
             git config --global user.email 'szabgab@users.noreply.github.com'
-            git commit -am "Automated Web page generation"
-            git push
+            if [ "$GIT_STATUS" != "" ]; then git commit -m "Automated Web page generation"; fi
+            if [ "$GIT_STATUS" != "" ]; then git push; fi
 

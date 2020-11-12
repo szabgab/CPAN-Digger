@@ -24,6 +24,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Checkout CPAN Dashboard
+        uses: actions/checkout@v2
+        with:
+          repository: davorg/dashboard
+          path: dashboard
+
       - name: Regular tests
         run: |
             cpanm --installdeps --notest .
@@ -42,7 +48,7 @@ jobs:
             make test
 
       - name: Create pages
-        if: ${{ matrix.perl-version == '5.30' }}
+        if: ${{ matrix.perl-version == '5.30' && github.event_name != 'pull_request' }}
         run: |
             perl -Ilib bin/cpan-digger --version
             perl -Ilib bin/cpan-digger --recent 100 --vcs --sleep 2 --html docs

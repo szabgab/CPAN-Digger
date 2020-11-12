@@ -10,6 +10,7 @@
           <th>VCS</th>
           <th>Issues</th>
           <th>CI</th>
+          <th>Dashboard</th>
         </tr>
       </thead>
       <tbody>
@@ -21,7 +22,7 @@
           <td>[% item.date %]</td>
           <td>
               [% IF item.licenses == 'unknown' %]
-                  <span class="badge badge-danger"><a href="https://perlmaven.com/how-to-add-the-license-field-to-meta-files-on-cpan">[% item.licenses %]</a></span>
+                  <a class="badge badge-danger" href="https://perlmaven.com/how-to-add-the-license-field-to-meta-files-on-cpan">[% item.licenses %]</a>
               [% ELSE %]
                   [% item.licenses %]
               [% END %]
@@ -30,7 +31,7 @@
               [% IF item.vcs_url %]
                   <a href="[% item.vcs_url %]">[% item.vcs_name %]</a>
               [% ELSE %]
-                  <span class="badge badge-danger"><a href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Missing</a></span>
+                  <a class="badge badge-danger" href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Missing</a>
               [% END %]
           </td>
           <td>[% item.issues %]</td>
@@ -56,6 +57,13 @@
                     [% END %]
               [% ELSE %]
                   <span class="badge badge-danger">No CI</span>
+              [% END %]
+          </td>
+          <td>
+              [% IF item.dashboard %]
+                  <a class="badge badge-success" href="https://cpandashboard.com/[% item.author %]/">Visit</a>
+              [% ELSE %]
+                  <a class="badge badge-warning" href="https://cpandashboard.com/">Add</a>
               [% END %]
           </td>
         </tr>

@@ -46,6 +46,16 @@ sub new {
     return $self;
 }
 
+sub read_dashboards {
+    my ($self) = @_;
+    my @pathes = ('dashboard', '/home/gabor/cpan/dashboard');
+    for my $path (@pathes) {
+        if (-e $path) {
+            $self->{dashboards} = { map { m{.*/([^/]+)\.json$}; $1 => 1 } glob "$path/authors/*.json" };
+        }
+    }
+}
+
 sub get_vcs {
     my ($repository) = @_;
     if ($repository) {
@@ -192,6 +202,9 @@ sub html {
     if (not -d $self->{html}) {
         mkdir $self->{html};
     }
+
+    $self->read_dashboards;
+
     my @distros = @{ $self->{db}->db_get_every_distro() };
     my %stats = (
         total => scalar @distros,
@@ -204,6 +217,7 @@ sub html {
         $stats{ci}{$ci} = 0;
     }
     for my $dist (@distros) {
+        $dist->{dashboard} = $self->{dashboards}{ $dist->{author} };
         if ($dist->{vcs_name}) {
             $stats{has_vcs}++;
             $stats{vcs}{ $dist->{vcs_name} }++;

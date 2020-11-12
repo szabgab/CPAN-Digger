@@ -24,7 +24,11 @@
               [% IF item.vcs_url %]
                   <a href="[% item.vcs_url %]">[% item.vcs_name %]</a>
               [% ELSE %]
-                  <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Add</a>
+                  [% IF item.vcs_not_interested %]
+                      <span class="badge badge-danger">No</span>
+                  [% ELSE %]
+                      <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Add</a>
+                  [% END %]
               [% END %]
           </td>
           <td>

@@ -21,6 +21,18 @@ morbo webapp.pl
 
 Then visit http://localhost:3000/
 
+Install
+
+```
+cpanm App::HTTPThis
+```
+
+and then run
+
+```
+http_this docs/
+```
+
 ## Steps
 
 * Fetch the list of recently uploaded released

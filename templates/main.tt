@@ -6,10 +6,10 @@
           <th>Name</th>
           <th>Author</th>
           <th>Date</th>
-          <th>Licenses</th>
           <th>VCS</th>
           <th>Issues</th>
           <th>CI</th>
+          <th>Licenses</th>
           <th>Dashboard</th>
         </tr>
       </thead>
@@ -20,13 +20,6 @@
           <td><a href="https://metacpan.org/release/[% item.distribution %]">[% item.distribution %]</a></td>
           <td><a href="https://metacpan.org/author/[% item.author %]">[% item.author %]</a></td>
           <td>[% item.date %]</td>
-          <td>
-              [% IF item.licenses == 'unknown' %]
-                  <a class="badge badge-danger" href="https://perlmaven.com/how-to-add-the-license-field-to-meta-files-on-cpan">[% item.licenses %]</a>
-              [% ELSE %]
-                  [% item.licenses %]
-              [% END %]
-          </td>
           <td>
               [% IF item.vcs_url %]
                   <a href="[% item.vcs_url %]">[% item.vcs_name %]</a>
@@ -57,6 +50,13 @@
                     [% END %]
               [% ELSE %]
                   <span class="badge badge-danger">No CI</span>
+              [% END %]
+          </td>
+          <td>
+              [% IF item.licenses == 'unknown' %]
+                  <a class="badge badge-danger" href="https://perlmaven.com/how-to-add-the-license-field-to-meta-files-on-cpan">[% item.licenses %]</a>
+              [% ELSE %]
+                  [% item.licenses %]
               [% END %]
           </td>
           <td>

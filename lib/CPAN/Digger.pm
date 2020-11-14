@@ -101,9 +101,9 @@ sub get_data {
     $logger->debug('      ',  $data{licenses});
     for my $license (@licenses) {
         if ($license eq 'unknown') {
-            $logger->error("Unknown license '$license'");
+            $logger->error("Unknown license '$license' for $data{distribution}");
         } elsif (not exists $known_licenses{$license}) {
-            $logger->warn("Unknown license '$license'. Probably CPAN::Digger needs to be updated");
+            $logger->warn("Unknown license '$license' for $data{distribution}. Probably CPAN::Digger needs to be updated");
         }
     }
     # if there are not licenses =>

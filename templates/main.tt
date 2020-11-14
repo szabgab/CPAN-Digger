@@ -23,19 +23,21 @@
           <td>
               [% IF item.vcs_url %]
                   <a href="[% item.vcs_url %]">[% item.vcs_name %]</a>
+              [% ELSIF item.vcs_not_interested %]
+                  <span class="badge badge-danger">No</span>
               [% ELSE %]
-                  [% IF item.vcs_not_interested %]
-                      <span class="badge badge-danger">No</span>
-                  [% ELSE %]
-                      <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Add</a>
-                  [% END %]
+                  <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Add repo</a>
               [% END %]
           </td>
           <td>
               [% IF item.issues %]
                   <a class="badge badge-success" href="[% item.issues %]">View</a>
+              [% ELSIF item.vcs_url %]
+                  <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Add bugtracker</a>
+              [% ELSIF item.vcs_not_interested %]
+                  <span class="badge badge-danger">No</span>
               [% ELSE %]
-                  <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Add</a>
+                  <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Add repo</a>
               [% END %]
           </td>
           <td>
@@ -61,13 +63,17 @@
                     [% IF item.bitbucket_pipeline %]
                         Bitbucket Pipelines
                     [% END %]
+              [% ELSIF item.vcs_url %]
+                  <a class="badge badge-warning" href="https://perlmaven.com/ci">Add CI</a>
+              [% ELSIF item.vcs_not_interested %]
+                  <span class="badge badge-danger">No</span>
               [% ELSE %]
-                  <span class="badge badge-danger">No CI</span>
+                  <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Add repo</a>
               [% END %]
           </td>
           <td>
               [% IF item.licenses == 'unknown' %]
-                  <a class="badge badge-danger" href="https://perlmaven.com/how-to-add-the-license-field-to-meta-files-on-cpan">[% item.licenses %]</a>
+                  <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-the-license-field-to-meta-files-on-cpan">Add license</a>
               [% ELSE %]
                   [% item.licenses %]
               [% END %]
@@ -76,7 +82,7 @@
               [% IF item.dashboard %]
                   <a class="badge badge-success" href="https://cpandashboard.com/[% item.author %]/">Visit</a>
               [% ELSE %]
-                  <a class="badge badge-warning" href="https://cpandashboard.com/">Add</a>
+                  <a class="badge badge-warning" href="https://cpandashboard.com/">Add dashboard</a>
               [% END %]
           </td>
         </tr>

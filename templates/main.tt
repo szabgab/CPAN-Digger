@@ -1,4 +1,14 @@
 <h1>CPAN Digger</h1>
+    <div>
+    Showing the most recent uploads to CPAN.
+    <ul>
+      <li>Having the link to your VCS in the META files help others to contribute to your code.</li>
+      <li>Having a link to your bugtracker/issues in the META file help people know where to submit bug reports.</li>
+      <li>Having a CI configured helps the author catch regression and platform incompability much faster.</li>
+      <li>Having a licens in the META, because why not?</li>
+      <li>Having your own CPAN Dashboard is cool</li>
+    </ul>
+    </div>
 
     <table class="table table-striped table-hover" id="sort_table">
       <thead>

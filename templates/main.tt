@@ -41,7 +41,15 @@
           </td>
           <td>
               [% IF item.issues %]
-                  <a class="badge badge-success" href="[% item.issues %]">View</a>
+                  [% IF item.issues.match('https?://github.com/') %]
+                    <a href="[% item.issues %]">GitHub</a>
+                  [% ELSIF item.issues.match('https?://gitlab.com/') %]
+                    <a href="[% item.issues %]">GitLab</a>
+                  [% ELSIF item.issues.match('https?://rt.cpan.org/') %]
+                    <a href="[% item.issues %]">RT</a>
+                  [% ELSE %]
+                    <a class="badge badge-success" href="[% item.issues %]">View</a>
+                  [% END %]
               [% ELSIF item.vcs_url %]
                   <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Add bugtracker</a>
               [% ELSIF item.vcs_not_interested %]

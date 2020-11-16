@@ -51,7 +51,7 @@ jobs:
         if: ${{ matrix.perl-version == '5.30' && github.event_name != 'pull_request' }}
         run: |
             perl -Ilib bin/cpan-digger --version
-            perl -Ilib bin/cpan-digger --recent 100 --vcs --sleep 2 --html docs
+            perl -Ilib bin/cpan-digger --recent 150 --vcs --sleep 2 --html docs
 
       - name: Commit new page
         run: |

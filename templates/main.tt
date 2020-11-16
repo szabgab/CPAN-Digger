@@ -63,6 +63,9 @@
                     [% IF item.travis %]
                         Travis<br>
                     [% END %]
+                    [% IF item.jenkins %]
+                        Jenkins<br>
+                    [% END %]
                     [% IF item.github_actions %]
                         GitHub Actions<br>
                     [% END %]
@@ -117,6 +120,7 @@
    <li>- GitLab: [% stats.vcs.GitLab %]</li>
    <li>Has CI: [% stats.has_ci %] ( [% stats.has_ci_percentage %]% )</li>
    <li>- GitHub Actions: [% stats.ci.github_actions %]</li>
+   <li>- Jenkins: [% stats.ci.jenkins %]</li>
    <li>- Azure Pipeline: [% stats.ci.azure_pipeline %]</li>
    <li>- Travis-CI: [% stats.ci.travis %]</li>
    <li>- CircleCI: [% stats.ci.circleci %]</li>

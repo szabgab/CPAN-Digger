@@ -16,7 +16,7 @@ use MetaCPAN::Client ();
 use DateTime         ();
 use Template ();
 
-my @ci_names = qw(travis github_actions circleci appveyor azure_pipeline gitlab_pipeline bitbucket_pipeline);
+my @ci_names = qw(travis github_actions circleci appveyor azure_pipeline gitlab_pipeline bitbucket_pipeline jenkins);
 
 my %no_vcs_authors = map { $_ => 1 } qw(PEVANS NLNETLABS RATCLIFFE JPIERCE GWYN JOHNH LSTEVENS);
 
@@ -202,6 +202,7 @@ sub analyze_bitbucket {
 
     $data->{bitbucket_pipeline} = -e "$repo/bitbucket-pipelines.yml";
     $data->{travis} = -e "$repo/.travis.yml";
+    $data->{jenkins} = -e "$repo/Jenkinsfile";
 }
 
 
@@ -209,6 +210,7 @@ sub analyze_gitlab {
     my ($data, $repo) = @_;
 
     $data->{gitlab_pipeline} = -e "$repo/.gitlab-ci.yml";
+    $data->{jenkins} = -e "$repo/Jenkinsfile";
 }
 
 sub analyze_github {
@@ -218,6 +220,7 @@ sub analyze_github {
     my @ga = glob("$repo/.github/workflows/*");
     $data->{github_actions} = (scalar(@ga) ? 1 : 0);
     $data->{circleci} = -e "$repo/.circleci";
+    $data->{jenkins} = -e "$repo/Jenkinsfile";
     $data->{appveyor} = (-e "$repo/.appveyor.yml") || (-e "$repo/appveyor.yml");
     $data->{azure_pipeline} = -e "$repo/azure-pipelines.yml";
 }

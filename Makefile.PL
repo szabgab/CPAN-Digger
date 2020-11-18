@@ -12,6 +12,7 @@ WriteMakefile(
     dist          => { COMPRESS => 'gzip', SUFFIX => 'gz' },
     PREREQ_PM => {
         'Capture::Tiny'    => 0,
+        'DateTime'         => 0,
         'DBI'              => 0,
         'DBD::SQLite'      => 0,
         'Log::Log4perl'    => 0,

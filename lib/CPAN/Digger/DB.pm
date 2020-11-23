@@ -121,6 +121,16 @@ sub get_vcs_count {
     return $total;
 }
 
+sub get_bugtracker_count {
+    my ($self, $start_date, $end_date) = @_;
+
+    my $sth = $self->{dbh}->prepare('SELECT COUNT(*) FROM dists WHERE issues IS NOT NULL AND date >= ? AND date < ?');
+    $sth->execute($start_date, $end_date);
+    my ($total) = $sth->fetchrow_array;
+    return $total;
+}
+
+
 sub get_ci_count {
     my ($self, $start_date, $end_date) = @_;
 

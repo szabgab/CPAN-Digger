@@ -314,10 +314,11 @@ sub report {
         my $authors = $self->{db}->get_author_count($self->{start_date}, $self->{end_date});
         my $vcs_count = $self->{db}->get_vcs_count($self->{start_date}, $self->{end_date});
         my $ci_count = $self->{db}->get_ci_count($self->{start_date}, $self->{end_date});
+        my $bugtracker_count = $self->{db}->get_bugtracker_count($self->{start_date}, $self->{end_date});
         printf
-            "Last week there were a total of %s uploads to CPAN of %s distinct distributions by %s different authors. Number of distributions with link to VCS: %s. Number of distros with CI: %s.\n",
+            "Last week there were a total of %s uploads to CPAN of %s distinct distributions by %s different authors. Number of distributions with link to VCS: %s. Number of distros with CI: %s. Number of distros with bugtracker: %s.\n",
             $self->{total}, $distros, $authors, $vcs_count,
-            $ci_count;
+            $ci_count, $bugtracker_count;
     }
 }
 

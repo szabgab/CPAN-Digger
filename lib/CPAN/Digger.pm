@@ -242,6 +242,8 @@ sub html {
         vcs => {},
         has_ci => 0,
         ci => {},
+        has_bugz => 0,
+        bugz => {},
     );
     for my $ci (@ci_names) {
         $stats{ci}{$ci} = 0;
@@ -256,6 +258,9 @@ sub html {
                 $dist->{vcs_not_interested} = 1;
             }
         }
+        if ($dist->{issues}) {
+            $stats{has_bugz}++;
+        }
         if ($dist->{has_ci}) {
             $stats{has_ci}++;
             for my $ci (@ci_names) {
@@ -265,6 +270,7 @@ sub html {
     }
     if ($stats{total}) {
         $stats{has_vcs_percentage} = int(100 * $stats{has_vcs} / $stats{total});
+        $stats{has_bugz_percentage} = int(100 * $stats{has_bugz} / $stats{total});
         $stats{has_ci_percentage} = int(100 * $stats{has_ci} / $stats{total});
     }
 

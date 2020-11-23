@@ -127,6 +127,7 @@
    <li>- Appveyor: [% stats.ci.appveyor %]</li>
    <li>- GitLab Pipeline: [% stats.ci.gitlab_pipeline %]</li>
    <li>- Bitbucket Pipelines: [% stats.ci.bitbucket_pipeline %]</li>
+   <li>Has Bugz: [% stats.has_bugz %] ( [% stats.has_bugz_percentage %]% )</li>
 </ul>
 
 

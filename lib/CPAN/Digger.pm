@@ -117,6 +117,9 @@ sub get_data {
             $data{vcs_url} = $vcs_url;
             $data{vcs_name} = $vcs_name;
             $logger->debug("      $vcs_name: $vcs_url");
+            if ($vcs_url =~ m{http://}) {
+                $logger->warn("Repository URL $vcs_url is http and not https");
+            }
         }
     } else {
         $logger->error('No repository for ', $item->distribution);
@@ -130,10 +133,16 @@ sub get_bugtracker {
     my ($self, $resources, $data) = @_;
 
     my $logger = Log::Log4perl->get_logger();
-    if (not $resources->{bugtracker}) {
+    if (not $resources->{bugtracker} or not $resources->{bugtracker}{web}) {
         $logger->error("No bugtracker for $data->{distribution}");
+        return;
     }
     $data->{issues} = $resources->{bugtracker}{web};
+
+    if ($data->{issues} =~ m{http://}) {
+        my $vcs_url = $data->{vcs_url} // '';
+        $logger->warn("Bugtracker URL $data->{issues} is http and not https. VCS is: $vcs_url");
+    }
 }
 
 sub analyze_vcs {

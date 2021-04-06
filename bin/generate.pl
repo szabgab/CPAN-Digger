@@ -32,7 +32,7 @@ sub main {
     my $total = $all->total;
     say $total;
     my $limit = shift @ARGV;
-    my $size = 10;
+    my $size = 100;
 
     my %stats;
     my %distros;

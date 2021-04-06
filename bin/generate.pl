@@ -5,7 +5,7 @@ use MetaCPAN::Client;
 
 use Template ();
 use DateTime;
-use DateTime::Format::ISO8601;
+#use DateTime::Format::ISO8601;
 use Data::Dumper qw(Dumper);
 use JSON;
 

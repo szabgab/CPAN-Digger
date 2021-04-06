@@ -13,6 +13,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Capture::Tiny'    => 0,
         'DateTime'         => 0,
+        'DateTime::Format::ISO8601' => 0,
         'DBI'              => 0,
         'DBD::SQLite'      => 0,
         'Log::Log4perl'    => 0,

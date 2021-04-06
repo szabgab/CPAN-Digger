@@ -21,16 +21,45 @@
         <ul class="navbar-nav mr-auto">
            <li class="nav-item"><a class="nav-link" href="https://cpandashboard.com/">Dashboard</a></li>
            <li class="nav-item"><a class="nav-link" href="https://cpan.rocks/">Rocks</a></li>
-           <li class="nav-item"><a class="nav-link" href="/stats.html">Stats</a></li>
          </ul>
       </div>
     </nav>
 
     <div class="container" role="main">
-[% content -%]
+<h1>CPAN Stats</h1>
+
+Total number of releases: 345647
+
+<h2>Top Authors</h2>
+<ul>
+
+   <li><a href="https://metacpan.org/author/ZMUGHAL">ZMUGHAL 1</a></li>
+
+   <li><a href="https://metacpan.org/author/PUCKERING">PUCKERING 1</a></li>
+
+   <li><a href="https://metacpan.org/author/KIMOTO">KIMOTO 1</a></li>
+
+   <li><a href="https://metacpan.org/author/LEEJO">LEEJO 1</a></li>
+
+   <li><a href="https://metacpan.org/author/PERLANCAR">PERLANCAR 1</a></li>
+
+   <li><a href="https://metacpan.org/author/RKELSCH">RKELSCH 1</a></li>
+
+   <li><a href="https://metacpan.org/author/CAMTAUXE">CAMTAUXE 1</a></li>
+
+   <li><a href="https://metacpan.org/author/PWBENNETT">PWBENNETT 1</a></li>
+
+   <li><a href="https://metacpan.org/author/WFANSH">WFANSH 1</a></li>
+
+   <li><a href="https://metacpan.org/author/JFORGET">JFORGET 1</a></li>
+
+</ul>
+
+<hr>
+Elapsed time: 3 sec
     </div>
     <footer>
-CPAN Digger written by <a href="https://twitter.com/szabgab">@szabgab</a> / Code on <a href="https://github.com/szabgab/CPAN-Digger">Github</a> / Last updated: [% timestamp %] /
+CPAN Digger written by <a href="https://twitter.com/szabgab">@szabgab</a> / Code on <a href="https://github.com/szabgab/CPAN-Digger">Github</a> / Last updated: 2021-04-06T07:33:17 /
 Support the work via <a href="https://www.patreon.com/szabgab">Patreon</a>
     </footer>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -39,18 +68,5 @@ Support the work via <a href="https://www.patreon.com/szabgab">Patreon</a>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <script src="//cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
     <script src="/js/digger.js"></script>
-[% IF analytics -%]
-<script>
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','//www.google-analytics.com/analytics.js','__gaTracker');
-
-	__gaTracker('create', '[% analytics %]', 'auto');
-	__gaTracker('set', 'forceSSL', true);
-	__gaTracker('send','pageview');
-
-</script>
-[% END -%]
   </body>
 </html>

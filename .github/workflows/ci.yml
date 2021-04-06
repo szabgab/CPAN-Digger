@@ -52,6 +52,7 @@ jobs:
         run: |
             perl -Ilib bin/cpan-digger --version
             perl -Ilib bin/cpan-digger --recent 150 --vcs --sleep 2 --html docs
+            perl bin/generate.pl 1000
 
       - name: Commit new page
         run: |

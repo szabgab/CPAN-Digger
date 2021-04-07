@@ -61,7 +61,7 @@ sub main {
     }
     my @authors =
         map { [$_ => $stats{authors}{$_}] }
-        reverse sort {$stats{authors}{$a} <=> $stats{authors}{$b}}
+        reverse sort {$stats{authors}{$a}{count} <=> $stats{authors}{$b}{count}}
         keys %{ $stats{authors} };
     if (scalar(@authors) > $size) {
         @authors = @authors[0..$size-1];

@@ -56,7 +56,7 @@ sub main {
         #say $release->name;
         #say $release->;
         say $release->author;
-        $stats{authors}{$release->author}++;
+        $stats{authors}{$release->author}{count}++;
         last if defined $limit and $limit-- <= 0;
     }
     my @authors =
@@ -66,6 +66,12 @@ sub main {
     if (scalar(@authors) > $size) {
         @authors = @authors[0..$size-1];
     }
+    for my $auth (@authors) {
+        my $author = $mcpan->author($auth->[0]); # https://metacpan.org/pod/MetaCPAN::Client::Author
+        $auth->[1]{name} = $author->name;
+        $auth->[1]{asciiname} = $author->ascii_name;
+    }
+
     #print Dumper \@authors;
     #say $total;
     my $end = time;
@@ -77,7 +83,7 @@ sub main {
 sub save_data {
     my ($data) = @_;
     my $json = JSON->new->allow_nonref;
-    open my $fh, '>', 'docs/stats.json' or die $!;
+    open my $fh, '>:encoding(utf8)', 'docs/stats.json' or die $!;
     print $fh $json->pretty->encode( $data );
 }
 
@@ -95,7 +101,7 @@ sub save_html {
         timestamp => DateTime->now,
     }, \$report) or die $tt->error(), "\n";
     my $html_file = 'docs/stats.html';
-    open(my $fh, '>', $html_file) or die "Could not open '$html_file'";
+    open(my $fh, '>:encoding(utf8)', $html_file) or die "Could not open '$html_file'";
     print $fh $report;
     close $fh;
 

@@ -5,7 +5,7 @@ Total number of releases: [% total %]
 <h2>Top Authors</h2>
 <ul>
 [% FOREACH value IN authors %]
-   <li><a href="https://metacpan.org/author/[% value.0 %]">[% value.0 %]</a> [% value.1 %]</li>
+   <li><a href="https://metacpan.org/author/[% value.0 %]">[% value.1.name %] ([% value.0 %])</a> [% value.1.count %]</li>
 [% END %]
 </ul>
 

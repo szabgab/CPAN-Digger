@@ -1,551 +1,19 @@
 {
    "authors" : {
-      "RCHAVES" : {
-         "count" : 1
-      },
-      "ZNMSTR" : {
-         "name" : "Afnic and IIS Zonemaster Project",
+      "DJERIUS" : {
+         "count" : "8",
          "asciiname" : null,
-         "count" : "4"
+         "name" : "Diab Jerius"
       },
-      "DISTLER" : {
-         "count" : 1
-      },
-      "NHORNE" : {
-         "asciiname" : null,
-         "count" : "4",
-         "name" : "Nigel Horne"
-      },
-      "SKIRMESS" : {
-         "count" : 1
-      },
-      "INA" : {
-         "count" : "4",
-         "asciiname" : null,
-         "name" : "INABA Hitoshi"
-      },
-      "MVSJES" : {
-         "count" : 1
-      },
-      "HUGMEIR" : {
-         "count" : 1
-      },
-      "KARASIK" : {
-         "count" : 1
-      },
-      "JMASLAK" : {
-         "count" : 1
-      },
-      "HAARG" : {
-         "count" : 2
-      },
-      "NEILB" : {
-         "count" : 2
-      },
-      "JKING" : {
-         "count" : 1
-      },
-      "AJWOOD" : {
-         "count" : 1
-      },
-      "ASPINELLI" : {
-         "count" : 1
-      },
-      "MSTEMLE" : {
-         "count" : 1
-      },
-      "TABULO" : {
-         "count" : 1
-      },
-      "INGY" : {
-         "count" : 1
-      },
-      "JSF" : {
-         "count" : 1
-      },
-      "KOBOLDWIZ" : {
-         "name" : "Kobold Wizard Johan",
-         "count" : "5",
-         "asciiname" : null
-      },
-      "DAVECROSS" : {
-         "count" : 1
-      },
-      "BINGOS" : {
-         "name" : "Chris Williams",
-         "asciiname" : null,
-         "count" : "5"
-      },
-      "TOMZO" : {
-         "count" : 1
-      },
-      "RURBAN" : {
-         "count" : 2
-      },
-      "HDELGADO" : {
-         "count" : 1
-      },
-      "MIKEJONES" : {
-         "count" : 1
-      },
-      "ART" : {
-         "count" : 1
-      },
-      "SYBER" : {
-         "name" : "Олег Пронин",
-         "asciiname" : null,
-         "count" : "21"
-      },
-      "DCANTRELL" : {
-         "asciiname" : null,
-         "count" : "5",
-         "name" : "David Cantrell"
-      },
-      "VIY" : {
-         "count" : 1
-      },
-      "SBECK" : {
-         "asciiname" : null,
-         "count" : "4",
-         "name" : "Sullivan Beck"
-      },
-      "AKIYM" : {
-         "count" : 1
-      },
-      "HATENA" : {
-         "count" : 1
-      },
-      "MLEHMANN" : {
-         "count" : 1
-      },
-      "BRTASTIC" : {
-         "name" : "Bartosz Jarzyna",
-         "count" : "4",
-         "asciiname" : null
-      },
-      "NICOMEN" : {
-         "count" : 1
-      },
-      "TINITA" : {
-         "count" : 1
-      },
-      "GSG" : {
-         "asciiname" : null,
-         "count" : "3",
-         "name" : "Grant Street Group"
-      },
-      "MBRADSHAW" : {
-         "count" : 1
-      },
-      "JMERELO" : {
-         "count" : 1
-      },
-      "JSPICAK" : {
-         "count" : 1
-      },
-      "MSTPLBG" : {
-         "count" : 1
-      },
-      "GRICHTER" : {
-         "count" : 1
-      },
-      "BOGDRO" : {
-         "count" : 1
-      },
-      "DANBERR" : {
-         "count" : 2
-      },
-      "GETTY" : {
-         "count" : 1
-      },
-      "JJNAPIORK" : {
-         "count" : "7",
-         "asciiname" : null,
-         "name" : "John Napiorkowski"
-      },
-      "BAERGAJ" : {
-         "count" : 1
-      },
-      "DRCLAW" : {
-         "count" : 1
-      },
-      "SCHUBIGER" : {
-         "count" : 1
-      },
-      "SIMCOP" : {
-         "count" : 2
-      },
-      "KAZEBURO" : {
-         "count" : 2
-      },
-      "JONASS" : {
-         "count" : 2
-      },
-      "VVELOX" : {
-         "name" : "Zane C. Bowers-Hadley",
-         "count" : "5",
-         "asciiname" : null
-      },
-      "GLBRUNE" : {
-         "count" : 1
-      },
-      "TULAMILI" : {
-         "count" : 2
-      },
-      "AKALINUX" : {
-         "name" : "Michael Shipper",
-         "count" : "6",
-         "asciiname" : null
-      },
-      "ASHWIN" : {
-         "count" : 1
-      },
-      "BOOK" : {
-         "count" : 1
-      },
-      "GWYN" : {
-         "count" : 1
-      },
-      "SLOYD" : {
-         "count" : 1
-      },
-      "SANKO" : {
-         "name" : "Sanko Robinson",
-         "asciiname" : null,
-         "count" : "4"
-      },
-      "MHASCH" : {
-         "count" : 1
-      },
-      "BIGFOOT" : {
-         "count" : 1
-      },
-      "JWB" : {
-         "count" : 1
-      },
-      "ROBM" : {
-         "count" : 1
-      },
-      "MLAWREN" : {
-         "count" : 1
-      },
-      "ZOFFIX" : {
-         "count" : 1
-      },
-      "AKXLIX" : {
-         "count" : 1
-      },
-      "FSEITZ" : {
-         "count" : 1
-      },
-      "SHLOMIF" : {
-         "count" : "16",
-         "asciiname" : null,
-         "name" : "Shlomi Fish"
-      },
-      "MICVU" : {
-         "count" : 1
-      },
-      "MMENZA" : {
-         "count" : 1
-      },
-      "SREZIC" : {
-         "count" : 1
-      },
-      "KULP" : {
-         "count" : 1
-      },
-      "SKAJI" : {
-         "asciiname" : null,
-         "count" : "5",
-         "name" : "Shoichi Kaji"
-      },
-      "TIMLEGGE" : {
-         "name" : "Timothy Legge",
-         "asciiname" : null,
-         "count" : "5"
-      },
-      "KIMRYAN" : {
-         "count" : 1
-      },
-      "ABRAXXA" : {
-         "count" : 1
-      },
-      "FELIXK" : {
-         "count" : "3",
-         "asciiname" : null,
-         "name" : "Felix Kühnl"
-      },
-      "PUTINTSEV" : {
-         "count" : 1
-      },
-      "POLETTIX" : {
-         "count" : 1
-      },
-      "SCHROEDER" : {
-         "count" : "3",
-         "asciiname" : null,
-         "name" : "Alex Schroeder"
-      },
-      "MRSCOTTY" : {
-         "count" : 1
-      },
-      "NMELNICK" : {
-         "count" : 1
-      },
-      "PROCH" : {
-         "name" : "Andrea Telatin 🧬",
-         "count" : "3",
-         "asciiname" : null
-      },
-      "DAMI" : {
-         "count" : 2
-      },
-      "STEFFENW" : {
-         "count" : 1
-      },
-      "PRBRENAN" : {
-         "name" : "Philip R Brenan",
-         "asciiname" : null,
-         "count" : "3"
-      },
-      "JCARTY" : {
-         "count" : 1
-      },
-      "PREACTION" : {
-         "count" : "3",
-         "asciiname" : null,
-         "name" : "💯 Doug Bell"
-      },
-      "SCHIECHEO" : {
-         "count" : 1
-      },
-      "ASPOSE" : {
-         "count" : 2
-      },
-      "TEAM" : {
-         "asciiname" : null,
-         "count" : "7",
-         "name" : "Tom Molesworth"
-      },
-      "ISHIGAKI" : {
-         "name" : "Kenichi Ishigaki",
-         "asciiname" : null,
-         "count" : "4"
-      },
-      "LTM" : {
-         "count" : 1
-      },
-      "OLIVER" : {
-         "count" : 2
-      },
-      "LOGIONIZ" : {
-         "count" : "3",
-         "asciiname" : null,
-         "name" : "Alexey Stavrov"
-      },
-      "MITHALDU" : {
-         "count" : 1
-      },
-      "BEANZ" : {
-         "count" : 1
-      },
-      "SHANCOCK" : {
-         "count" : 1
-      },
-      "FELIPE" : {
-         "name" : "Felipe Gasper",
-         "count" : "7",
-         "asciiname" : null
-      },
-      "TOBIB" : {
-         "count" : 1
-      },
-      "JLMARTIN" : {
-         "count" : "3",
-         "asciiname" : null,
-         "name" : "Jose Luis Martinez Torres"
-      },
-      "JDEGUEST" : {
-         "name" : "Jacques Deguest",
-         "count" : "7",
-         "asciiname" : null
-      },
-      "PJACKLAM" : {
-         "asciiname" : null,
-         "count" : "12",
-         "name" : "Peter John Acklam"
-      },
-      "RSKRABA" : {
-         "count" : 1
-      },
-      "CHRISN" : {
-         "count" : 1
-      },
-      "WOUTER" : {
-         "count" : 1
-      },
-      "ASB" : {
-         "count" : "3",
-         "asciiname" : null,
-         "name" : "Alexander Becker"
-      },
-      "BIGPRESH" : {
-         "count" : 1
-      },
-      "SRI" : {
-         "count" : 1
-      },
-      "TURNERJW" : {
-         "count" : 2
-      },
-      "KUERBIS" : {
-         "name" : "Matthäus Kiem",
-         "count" : "5",
-         "asciiname" : null
-      },
-      "MIKAGE" : {
-         "count" : 1
-      },
-      "PERLANCAR" : {
-         "count" : "179",
-         "asciiname" : null,
-         "name" : "perlancar"
-      },
-      "ATOOMIC" : {
-         "count" : 2
-      },
-      "DCLARKE" : {
-         "count" : 1
-      },
-      "TEODESIAN" : {
-         "asciiname" : null,
-         "count" : "3",
-         "name" : "George S. Baugh"
-      },
-      "ATHREEF" : {
-         "count" : 1
-      },
-      "AMBA" : {
-         "count" : 1
-      },
-      "NOBUNAGA" : {
-         "count" : 1
-      },
-      "EZIMUEL" : {
-         "name" : "Enrico Zimuel",
-         "count" : "7",
-         "asciiname" : null
-      },
-      "GARU" : {
-         "count" : 2
-      },
-      "LCONS" : {
-         "name" : "Lionel Cons",
-         "asciiname" : null,
-         "count" : "7"
-      },
-      "ANDK" : {
-         "count" : 2
-      },
-      "MANWAR" : {
-         "name" : "Mohammad S Anwar",
-         "count" : "3",
-         "asciiname" : null
-      },
-      "IVANWILLS" : {
-         "count" : 2
-      },
-      "TOKUHIROM" : {
-         "count" : 1
-      },
-      "EXODIST" : {
-         "count" : "5",
-         "asciiname" : null,
-         "name" : "Chad Granum"
-      },
-      "SELECTPDF" : {
-         "count" : 1
-      },
-      "OKELLO" : {
-         "count" : 1
-      },
-      "RJBS" : {
-         "name" : "Ricardo SIGNES 😄",
-         "asciiname" : null,
-         "count" : "5"
-      },
-      "GILS" : {
-         "count" : 1
-      },
-      "ARISTOTLE" : {
-         "name" : "Αριστοτέλης Παγκαλτζής",
-         "count" : "4",
-         "asciiname" : null
-      },
-      "TOMC" : {
-         "count" : 2
-      },
-      "GIACOMONI" : {
-         "count" : 1
-      },
-      "DDUMONT" : {
-         "asciiname" : null,
-         "count" : "5",
-         "name" : "Dominique Dumont"
-      },
-      "RAJ" : {
-         "count" : 1
-      },
-      "JCRISTY" : {
-         "count" : 1
-      },
-      "GENE" : {
-         "name" : "Gene Boggs",
-         "asciiname" : null,
-         "count" : "5"
-      },
-      "SULLR" : {
-         "count" : 1
-      },
-      "DBAURAIN" : {
-         "name" : "Denis BAURAIN",
-         "asciiname" : null,
-         "count" : "4"
-      },
-      "BLHOTSKY" : {
-         "count" : 2
-      },
-      "TVIGNAUD" : {
-         "count" : 2
-      },
-      "BKB" : {
-         "count" : 1
-      },
-      "TRWWW" : {
+      "KFLY" : {
          "count" : 1
       },
       "MARKOV" : {
-         "name" : "Mark Overmeer",
          "count" : "4",
-         "asciiname" : null
+         "asciiname" : null,
+         "name" : "Mark Overmeer"
       },
-      "HIROSE" : {
-         "count" : 1
-      },
-      "SETH" : {
-         "count" : 1
-      },
-      "FIREDRAKE" : {
-         "count" : 1
-      },
-      "ERIAM" : {
-         "count" : 1
-      },
-      "WFANSH" : {
-         "count" : 1
-      },
-      "HOUSTON" : {
+      "BRMILLER" : {
          "count" : 1
       },
       "LEEJO" : {
@@ -553,589 +21,275 @@
          "asciiname" : null,
          "name" : "Lee Johnson"
       },
-      "SSIMMS" : {
-         "count" : 1
-      },
-      "RES" : {
-         "count" : 1
-      },
-      "CORION" : {
-         "asciiname" : null,
-         "count" : "8",
-         "name" : "Max Maischein"
-      },
-      "ZMUGHAL" : {
-         "name" : "Zakariyya Mughal",
-         "count" : "12",
-         "asciiname" : null
-      },
-      "DBOOK" : {
-         "name" : "Dan Book",
-         "count" : "5",
-         "asciiname" : null
-      },
-      "JOROL" : {
-         "count" : 1
-      },
-      "GUIDO" : {
-         "count" : 1
-      },
-      "MOB" : {
-         "count" : 2
-      },
-      "CONTRA" : {
-         "count" : 2
-      },
-      "TRIZEN" : {
-         "count" : 1
-      },
-      "SCHWIGON" : {
-         "asciiname" : null,
-         "count" : "3",
-         "name" : "Steffen Schwigon"
-      },
-      "ALFIE" : {
-         "count" : 1
-      },
-      "CDN" : {
-         "asciiname" : null,
-         "count" : "6",
-         "name" : "Chernenko Dmitriy"
-      },
-      "TARAS" : {
-         "count" : 1
-      },
-      "SACAVILIA" : {
-         "count" : 2
-      },
-      "IGIBBS" : {
-         "count" : 2
-      },
-      "MBARBON" : {
-         "count" : 2
-      },
-      "CARELINE" : {
-         "count" : 1
-      },
-      "VOLKENING" : {
-         "count" : 1
-      },
-      "DAGOLDEN" : {
-         "count" : 2
-      },
-      "GTERMARS" : {
-         "count" : 1
-      },
-      "UHLE" : {
-         "count" : 1
-      },
-      "JDDPAUSE" : {
-         "count" : 1
-      },
-      "DAEMON" : {
-         "count" : 2
-      },
-      "CAMTAUXE" : {
-         "count" : 1
-      },
-      "DERF" : {
-         "count" : 1
-      },
-      "DANKOGAI" : {
-         "count" : 1
-      },
-      "MARIOROY" : {
-         "count" : 2
-      },
-      "BDFOY" : {
-         "name" : "brian d foy",
-         "count" : "3",
-         "asciiname" : null
-      },
-      "MRDVT" : {
-         "count" : 2
-      },
-      "VOEGELAS" : {
-         "name" : "Andreas Vögele",
-         "count" : "3",
-         "asciiname" : null
-      },
-      "RBWOHLFAR" : {
-         "count" : 1
-      },
-      "GRABZIT" : {
-         "count" : 1
-      },
-      "KIM" : {
-         "count" : 1
-      },
-      "ETJ" : {
-         "name" : "Ed J",
-         "count" : "16",
-         "asciiname" : null
-      },
-      "RATCLIFFE" : {
-         "count" : 1
-      },
-      "JV" : {
-         "count" : 2
-      },
-      "JFF" : {
-         "count" : 2
-      },
-      "BEROV" : {
-         "count" : 1
-      },
-      "CLOOS" : {
-         "count" : 1
-      },
-      "YLAVOIE" : {
-         "count" : 1
-      },
-      "CSSON" : {
-         "count" : 1
-      },
-      "ERIKOEST" : {
-         "count" : 1
-      },
-      "YTURTLE" : {
-         "count" : 1
-      },
-      "BURAK" : {
-         "count" : 1
-      },
-      "JJATRIA" : {
-         "name" : "José Joaquín Atria",
-         "asciiname" : null,
-         "count" : "3"
-      },
-      "CEBJYRE" : {
+      "LTM" : {
          "count" : 1
       },
       "TANIGUCHI" : {
          "count" : 1
       },
-      "BRDUCH" : {
-         "count" : "3",
-         "asciiname" : null,
-         "name" : "Peter P. Neuromantic"
-      },
-      "MSTROUT" : {
-         "count" : 1
-      },
-      "HMBRAND" : {
-         "count" : 1
-      },
-      "SYMKAT" : {
-         "count" : 2
-      },
-      "MELMOTHX" : {
-         "name" : "Marco Pessotto",
-         "asciiname" : null,
-         "count" : "3"
-      },
-      "NICS" : {
-         "count" : 2
-      },
       "MBP" : {
          "count" : 1
       },
-      "KARJALA" : {
-         "name" : "Alexander Karelas",
-         "asciiname" : null,
-         "count" : "5"
-      },
-      "TVV" : {
-         "count" : 1
-      },
-      "ABALAMA" : {
-         "count" : 1
-      },
-      "RAPHI" : {
+      "OETIKER" : {
          "count" : 1
       },
       "GUILLEM" : {
          "count" : 1
       },
-      "UNDEF" : {
+      "STEFFENW" : {
          "count" : 1
-      },
-      "VANHOESEL" : {
-         "count" : 2
-      },
-      "SHAY" : {
-         "count" : 1
-      },
-      "ASLEWIS" : {
-         "count" : 1
-      },
-      "AVAJADI" : {
-         "count" : 1
-      },
-      "PETERCJ" : {
-         "count" : 2
-      },
-      "GEEKRUTH" : {
-         "count" : 2
-      },
-      "AAHAZRED" : {
-         "count" : 1
-      },
-      "ASOKOLOV" : {
-         "count" : 1
-      },
-      "JONASBN" : {
-         "count" : 2
-      },
-      "MOOCOW" : {
-         "count" : 2
-      },
-      "DJERIUS" : {
-         "name" : "Diab Jerius",
-         "count" : "8",
-         "asciiname" : null
-      },
-      "RRWO" : {
-         "count" : "6",
-         "asciiname" : null,
-         "name" : "Robert Rothenberg"
-      },
-      "BINARY" : {
-         "count" : "3",
-         "asciiname" : null,
-         "name" : "Binary.com"
-      },
-      "MATHIAS" : {
-         "count" : 1
-      },
-      "YANICK" : {
-         "count" : 2
-      },
-      "MSCHOUT" : {
-         "count" : 1
-      },
-      "AKRON" : {
-         "count" : 1
-      },
-      "HAUKEX" : {
-         "count" : 1
-      },
-      "NIGELM" : {
-         "count" : 1
-      },
-      "JBARRETT" : {
-         "count" : 2
-      },
-      "OALDERS" : {
-         "asciiname" : null,
-         "count" : "9",
-         "name" : "Olaf Alders 🐫"
-      },
-      "DCONWAY" : {
-         "count" : 1
-      },
-      "PERLSRVDE" : {
-         "name" : "Perl Services",
-         "count" : "7",
-         "asciiname" : null
-      },
-      "SISYPHUS" : {
-         "name" : "Sisyphus",
-         "count" : "5",
-         "asciiname" : null
-      },
-      "RCAPUTO" : {
-         "count" : 1
-      },
-      "JMATES" : {
-         "count" : "2",
-         "asciiname" : null,
-         "name" : "thrig"
       },
       "DAM" : {
          "count" : 1
       },
-      "TROHAU" : {
+      "AJWOOD" : {
          "count" : 1
-      },
-      "PATRICKB" : {
-         "count" : 1
-      },
-      "JKEENAN" : {
-         "count" : 1
-      },
-      "CFABER" : {
-         "count" : 1
-      },
-      "MAFEMBRAC" : {
-         "name" : "Muhammad Mahad Ashraf",
-         "asciiname" : null,
-         "count" : "4"
-      },
-      "BAREFOOT" : {
-         "count" : 1
-      },
-      "EHUELS" : {
-         "name" : "Erik Huelsmann",
-         "count" : "5",
-         "asciiname" : null
       },
       "SLAFFAN" : {
-         "count" : 1
-      },
-      "DWHEELER" : {
-         "count" : 1
-      },
-      "JHTHORSEN" : {
-         "asciiname" : null,
-         "count" : "9",
-         "name" : "Jan Henning Thorsen"
-      },
-      "TOREAU" : {
-         "count" : 1
-      },
-      "BPS" : {
-         "asciiname" : null,
-         "count" : "5",
-         "name" : "Best Practical Solutions »|«"
-      },
-      "SZARATE" : {
-         "count" : 1
-      },
-      "TASKULA" : {
-         "count" : 1
-      },
-      "HANENKAMP" : {
-         "count" : 1
-      },
-      "JULIODCS" : {
-         "count" : 1
-      },
-      "MREISNER" : {
-         "count" : 1
-      },
-      "MIKIHOSHI" : {
-         "count" : 1
-      },
-      "MHANDISI" : {
-         "count" : 1
-      },
-      "GRYPHON" : {
-         "name" : "Gryphon Shafer",
-         "count" : "4",
-         "asciiname" : null
-      },
-      "SBAKKER" : {
-         "count" : 1
-      },
-      "PFEIFFER" : {
-         "count" : 1
-      },
-      "ZEFRAM" : {
-         "count" : 1
-      },
-      "ZEUS" : {
-         "count" : 1
-      },
-      "CUKEBOT" : {
-         "name" : "Cucumber Bot",
-         "asciiname" : null,
-         "count" : "3"
-      },
-      "SSCHECK" : {
-         "count" : 1
-      },
-      "MAMAWE" : {
-         "count" : "9",
-         "asciiname" : null,
-         "name" : "Mathias Weidner"
-      },
-      "DOMQ" : {
-         "count" : 1
-      },
-      "WYANT" : {
-         "name" : "Tom Wyant",
-         "asciiname" : null,
-         "count" : "14"
-      },
-      "AUDREYT" : {
-         "count" : 1
-      },
-      "MEWP" : {
-         "count" : 1
-      },
-      "DOMM" : {
-         "name" : "Thomas Klausner",
-         "count" : "2",
-         "asciiname" : null
-      },
-      "OVID" : {
-         "count" : "2",
-         "asciiname" : null,
-         "name" : "Curtis \"Ovid\" Poe"
-      },
-      "REEDFISH" : {
-         "count" : 1
-      },
-      "DDICK" : {
-         "count" : "2",
-         "asciiname" : null,
-         "name" : "David Dick"
-      },
-      "GRAVATTJ" : {
-         "count" : 1
-      },
-      "SARGIE" : {
-         "count" : 1
-      },
-      "OODLER" : {
-         "name" : "OODLER 578",
-         "count" : "2",
-         "asciiname" : null
-      },
-      "ARFREITAS" : {
          "count" : 1
       },
       "COLINK" : {
          "count" : 1
       },
-      "LNATION" : {
-         "count" : 1
-      },
-      "SKIM" : {
-         "count" : "14",
-         "asciiname" : null,
-         "name" : "Michal Josef Špaček"
-      },
-      "WOLLMERS" : {
-         "count" : 1
-      },
-      "BRMILLER" : {
-         "count" : 1
-      },
-      "ETHER" : {
-         "name" : "Karen Etheridge 🐾 🌋🦑🇹🇼🇭🇰",
-         "asciiname" : null,
-         "count" : "9"
-      },
-      "KNI" : {
-         "count" : 1
-      },
-      "ABELTJE" : {
-         "count" : 1
-      },
-      "VPEIL" : {
-         "count" : 1
-      },
-      "VOJ" : {
-         "name" : "Jakob Voß",
-         "count" : "2",
+      "INA" : {
+         "count" : "4",
+         "name" : "INABA Hitoshi",
          "asciiname" : null
       },
-      "EBRUNI" : {
-         "count" : "4",
-         "asciiname" : null,
-         "name" : "Bruni Emiliano"
-      },
-      "RSAVAGE" : {
+      "MRSCOTTY" : {
          "count" : 1
       },
-      "HOCHSTEN" : {
-         "count" : "2",
-         "asciiname" : null,
-         "name" : "Patrick Hochstenbach"
-      },
-      "LAWALSH" : {
+      "JMASLAK" : {
          "count" : 1
       },
-      "BARNEY" : {
+      "DDUMONT" : {
+         "name" : "Dominique Dumont",
          "asciiname" : null,
-         "count" : "2",
-         "name" : "Branislav Zahradník"
+         "count" : "5"
       },
-      "MIK" : {
-         "count" : "2",
-         "asciiname" : null,
-         "name" : "Karel Miko"
-      },
-      "APRIME" : {
+      "DAVECROSS" : {
          "count" : 1
       },
-      "MACOPY" : {
-         "count" : "2",
+      "JDEGUEST" : {
+         "count" : "7",
          "asciiname" : null,
-         "name" : "Makoto Taniwaki"
+         "name" : "Jacques Deguest"
       },
-      "GSB" : {
-         "name" : "Graham Bell",
+      "DCONWAY" : {
+         "count" : 1
+      },
+      "TOMZO" : {
+         "count" : 1
+      },
+      "PLICEASE" : {
+         "count" : "18",
          "asciiname" : null,
-         "count" : "2"
+         "name" : "🦖🦜Graham Ollis🦃🦕"
+      },
+      "DANBERR" : {
+         "count" : 2
+      },
+      "PROCH" : {
+         "asciiname" : null,
+         "name" : "Andrea Telatin 🧬",
+         "count" : "3"
+      },
+      "CFABER" : {
+         "count" : 1
+      },
+      "UNDEF" : {
+         "count" : 1
+      },
+      "SHAY" : {
+         "count" : 1
+      },
+      "GRABZIT" : {
+         "count" : 1
+      },
+      "SREZIC" : {
+         "count" : 1
+      },
+      "KUERBIS" : {
+         "count" : "5",
+         "asciiname" : null,
+         "name" : "Matthäus Kiem"
+      },
+      "RBWOHLFAR" : {
+         "count" : 1
+      },
+      "JDDPAUSE" : {
+         "count" : 1
       },
       "VANSTYN" : {
          "count" : 1
       },
-      "NERDVANA" : {
-         "asciiname" : null,
-         "count" : "5",
-         "name" : "Michael Conrad"
-      },
-      "OETIKER" : {
+      "DJZORT" : {
          "count" : 1
       },
-      "PEVANS" : {
-         "count" : "36",
-         "asciiname" : null,
-         "name" : "Paul Evans"
+      "GTERMARS" : {
+         "count" : 1
       },
-      "STEVEB" : {
-         "name" : "Steve Bertrand",
-         "asciiname" : null,
-         "count" : "3"
+      "JONASBN" : {
+         "count" : 2
       },
-      "DROLSKY" : {
-         "name" : "Dave Rolsky",
-         "count" : "6",
+      "ERIAM" : {
+         "count" : 1
+      },
+      "ART" : {
+         "count" : 1
+      },
+      "AVAJADI" : {
+         "count" : 1
+      },
+      "GRYPHON" : {
+         "count" : "4",
+         "name" : "Gryphon Shafer",
          "asciiname" : null
+      },
+      "GILS" : {
+         "count" : 1
+      },
+      "OVID" : {
+         "count" : 2
+      },
+      "OALDERS" : {
+         "name" : "Olaf Alders 🐫",
+         "asciiname" : null,
+         "count" : "9"
+      },
+      "SBAKKER" : {
+         "count" : 1
+      },
+      "GIACOMONI" : {
+         "count" : 1
+      },
+      "GUIDO" : {
+         "count" : 1
+      },
+      "TULAMILI" : {
+         "count" : 2
+      },
+      "GSB" : {
+         "count" : 2
+      },
+      "MOB" : {
+         "count" : 2
+      },
+      "PREACTION" : {
+         "count" : "3",
+         "asciiname" : null,
+         "name" : "💯 Doug Bell"
+      },
+      "PERLSRVDE" : {
+         "count" : "7",
+         "asciiname" : null,
+         "name" : "Perl Services"
+      },
+      "BOOK" : {
+         "count" : 1
+      },
+      "DAGOLDEN" : {
+         "count" : 2
+      },
+      "KIMRYAN" : {
+         "count" : 1
+      },
+      "ANDK" : {
+         "count" : 2
+      },
+      "ATOOMIC" : {
+         "count" : 2
       },
       "DORNER" : {
          "count" : 1
       },
-      "UTASHIRO" : {
-         "asciiname" : null,
-         "count" : "15",
-         "name" : "歌代 和正 (Kaz Utashiro)"
+      "VOJ" : {
+         "count" : 2
       },
-      "MICHIELB" : {
+      "BOGDRO" : {
          "count" : 1
       },
-      "AVERKIOS" : {
+      "HAUKEX" : {
          "count" : 1
       },
-      "JOENIO" : {
+      "JONASS" : {
+         "count" : 2
+      },
+      "MSTEMLE" : {
          "count" : 1
       },
-      "LEONT" : {
-         "count" : "2",
-         "asciiname" : null,
-         "name" : "Leon Timmermans"
+      "DOMM" : {
+         "count" : 2
       },
-      "KFLY" : {
+      "JKEENAN" : {
          "count" : 1
       },
-      "NLNETLABS" : {
-         "name" : "NLnet Labs",
+      "MANWAR" : {
+         "name" : "Mohammad S Anwar",
          "asciiname" : null,
-         "count" : "2"
+         "count" : "3"
       },
-      "ELLEDNERA" : {
-         "name" : "Raphael Jong Jun Jie",
+      "MARIOROY" : {
+         "count" : 2
+      },
+      "ZEFRAM" : {
+         "count" : 1
+      },
+      "AMBA" : {
+         "count" : 1
+      },
+      "RATCLIFFE" : {
+         "count" : 1
+      },
+      "SKIM" : {
+         "count" : "13",
          "asciiname" : null,
-         "count" : "2"
+         "name" : "Michal Josef Špaček"
       },
-      "SHIGETA" : {
+      "PRBRENAN" : {
+         "count" : "3",
+         "asciiname" : null,
+         "name" : "Philip R Brenan"
+      },
+      "MOOCOW" : {
+         "count" : 2
+      },
+      "MEWP" : {
          "count" : 1
       },
       "WLMB" : {
+         "count" : 1
+      },
+      "HAARG" : {
+         "count" : 2
+      },
+      "DERF" : {
+         "count" : 1
+      },
+      "ATHREEF" : {
+         "count" : 1
+      },
+      "ASLEWIS" : {
+         "count" : 1
+      },
+      "TABULO" : {
+         "count" : 1
+      },
+      "VVELOX" : {
+         "asciiname" : null,
+         "name" : "Zane C. Bowers-Hadley",
+         "count" : "5"
+      },
+      "MATY" : {
+         "count" : 1
+      },
+      "TVV" : {
+         "count" : 1
+      },
+      "NIGELM" : {
+         "count" : 1
+      },
+      "BKB" : {
          "count" : 1
       },
       "AALAMEER" : {
@@ -1143,58 +297,901 @@
          "asciiname" : null,
          "count" : "3"
       },
-      "ABH" : {
+      "HUGMEIR" : {
+         "count" : 1
+      },
+      "DANKOGAI" : {
+         "count" : 1
+      },
+      "KIM" : {
+         "count" : 1
+      },
+      "CSSON" : {
+         "count" : 1
+      },
+      "JBARRETT" : {
+         "count" : 2
+      },
+      "AUDREYT" : {
+         "count" : 1
+      },
+      "CORION" : {
+         "count" : "8",
+         "name" : "Max Maischein",
+         "asciiname" : null
+      },
+      "LNATION" : {
+         "count" : 1
+      },
+      "RCHAVES" : {
+         "count" : 1
+      },
+      "SHANCOCK" : {
+         "count" : 1
+      },
+      "JWB" : {
+         "count" : 1
+      },
+      "MACOPY" : {
+         "count" : 2
+      },
+      "SRI" : {
+         "count" : 1
+      },
+      "BPS" : {
+         "asciiname" : null,
+         "name" : "Best Practical Solutions »|«",
+         "count" : "5"
+      },
+      "GNUSTAVO" : {
+         "count" : 1
+      },
+      "REEDFISH" : {
+         "count" : 1
+      },
+      "GRAVATTJ" : {
+         "count" : 1
+      },
+      "BIGFOOT" : {
+         "count" : 1
+      },
+      "ETHER" : {
+         "name" : "Karen Etheridge 🐾 🌋🦑🇹🇼🇭🇰",
+         "asciiname" : null,
+         "count" : "9"
+      },
+      "JMERELO" : {
+         "count" : 1
+      },
+      "ZNMSTR" : {
+         "count" : "4",
+         "name" : "Afnic and IIS Zonemaster Project",
+         "asciiname" : null
+      },
+      "AAHAZRED" : {
+         "count" : 1
+      },
+      "CEBJYRE" : {
+         "count" : 1
+      },
+      "SLOYD" : {
+         "count" : 1
+      },
+      "AKALINUX" : {
+         "count" : "6",
+         "name" : "Michael Shipper",
+         "asciiname" : null
+      },
+      "BDFOY" : {
+         "asciiname" : null,
+         "name" : "brian d foy",
+         "count" : "4"
+      },
+      "MRDVT" : {
+         "count" : 2
+      },
+      "DAMI" : {
+         "count" : 2
+      },
+      "HIROSE" : {
          "count" : 1
       },
       "VPIT" : {
          "count" : 1
       },
-      "HOEKIT" : {
+      "MATHIAS" : {
          "count" : 1
       },
-      "GNUSTAVO" : {
+      "ZMUGHAL" : {
+         "count" : "12",
+         "asciiname" : null,
+         "name" : "Zakariyya Mughal"
+      },
+      "MSTROUT" : {
+         "count" : 1
+      },
+      "HOUSTON" : {
+         "count" : 1
+      },
+      "BAREFOOT" : {
+         "count" : 1
+      },
+      "BIGPRESH" : {
+         "count" : 1
+      },
+      "DRCLAW" : {
+         "count" : 1
+      },
+      "KARASIK" : {
+         "count" : 1
+      },
+      "CUKEBOT" : {
+         "asciiname" : null,
+         "name" : "Cucumber Bot",
+         "count" : "3"
+      },
+      "PERLANCAR" : {
+         "asciiname" : null,
+         "name" : "perlancar",
+         "count" : "180"
+      },
+      "AKIYM" : {
+         "count" : 1
+      },
+      "MBRADSHAW" : {
+         "count" : 1
+      },
+      "OLIVER" : {
+         "count" : 2
+      },
+      "TARAS" : {
+         "count" : 1
+      },
+      "ZEUS" : {
+         "count" : 1
+      },
+      "SCHROEDER" : {
+         "count" : 2
+      },
+      "ARISTOTLE" : {
+         "count" : "5",
+         "asciiname" : null,
+         "name" : "Αριστοτέλης Παγκαλτζής"
+      },
+      "SHIGETA" : {
+         "count" : 1
+      },
+      "JCRISTY" : {
+         "count" : 1
+      },
+      "HANENKAMP" : {
+         "count" : 1
+      },
+      "YANICK" : {
+         "count" : 2
+      },
+      "NICOMEN" : {
+         "count" : 1
+      },
+      "MELMOTHX" : {
+         "asciiname" : null,
+         "name" : "Marco Pessotto",
+         "count" : "3"
+      },
+      "EZIMUEL" : {
+         "name" : "Enrico Zimuel",
+         "asciiname" : null,
+         "count" : "7"
+      },
+      "BAERGAJ" : {
+         "count" : 1
+      },
+      "ASB" : {
+         "count" : "3",
+         "name" : "Alexander Becker",
+         "asciiname" : null
+      },
+      "ROBN" : {
+         "count" : "3",
+         "asciiname" : null,
+         "name" : "Rob N ★"
+      },
+      "TINITA" : {
+         "count" : 1
+      },
+      "NERDVANA" : {
+         "name" : "Michael Conrad",
+         "asciiname" : null,
+         "count" : "5"
+      },
+      "DROLSKY" : {
+         "count" : "6",
+         "name" : "Dave Rolsky",
+         "asciiname" : null
+      },
+      "JSF" : {
+         "count" : 1
+      },
+      "AKRON" : {
+         "count" : 1
+      },
+      "SSIMMS" : {
+         "count" : 1
+      },
+      "PFEIFFER" : {
+         "count" : 1
+      },
+      "RJBS" : {
+         "asciiname" : null,
+         "name" : "Ricardo SIGNES 😄",
+         "count" : "5"
+      },
+      "MBARBON" : {
+         "count" : 2
+      },
+      "TEAM" : {
+         "count" : "7",
+         "name" : "Tom Molesworth",
+         "asciiname" : null
+      },
+      "MICHIELB" : {
+         "count" : 1
+      },
+      "JV" : {
+         "count" : "3",
+         "asciiname" : null,
+         "name" : "Johan Vromans"
+      },
+      "FELIPE" : {
+         "count" : "7",
+         "asciiname" : null,
+         "name" : "Felipe Gasper"
+      },
+      "ISHIGAKI" : {
+         "count" : "4",
+         "name" : "Kenichi Ishigaki",
+         "asciiname" : null
+      },
+      "VOEGELAS" : {
+         "count" : "3",
+         "asciiname" : null,
+         "name" : "Andreas Vögele"
+      },
+      "CHRISN" : {
+         "count" : 1
+      },
+      "SANKO" : {
+         "name" : "Sanko Robinson",
+         "asciiname" : null,
+         "count" : "4"
+      },
+      "SISYPHUS" : {
+         "count" : "5",
+         "name" : "Sisyphus",
+         "asciiname" : null
+      },
+      "GEEKRUTH" : {
+         "count" : 2
+      },
+      "DBAURAIN" : {
+         "count" : "4",
+         "name" : "Denis BAURAIN",
+         "asciiname" : null
+      },
+      "YTURTLE" : {
+         "count" : 1
+      },
+      "BEANZ" : {
+         "count" : 1
+      },
+      "SETH" : {
+         "count" : 1
+      },
+      "LCONS" : {
+         "name" : "Lionel Cons",
+         "asciiname" : null,
+         "count" : "7"
+      },
+      "BRDUCH" : {
+         "count" : "3",
+         "asciiname" : null,
+         "name" : "Peter P. Neuromantic"
+      },
+      "MHANDISI" : {
+         "count" : 1
+      },
+      "NEILB" : {
+         "count" : 2
+      },
+      "NLNETLABS" : {
+         "count" : 2
+      },
+      "DWHEELER" : {
+         "count" : 1
+      },
+      "ABALAMA" : {
+         "count" : 1
+      },
+      "IVANWILLS" : {
+         "count" : 2
+      },
+      "RSKRABA" : {
+         "count" : 1
+      },
+      "SHLOMIF" : {
+         "count" : "16",
+         "asciiname" : null,
+         "name" : "Shlomi Fish"
+      },
+      "SYBER" : {
+         "count" : "21",
+         "asciiname" : null,
+         "name" : "Олег Пронин"
+      },
+      "MERKYS" : {
+         "count" : 2
+      },
+      "GARU" : {
+         "count" : 2
+      },
+      "PETERCJ" : {
+         "count" : 2
+      },
+      "CAMTAUXE" : {
+         "count" : 1
+      },
+      "UHLE" : {
+         "count" : 1
+      },
+      "MSTPLBG" : {
+         "count" : 1
+      },
+      "TRIZEN" : {
+         "count" : 1
+      },
+      "TOBIB" : {
+         "count" : 1
+      },
+      "WOLLMERS" : {
+         "count" : 1
+      },
+      "GLBRUNE" : {
+         "count" : 1
+      },
+      "TVIGNAUD" : {
+         "count" : 2
+      },
+      "GENE" : {
+         "count" : "5",
+         "asciiname" : null,
+         "name" : "Gene Boggs"
+      },
+      "DAEMON" : {
+         "count" : 2
+      },
+      "MIK" : {
+         "count" : 2
+      },
+      "PATRICKB" : {
+         "count" : 1
+      },
+      "RAJ" : {
+         "count" : 1
+      },
+      "LOGIONIZ" : {
+         "count" : "3",
+         "name" : "Alexey Stavrov",
+         "asciiname" : null
+      },
+      "GRICHTER" : {
+         "count" : 1
+      },
+      "DISTLER" : {
+         "count" : 1
+      },
+      "GWYN" : {
+         "count" : 1
+      },
+      "SACAVILIA" : {
+         "count" : 2
+      },
+      "CDN" : {
+         "name" : "Chernenko Dmitriy",
+         "asciiname" : null,
+         "count" : "6"
+      },
+      "ASPOSE" : {
+         "count" : 2
+      },
+      "RES" : {
+         "count" : 1
+      },
+      "ABH" : {
+         "count" : 1
+      },
+      "RRWO" : {
+         "asciiname" : null,
+         "name" : "Robert Rothenberg",
+         "count" : "6"
+      },
+      "MMENZA" : {
+         "count" : 1
+      },
+      "MICVU" : {
+         "count" : 1
+      },
+      "IGIBBS" : {
+         "count" : 2
+      },
+      "MAMAWE" : {
+         "count" : "9",
+         "asciiname" : null,
+         "name" : "Mathias Weidner"
+      },
+      "BINGOS" : {
+         "count" : "5",
+         "name" : "Chris Williams",
+         "asciiname" : null
+      },
+      "OKELLO" : {
+         "count" : 1
+      },
+      "SCHIECHEO" : {
+         "count" : 1
+      },
+      "NMELNICK" : {
+         "count" : 1
+      },
+      "BARNEY" : {
+         "count" : 2
+      },
+      "PEVANS" : {
+         "asciiname" : null,
+         "name" : "Paul Evans",
+         "count" : "37"
+      },
+      "INGY" : {
+         "count" : 1
+      },
+      "ELLEDNERA" : {
+         "count" : "2",
+         "name" : "Raphael Jong Jun Jie",
+         "asciiname" : null
+      },
+      "SARGIE" : {
+         "count" : 1
+      },
+      "POLETTIX" : {
+         "count" : 1
+      },
+      "MVSJES" : {
+         "count" : 1
+      },
+      "GETTY" : {
+         "count" : 1
+      },
+      "WYANT" : {
+         "asciiname" : null,
+         "name" : "Tom Wyant",
+         "count" : "14"
+      },
+      "JFF" : {
+         "count" : "2",
+         "asciiname" : null,
+         "name" : "jens fischer"
+      },
+      "SBECK" : {
+         "name" : "Sullivan Beck",
+         "asciiname" : null,
+         "count" : "4"
+      },
+      "SSCHECK" : {
+         "count" : 1
+      },
+      "UTASHIRO" : {
+         "count" : "15",
+         "name" : "歌代 和正 (Kaz Utashiro)",
+         "asciiname" : null
+      },
+      "RCAPUTO" : {
          "count" : 1
       },
       "SHOGO" : {
          "asciiname" : null,
-         "count" : "3",
-         "name" : "Shogo Ichinose"
+         "name" : "Shogo Ichinose",
+         "count" : "3"
       },
-      "MATY" : {
+      "MLEHMANN" : {
          "count" : 1
       },
-      "PLICEASE" : {
-         "name" : "🦖🦜Graham Ollis🦃🦕",
+      "EXODIST" : {
          "asciiname" : null,
-         "count" : "18"
-      },
-      "KIMOTO" : {
-         "name" : "Yuki Kimoto",
-         "count" : "4",
-         "asciiname" : null
+         "name" : "Chad Granum",
+         "count" : "5"
       },
       "MDOOTSON" : {
          "count" : 1
       },
-      "AKHUETTEL" : {
-         "name" : "Andreas K. Hüttel",
+      "DCLARKE" : {
+         "count" : 1
+      },
+      "EBRUNI" : {
+         "asciiname" : null,
+         "name" : "Bruni Emiliano",
+         "count" : "4"
+      },
+      "TOREAU" : {
+         "count" : 1
+      },
+      "KARJALA" : {
          "count" : "5",
+         "name" : "Alexander Karelas",
          "asciiname" : null
       },
-      "ROBN" : {
-         "name" : "Rob N ★",
-         "count" : "3",
+      "MREISNER" : {
+         "count" : 1
+      },
+      "DDICK" : {
+         "count" : 1
+      },
+      "LAWALSH" : {
+         "count" : 1
+      },
+      "ASHWIN" : {
+         "count" : 1
+      },
+      "JKING" : {
+         "count" : 1
+      },
+      "AKHUETTEL" : {
+         "count" : "5",
+         "asciiname" : null,
+         "name" : "Andreas K. Hüttel"
+      },
+      "SELECTPDF" : {
+         "count" : 1
+      },
+      "LEONT" : {
+         "count" : "2",
+         "name" : "Leon Timmermans",
          "asciiname" : null
+      },
+      "CONTRA" : {
+         "name" : "Thibault Duponchelle",
+         "asciiname" : null,
+         "count" : "2"
+      },
+      "MIKAGE" : {
+         "count" : 1
+      },
+      "HDELGADO" : {
+         "count" : 1
+      },
+      "KIMOTO" : {
+         "count" : "4",
+         "asciiname" : null,
+         "name" : "Yuki Kimoto"
       },
       "GUGOD" : {
          "count" : "4",
-         "asciiname" : null,
-         "name" : "劉康民"
+         "name" : "劉康民",
+         "asciiname" : null
       },
-      "MERKYS" : {
+      "MIKIHOSHI" : {
+         "count" : 1
+      },
+      "SYMKAT" : {
+         "count" : "2",
+         "name" : "SymKat",
+         "asciiname" : null
+      },
+      "HATENA" : {
+         "count" : 1
+      },
+      "ABRAXXA" : {
+         "count" : 1
+      },
+      "ETJ" : {
+         "asciiname" : null,
+         "name" : "Ed J",
+         "count" : "16"
+      },
+      "VIY" : {
+         "count" : 1
+      },
+      "VOLKENING" : {
+         "count" : 1
+      },
+      "NICS" : {
+         "count" : "2",
+         "name" : "Nicolas Steenlant",
+         "asciiname" : null
+      },
+      "ALFIE" : {
+         "count" : 1
+      },
+      "KAZEBURO" : {
+         "count" : 1
+      },
+      "SKIRMESS" : {
+         "count" : 1
+      },
+      "DBOOK" : {
+         "count" : "5",
+         "asciiname" : null,
+         "name" : "Dan Book"
+      },
+      "JHTHORSEN" : {
+         "name" : "Jan Henning Thorsen",
+         "asciiname" : null,
+         "count" : "9"
+      },
+      "ABELTJE" : {
+         "count" : 1
+      },
+      "SZARATE" : {
+         "count" : 1
+      },
+      "TIMLEGGE" : {
+         "asciiname" : null,
+         "name" : "Timothy Legge",
+         "count" : "5"
+      },
+      "MIKEJONES" : {
+         "count" : 1
+      },
+      "FSEITZ" : {
+         "count" : 1
+      },
+      "STEVEB" : {
+         "asciiname" : null,
+         "name" : "Steve Bertrand",
+         "count" : "3"
+      },
+      "MSCHOUT" : {
+         "count" : 1
+      },
+      "NOBUNAGA" : {
+         "count" : 1
+      },
+      "DOMQ" : {
+         "count" : 1
+      },
+      "JMATES" : {
          "count" : "2",
          "asciiname" : null,
-         "name" : "Andrius Merkys"
+         "name" : "thrig"
+      },
+      "TRWWW" : {
+         "count" : 1
+      },
+      "JCARTY" : {
+         "count" : 1
+      },
+      "JJATRIA" : {
+         "asciiname" : null,
+         "name" : "José Joaquín Atria",
+         "count" : "3"
+      },
+      "ASPINELLI" : {
+         "count" : 1
+      },
+      "ERIKOEST" : {
+         "count" : 1
+      },
+      "JOROL" : {
+         "count" : 1
+      },
+      "TURNERJW" : {
+         "name" : "Jim Turner",
+         "asciiname" : null,
+         "count" : "2"
+      },
+      "BLHOTSKY" : {
+         "count" : "2",
+         "asciiname" : null,
+         "name" : "Brad Lhotsky"
+      },
+      "KOBOLDWIZ" : {
+         "asciiname" : null,
+         "name" : "Kobold Wizard Johan",
+         "count" : "5"
+      },
+      "SCHUBIGER" : {
+         "count" : 1
+      },
+      "CARELINE" : {
+         "count" : 1
+      },
+      "AVERKIOS" : {
+         "count" : 1
+      },
+      "GSG" : {
+         "name" : "Grant Street Group",
+         "asciiname" : null,
+         "count" : "3"
+      },
+      "JULIODCS" : {
+         "count" : 1
+      },
+      "MLAWREN" : {
+         "count" : 1
+      },
+      "ARFREITAS" : {
+         "count" : 1
+      },
+      "KULP" : {
+         "count" : 1
+      },
+      "MITHALDU" : {
+         "count" : 1
+      },
+      "BINARY" : {
+         "name" : "Binary.com",
+         "asciiname" : null,
+         "count" : "3"
+      },
+      "DCANTRELL" : {
+         "count" : "5",
+         "asciiname" : null,
+         "name" : "David Cantrell"
+      },
+      "RSAVAGE" : {
+         "count" : 1
+      },
+      "FIREDRAKE" : {
+         "count" : 1
+      },
+      "TOMC" : {
+         "name" : "Tom Christiansen",
+         "asciiname" : null,
+         "count" : "2"
+      },
+      "HOCHSTEN" : {
+         "name" : "Patrick Hochstenbach",
+         "asciiname" : null,
+         "count" : "2"
+      },
+      "EHUELS" : {
+         "count" : "5",
+         "asciiname" : null,
+         "name" : "Erik Huelsmann"
+      },
+      "TASKULA" : {
+         "count" : 1
+      },
+      "BEROV" : {
+         "count" : 1
+      },
+      "MAFEMBRAC" : {
+         "count" : "4",
+         "asciiname" : null,
+         "name" : "Muhammad Mahad Ashraf"
+      },
+      "PUTINTSEV" : {
+         "count" : 1
+      },
+      "VPEIL" : {
+         "count" : 1
+      },
+      "SKAJI" : {
+         "name" : "Shoichi Kaji",
+         "asciiname" : null,
+         "count" : "5"
+      },
+      "SULLR" : {
+         "count" : 1
+      },
+      "JLMARTIN" : {
+         "count" : "3",
+         "name" : "Jose Luis Martinez Torres",
+         "asciiname" : null
+      },
+      "SIMCOP" : {
+         "name" : "Ryan Voots",
+         "asciiname" : null,
+         "count" : "2"
+      },
+      "AKXLIX" : {
+         "count" : 1
+      },
+      "VANHOESEL" : {
+         "asciiname" : null,
+         "name" : "Theo van Hoesel",
+         "count" : "2"
+      },
+      "RURBAN" : {
+         "name" : "Reini Urban",
+         "asciiname" : null,
+         "count" : "2"
+      },
+      "BRTASTIC" : {
+         "name" : "Bartosz Jarzyna",
+         "asciiname" : null,
+         "count" : "4"
+      },
+      "JSPICAK" : {
+         "count" : 1
+      },
+      "TROHAU" : {
+         "count" : 1
+      },
+      "WOUTER" : {
+         "count" : 1
+      },
+      "YLAVOIE" : {
+         "count" : 1
+      },
+      "ROBM" : {
+         "count" : 1
+      },
+      "ZOFFIX" : {
+         "count" : 1
+      },
+      "APRIME" : {
+         "count" : 1
+      },
+      "OODLER" : {
+         "count" : "2",
+         "name" : "OODLER 578",
+         "asciiname" : null
+      },
+      "SCHWIGON" : {
+         "name" : "Steffen Schwigon",
+         "asciiname" : null,
+         "count" : "3"
+      },
+      "NHORNE" : {
+         "name" : "Nigel Horne",
+         "asciiname" : null,
+         "count" : "4"
+      },
+      "HMBRAND" : {
+         "count" : 1
+      },
+      "TEODESIAN" : {
+         "asciiname" : null,
+         "name" : "George S. Baugh",
+         "count" : "3"
+      },
+      "JOENIO" : {
+         "count" : 1
+      },
+      "TOKUHIROM" : {
+         "count" : 1
+      },
+      "FELIXK" : {
+         "count" : "3",
+         "name" : "Felix Kühnl",
+         "asciiname" : null
+      },
+      "JJNAPIORK" : {
+         "asciiname" : null,
+         "name" : "John Napiorkowski",
+         "count" : "7"
+      },
+      "WFANSH" : {
+         "count" : 1
+      },
+      "RAPHI" : {
+         "count" : 1
+      },
+      "PJACKLAM" : {
+         "asciiname" : null,
+         "name" : "Peter John Acklam",
+         "count" : "12"
+      },
+      "HOEKIT" : {
+         "count" : 1
+      },
+      "ASOKOLOV" : {
+         "count" : 1
+      },
+      "MHASCH" : {
+         "count" : 1
+      },
+      "BURAK" : {
+         "count" : 1
       }
    }
 }

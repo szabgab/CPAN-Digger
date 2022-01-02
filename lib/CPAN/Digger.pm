@@ -65,6 +65,9 @@ sub get_vcs {
         my $url = $repository->{web};
         if (not $url) {
             $url = $repository->{url};
+            if (not $url) {
+                return;
+            }
             $url =~ s{^git://}{https://};
             $url =~ s{\.git$}{};
         }
@@ -120,6 +123,8 @@ sub get_data {
             if ($vcs_url =~ m{http://}) {
                 $logger->warn("Repository URL $vcs_url is http and not https");
             }
+        } else {
+            $logger->error('Missing repository for ', $item->distribution);
         }
     } else {
         $logger->error('No repository for ', $item->distribution);

@@ -18,6 +18,8 @@ use Template ();
 
 my @ci_names = qw(travis github_actions circleci appveyor azure_pipeline gitlab_pipeline bitbucket_pipeline jenkins);
 
+# Authors who indicated (usually in an email exchange with Gabor) that they don't have public VCS and are not
+# interested in adding one. So there is no point in reporting their distributions.
 my %no_vcs_authors = map { $_ => 1 } qw(PEVANS NLNETLABS RATCLIFFE JPIERCE GWYN JOHNH LSTEVENS GUS);
 
 use CPAN::Digger::DB qw(get_fields);

@@ -2,11 +2,12 @@
     <div>
     Showing the most recent uploads to CPAN.
     <ul>
-      <li>Having the link to your VCS in the META files help others to contribute to your code.</li>
-      <li>Having a link to your bugtracker/issues in the META file help people know where to submit bug reports.</li>
-      <li>Having a CI configured helps the author catch regression and platform incompability much faster.</li>
-      <li>Having a licens in the META, because why not?</li>
-      <li>Having your own CPAN Dashboard is cool</li>
+      <li>Having the link to your public Version Control System (VCS) in the META files help others to contribute to your code.</li>
+      <li>Having an explicit link to your bugtracker/issues in the META file help people know where to submit bug reports.</li>
+      <li>Having Continuous Integration (CI) configured helps the author catch regression and platform incompability much faster.</li>
+      <li>Having license information in the META files can help people automatically verify that they use only approved licenses.</li>
+      <li>Having your own CPAN Dashboard is cool.</li>
+      <li><span class="badge badge-danger">No</span> means the author does not have public VCS and does not want to have one.</li>
     </ul>
     </div>
 

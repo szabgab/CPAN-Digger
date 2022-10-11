@@ -103,6 +103,8 @@
           <td>
               [% IF item.dashboard %]
                   <a class="badge badge-success" href="https://cpandashboard.com/[% item.author %]/">Visit</a>
+              [% ELSIF item.vcs_not_interested %]
+                  <span class="badge badge-danger">No</span>
               [% ELSE %]
                   <a class="badge badge-warning" href="https://cpandashboard.com/">Add dashboard</a>
               [% END %]

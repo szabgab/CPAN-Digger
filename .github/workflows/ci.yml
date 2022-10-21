@@ -2,9 +2,7 @@ name: CI
 
 on:
     push:
-        branches: '*'
     pull_request:
-        branches: '*'
     schedule:
         - cron: '42 2 * * *'
 
@@ -15,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         perl-version:
-          - '5.30'
+          - '5.36'
 #          - '5.32'
 #          - 'latest'
     container:
@@ -48,7 +46,7 @@ jobs:
             make test
 
       - name: Create pages
-        if: ${{ matrix.perl-version == '5.30' && github.event_name != 'pull_request' }}
+        if: ${{ matrix.perl-version == '5.36' && github.event_name != 'pull_request' }}
         run: |
             perl -Ilib bin/cpan-digger --version
             perl -Ilib bin/cpan-digger --recent 150 --vcs --sleep 2 --html docs

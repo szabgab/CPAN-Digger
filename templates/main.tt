@@ -7,7 +7,7 @@
       <li>Having Continuous Integration (CI) configured helps the author catch regression and platform incompability much faster.</li>
       <li>Having license information in the META files can help people automatically verify that they use only approved licenses.</li>
       <li>Having your own CPAN Dashboard is cool.</li>
-      <li><span class="badge badge-danger">No</span> means the author does not have public VCS and does not want to have one.</li>
+      <li><span class="badge badge-danger">No</span> means the author does not have public VCS and does not want to have one or that the author is not interested in CI (for at least some of the modules).</li>
     </ul>
     </div>
 
@@ -85,11 +85,11 @@
                     [% IF item.bitbucket_pipeline %]
                         Bitbucket Pipelines
                     [% END %]
+              [% ELSIF item.ci_not_interested %]
+                  <span class="badge badge-danger">No</span>
               [% ELSIF item.vcs_url %]
                   <a class="badge badge-warning" href="https://perlmaven.com/ci">Add CI</a>
               [% ELSIF item.vcs_not_interested %]
-                  <span class="badge badge-danger">No</span>
-              [% ELSIF item.ci_not_interested %]
                   <span class="badge badge-danger">No</span>
               [% ELSE %]
                   <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Add repo</a>

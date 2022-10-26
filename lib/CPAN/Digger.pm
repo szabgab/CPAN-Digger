@@ -22,6 +22,9 @@ my @ci_names = qw(travis github_actions circleci appveyor azure_pipeline gitlab_
 # interested in adding one. So there is no point in reporting their distributions.
 my %no_vcs_authors = map { $_ => 1 } qw(PEVANS NLNETLABS RATCLIFFE JPIERCE GWYN JOHNH LSTEVENS GUS KOBOLDWIZ STRZELEC);
 
+# Authors that are not interested in CI for all (or at leas some) of their modules
+my %no_ci_authors = map { $_ => 1 } qw(SISYPHUS GENE);
+
 use CPAN::Digger::DB qw(get_fields);
 
 my $tempdir = tempdir( CLEANUP => ($ENV{KEEP_TEMPDIR} ? 0 : 1) );
@@ -281,6 +284,10 @@ sub html {
             $stats{has_ci}++;
             for my $ci (@ci_names) {
                 $stats{ci}{$ci}++ if $dist->{$ci};
+            }
+        } else {
+            if ($no_ci_authors{ $dist->{author} }) {
+                $dist->{ci_not_interested} = 1;
             }
         }
     }

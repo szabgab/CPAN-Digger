@@ -89,6 +89,8 @@
                   <a class="badge badge-warning" href="https://perlmaven.com/ci">Add CI</a>
               [% ELSIF item.vcs_not_interested %]
                   <span class="badge badge-danger">No</span>
+              [% ELSIF item.ci_not_interested %]
+                  <span class="badge badge-danger">No</span>
               [% ELSE %]
                   <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Add repo</a>
               [% END %]

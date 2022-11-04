@@ -20,17 +20,25 @@ jobs:
       image: perldocker/perl-tester:${{ matrix.perl-version }}     # https://hub.docker.com/r/perldocker/perl-tester
     name: Perl ${{ matrix.perl-version }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Checkout CPAN Dashboard
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: davorg/dashboard
           path: dashboard
 
-      - name: Regular tests
+      - name: Install dependencies
         run: |
             cpanm --installdeps --notest .
+
+      - name: Show Errors on Ubuntu
+        if:  ${{ failure() && matrix.runner == 'ubuntu-latest' }}
+        run: |
+           cat /home/runner/.cpanm/work/*/build.log
+
+      - name: Regular tests
+        run: |
             perl Makefile.PL
             make
             make test

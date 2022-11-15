@@ -20,10 +20,10 @@ my @ci_names = qw(travis github_actions circleci appveyor azure_pipeline gitlab_
 
 # Authors who indicated (usually in an email exchange with Gabor) that they don't have public VCS and are not
 # interested in adding one. So there is no point in reporting their distributions.
-my %no_vcs_authors = map { $_ => 1 } qw(PEVANS NLNETLABS RATCLIFFE JPIERCE GWYN JOHNH LSTEVENS GUS KOBOLDWIZ STRZELEC);
+my %no_vcs_authors = map { $_ => 1 } qw(PEVANS NLNETLABS RATCLIFFE JPIERCE GWYN JOHNH LSTEVENS GUS KOBOLDWIZ STRZELEC TURNERJW);
 
-# Authors that are not interested in CI for all (or at leas some) of their modules
-my %no_ci_authors = map { $_ => 1 } qw(SISYPHUS GENE);
+# Authors that are not interested in CI for all (or at least for some) of their modules
+my %no_ci_authors = map { $_ => 1 } qw(SISYPHUS GENE PERLANCAR);
 
 my %no_ci_distros = map { $_ => 1 } qw(Kelp-Module-Sereal);
 

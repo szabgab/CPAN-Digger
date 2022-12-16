@@ -62,6 +62,8 @@ jobs:
 
       - name: Commit new page
         run: |
+            set -x
+            git config --global --add safe.directory /__w/CPAN-Digger/CPAN-Digger
             GIT_STATUS=$(git status --porcelain)
             echo $GIT_STATUS
             git config --global user.name 'Gabor Szabo'

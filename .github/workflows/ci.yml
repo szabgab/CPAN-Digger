@@ -66,8 +66,8 @@ jobs:
             git config --global --add safe.directory /__w/CPAN-Digger/CPAN-Digger
             GIT_STATUS=$(git status --porcelain)
             echo $GIT_STATUS
-            git config --global user.name 'Gabor Szabo'
-            git config --global user.email 'gabor@szabgab.com'
+            git config user.name github-actions[bot]
+            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
             git add docs/
             if [ "$GIT_STATUS" != "" ]; then git commit -m "Automated Web page generation"; fi
             if [ "$GIT_STATUS" != "" ]; then git push; fi

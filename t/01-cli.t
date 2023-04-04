@@ -84,6 +84,10 @@ sub recent {
 #    return _result_set(@results_author);
 #}
 
+sub cover {
+    return MetaCPAN::Client::Cover->new;
+}
+
 #sub author {
 #    return MetaCPAN::Client::Author->new;
 #}
@@ -99,18 +103,25 @@ sub _result_set {
 
 my $client;
 my $resultset;
+my $cover;
 #my $author;
 BEGIN {
     $client = qclass(
         -implement => 'MetaCPAN::Client',
         -with_new => 1,
         recent => \&recent,
+        cover => \&cover,
 #        author => \&author,
     );
     $resultset = qclass(
         -implement => 'MetaCPAN::Client::ResultSet',
         -with_new => 1,
         next => \&my_next,
+    );
+    $cover = qclass(
+        -implement => 'MetaCPAN::Client::Cover',
+        -with_new => 1,
+        criteria => sub { undef },
     );
 #    $author = qclass(
 #        -implement => 'MetaCPAN::Client::Author',

@@ -140,7 +140,7 @@ sub get_data {
 
     my $cover = $mcpan->cover($item->name);
     if (defined $cover->criteria) {
-        # $logger->info("Cover " . Dumper $cover->criteria);
+        $logger->info("Cover " . Dumper $cover->criteria);
         # {
         #   'condition' => '79.69',
         #   'subroutine' => '89.06',
@@ -148,7 +148,8 @@ sub get_data {
         #   'statement' => '89.76',
         #   'branch' => '75.51'
         # };
-        $data{cover} = $cover->criteria;
+        $data{cover_total} = $cover->criteria->{'total'};
+        #$logger->info(Dumper $data{cover});
     }
 
     return %data;

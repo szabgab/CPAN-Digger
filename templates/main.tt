@@ -106,9 +106,10 @@
               [% END %]
           </td>
           <td>
-              [% IF item.cover %]
-                [% item.cover.total %]
+              [% IF item.cover_total %]
+                [% item.cover_total %]
               [% ELSE %]
+                -
               [% END %]
           </td>
           <td>

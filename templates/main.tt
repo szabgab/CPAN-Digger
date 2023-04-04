@@ -107,7 +107,7 @@
           </td>
           <td>
               [% IF item.cover_total %]
-                [% item.cover_total %]
+                <a href="http://cpancover.com/latest/[% item.distribution %]-[% item.version %]/index.html">[% item.cover_total %]</a>
               [% ELSE %]
                 -
               [% END %]

@@ -21,6 +21,7 @@
           <th>Issues</th>
           <th>CI</th>
           <th>Licenses</th>
+          <th>Coverage</th>
           <th>Dashboard</th>
         </tr>
       </thead>
@@ -102,6 +103,12 @@
                 <span class="badge badge-danger">No</span>
               [% ELSE %]
                 <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-the-license-field-to-meta-files-on-cpan">Add license</a>
+              [% END %]
+          </td>
+          <td>
+              [% IF item.cover %]
+                [% item.cover.total %]
+              [% ELSE %]
               [% END %]
           </td>
           <td>

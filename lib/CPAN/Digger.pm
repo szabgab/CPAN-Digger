@@ -93,7 +93,7 @@ sub get_vcs {
 }
 
 sub get_data {
-    my ($self, $item) = @_;
+    my ($self, $mcpan, $item) = @_;
 
     my $logger = Log::Log4perl->get_logger();
     my %data = (
@@ -137,6 +137,19 @@ sub get_data {
         $logger->error('No repository for ', $item->distribution);
     }
     $self->get_bugtracker(\%resources, \%data);
+
+    my $cover = $mcpan->cover($item->name);
+    if (defined $cover->criteria) {
+        # $logger->info("Cover " . Dumper $cover->criteria);
+        # {
+        #   'condition' => '79.69',
+        #   'subroutine' => '89.06',
+        #   'total' => '85.19',
+        #   'statement' => '89.76',
+        #   'branch' => '75.51'
+        # };
+        $data{cover} = $cover->criteria;
+    }
 
     return %data;
 }
@@ -390,7 +403,7 @@ sub collect {
 	            next if $item->date lt $self->{start_date};
 	            next if $self->{end_date} le $item->date;
             }
-
+            # $logger->info("Release: " . $item->name);
             $self->{total}++;
 
     		next if $distros{ $item->distribution }; # We have already deal with this in this session
@@ -398,7 +411,7 @@ sub collect {
 
             my $row = $self->{db}->db_get_distro($item->distribution);
             next if $row and $row->{version} eq $item->version; # we already have this in the database (shall we call last?)
-            my %data = $self->get_data($item);
+            my %data = $self->get_data($mcpan, $item);
             #die Dumper \%data;
             $self->{db}->db_insert_into(@data{@fields});
             push @all_the_distributions, \%data;

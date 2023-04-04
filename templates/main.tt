@@ -96,12 +96,12 @@
               [% END %]
           </td>
           <td>
-              [% IF item.licenses == 'unknown' %]
-                  <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-the-license-field-to-meta-files-on-cpan">Add license</a>
+              [% IF item.licenses != 'unknown' %]
+                [% item.licenses %]
               [% ELSIF item.vcs_not_interested %]
-                  <span class="badge badge-danger">No</span>
+                <span class="badge badge-danger">No</span>
               [% ELSE %]
-                  [% item.licenses %]
+                <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-the-license-field-to-meta-files-on-cpan">Add license</a>
               [% END %]
           </td>
           <td>

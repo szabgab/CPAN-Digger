@@ -31,7 +31,7 @@ sub main {
     # say $all; # MetaCPAN::Client::ResultSet
     my $total = $all->total;
     say $total;
-    my $limit = shift @ARGV;
+    my ($folder, $limit) = @ARGV;
     my $size = 100;
 
     my %stats;
@@ -76,19 +76,19 @@ sub main {
     #say $total;
     my $end = time;
 
-    save_html($total, ($end-$start), $now, \@authors);
-    save_data(\%stats);
+    save_html($folder, $total, ($end-$start), $now, \@authors);
+    save_data($folder, \%stats);
 }
 
 sub save_data {
-    my ($data) = @_;
+    my ($folder, $data) = @_;
     my $json = JSON->new->allow_nonref;
-    open my $fh, '>:encoding(utf8)', 'docs/stats.json' or die $!;
+    open my $fh, '>:encoding(utf8)', "$folder/stats.json" or die $!;
     print $fh $json->pretty->encode( $data );
 }
 
 sub save_html {
-    my ($total, $elapsed, $now, $authors) = @_;
+    my ($folder, $total, $elapsed, $now, $authors) = @_;
 
     my $report;
     $tt->process('stats.tt', {
@@ -100,7 +100,7 @@ sub save_html {
         #version => $VERSION,
         timestamp => DateTime->now,
     }, \$report) or die $tt->error(), "\n";
-    my $html_file = 'docs/stats.html';
+    my $html_file = "$folder/stats.html";
     open(my $fh, '>:encoding(utf8)', $html_file) or die "Could not open '$html_file'";
     print $fh $report;
     close $fh;

@@ -75,7 +75,7 @@ jobs:
       - name: Generate report
         if: ${{ matrix.perl-version == '5.36' && github.event_name != 'pull_request' }}
         run: |
-            perl bin/generate.pl 1000
+            perl bin/generate.pl _site 1000
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1

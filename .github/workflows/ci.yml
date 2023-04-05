@@ -17,7 +17,7 @@ concurrency:
 
 
 jobs:
-  test-code:
+  generate:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

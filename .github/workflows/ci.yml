@@ -6,6 +6,16 @@ on:
     schedule:
         - cron: '42 2 * * *'
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+
 jobs:
   test-code:
     runs-on: ubuntu-latest
@@ -20,6 +30,10 @@ jobs:
       image: perldocker/perl-tester:${{ matrix.perl-version }}     # https://hub.docker.com/r/perldocker/perl-tester
     name: Perl ${{ matrix.perl-version }}
     steps:
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+
       - uses: actions/checkout@v3
 
       - name: Checkout CPAN Dashboard
@@ -57,22 +71,38 @@ jobs:
         if: ${{ matrix.perl-version == '5.36' && github.event_name != 'pull_request' }}
         run: |
             perl -Ilib bin/cpan-digger --version
-            perl -Ilib bin/cpan-digger --recent 200 --vcs --sleep 2 --html docs
+            perl -Ilib bin/cpan-digger --recent 20 --vcs --sleep 2 --html _site
 
       - name: Generate report
         if: ${{ matrix.perl-version == '5.36' && github.event_name != 'pull_request' }}
         run: |
             perl bin/generate.pl 1000
 
-      - name: Commit new page
-        run: |
-            set -x
-            git config --global --add safe.directory /__w/CPAN-Digger/CPAN-Digger
-            GIT_STATUS=$(git status --porcelain)
-            echo $GIT_STATUS
-            git config user.name github-actions[bot]
-            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-            git add docs/
-            if [ "$GIT_STATUS" != "" ]; then git commit -m "Automated Web page generation"; fi
-            if [ "$GIT_STATUS" != "" ]; then git push; fi
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
 
+
+#      - name: Commit new page
+#        run: |
+#            set -x
+#            git config --global --add safe.directory /__w/CPAN-Digger/CPAN-Digger
+#            GIT_STATUS=$(git status --porcelain)
+#            echo $GIT_STATUS
+#            git config user.name github-actions[bot]
+#            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+#            git add docs/
+#            if [ "$GIT_STATUS" != "" ]; then git commit -m "Automated Web page generation"; fi
+#            if [ "$GIT_STATUS" != "" ]; then git push; fi
+
+  # Deployment job
+  deploy:
+    if: github.ref == 'refs/heads/master'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: generate
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1

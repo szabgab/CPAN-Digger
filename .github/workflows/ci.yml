@@ -58,6 +58,10 @@ jobs:
         run: |
             perl -Ilib bin/cpan-digger --version
             perl -Ilib bin/cpan-digger --recent 200 --vcs --sleep 2 --html docs
+
+      - name: Generate report
+        if: ${{ matrix.perl-version == '5.36' && github.event_name != 'pull_request' }}
+        run: |
             perl bin/generate.pl 1000
 
       - name: Commit new page

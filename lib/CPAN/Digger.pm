@@ -93,20 +93,20 @@ sub get_vcs {
 }
 
 sub get_data {
-    my ($self, $mcpan, $item) = @_;
+    my ($self, $mcpan, $release) = @_;
 
     my $logger = Log::Log4perl->get_logger();
     my %data = (
-        distribution => $item->distribution,
-        version      => $item->version,
-        author       => $item->author,
-        date         => $item->date,
+        distribution => $release->distribution,
+        version      => $release->version,
+        author       => $release->author,
+        date         => $release->date,
     );
-    #die Dumper $item;
+    #die Dumper $release;
 
-    $logger->debug('dist: ', $item->distribution);
-    $logger->debug('      ', $item->author);
-    my @licenses = @{ $item->license };
+    $logger->debug('dist: ', $release->distribution);
+    $logger->debug('      ', $release->author);
+    my @licenses = @{ $release->license };
     $data{licenses} = join ' ', @licenses;
     $logger->debug('      ',  $data{licenses});
     for my $license (@licenses) {
@@ -119,7 +119,7 @@ sub get_data {
     # if there are not licenses =>
     # if there is a license called "unknonws"
     # check against a known list of licenses (grow it later, or look it up somewhere?)
-    my %resources = %{ $item->resources };
+    my %resources = %{ $release->resources };
     #say '  ', join ' ', keys %resources;
     if ($resources{repository}) {
         my ($vcs_url, $vcs_name) = get_vcs($resources{repository});
@@ -131,14 +131,14 @@ sub get_data {
                 $logger->warn("Repository URL $vcs_url is http and not https");
             }
         } else {
-            $logger->error('Missing repository for ', $item->distribution);
+            $logger->error('Missing repository for ', $release->distribution);
         }
     } else {
-        $logger->error('No repository for ', $item->distribution);
+        $logger->error('No repository for ', $release->distribution);
     }
     $self->get_bugtracker(\%resources, \%data);
 
-    my $cover = $mcpan->cover($item->name);
+    my $cover = $mcpan->cover($release->name);
     if (defined $cover->criteria) {
         $logger->info("Cover " . Dumper $cover->criteria);
         # {
@@ -396,23 +396,24 @@ sub collect {
     } else {
         $rset  = $mcpan->recent($self->{recent});
     }
-    $logger->info("MetaCPAN::Client::ResultSet received with a total of $rset->{total} items");
+    $logger->info("MetaCPAN::Client::ResultSet received with a total of $rset->{total} releases");
     my %distros;
     my @fields = get_fields();
-    while ( my $item = $rset->next ) {
+    while ( my $release = $rset->next ) {
+            # $logger->info("Release: " . $release);
             if ($self->{days}) {
-	            next if $item->date lt $self->{start_date};
-	            next if $self->{end_date} le $item->date;
+	            next if $release->date lt $self->{start_date};
+	            next if $self->{end_date} le $release->date;
             }
-            # $logger->info("Release: " . $item->name);
+            # $logger->info("Release: " . $release->name);
             $self->{total}++;
 
-    		next if $distros{ $item->distribution }; # We have already deal with this in this session
-            $distros{ $item->distribution } = 1;
+    		next if $distros{ $release->distribution }; # We have already deal with this in this session
+            $distros{ $release->distribution } = 1;
 
-            my $row = $self->{db}->db_get_distro($item->distribution);
-            next if $row and $row->{version} eq $item->version; # we already have this in the database (shall we call last?)
-            my %data = $self->get_data($mcpan, $item);
+            my $row = $self->{db}->db_get_distro($release->distribution);
+            next if $row and $row->{version} eq $release->version; # we already have this in the database (shall we call last?)
+            my %data = $self->get_data($mcpan, $release);
             #die Dumper \%data;
             $self->{db}->db_insert_into(@data{@fields});
             push @all_the_distributions, \%data;

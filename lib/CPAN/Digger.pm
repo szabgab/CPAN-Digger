@@ -8,6 +8,7 @@ use Capture::Tiny qw(capture);
 use Cwd qw(getcwd);
 use Data::Dumper qw(Dumper);
 use Exporter qw(import);
+use File::Copy::Recursive qw(rcopy);
 use File::Spec ();
 use File::Temp qw(tempdir);
 use Log::Log4perl ();
@@ -264,9 +265,11 @@ sub html {
     my ($self) = @_;
 
     return if not $self->{html};
-    if (not -d $self->{html}) {
-        mkdir $self->{html};
+    if (-d $self->{html}) {
+        return;
+        #mkdir $self->{html};
     }
+    rcopy("static", $self->{html});
 
     $self->read_dashboards;
 

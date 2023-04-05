@@ -70,7 +70,7 @@ jobs:
         if: ${{ matrix.perl-version == '5.36' && github.event_name != 'pull_request' }}
         run: |
             perl -Ilib bin/cpan-digger --version
-            perl -Ilib bin/cpan-digger --recent 20 --vcs --sleep 2 --html _site
+            perl -Ilib bin/cpan-digger --recent 200 --vcs --sleep 2 --html _site
 
       - name: Generate report
         if: ${{ matrix.perl-version == '5.36' && github.event_name != 'pull_request' }}

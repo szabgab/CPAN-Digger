@@ -109,7 +109,7 @@
               [% IF item.cover_total %]
                 <a href="http://cpancover.com/latest/[% item.distribution %]-[% item.version %]/index.html">[% item.cover_total %]</a>
               [% ELSE %]
-                <a href="http://cpancover.com/latest/dist/[% item.distribution.substr(0, 1) %].html" title="Look for your distribution and click on the pilcrow sign in the log column to see the log">cover</a>
+                <a href="http://cpancover.com/latest/dist/[% item.distribution.substr(0, 1) %].html" title="Look for your distribution and click on the pilcrow sign in the log column to see the log">-</a>
               [% END %]
           </td>
           <td>

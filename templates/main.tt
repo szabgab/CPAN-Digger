@@ -109,7 +109,7 @@
               [% IF item.cover_total %]
                 <a href="http://cpancover.com/latest/[% item.distribution %]-[% item.version %]/index.html">[% item.cover_total %]</a>
               [% ELSE %]
-                -
+                <a href="http://cpancover.com/latest/dist/[% item.distribution.substr(0, 1) %].html" title="Look for your distribution and click on the pilcrow sign in the log column to see the log">cover</a>
               [% END %]
           </td>
           <td>
@@ -118,7 +118,7 @@
               [% ELSIF item.vcs_not_interested %]
                   <span class="badge badge-danger">No</span>
               [% ELSE %]
-                  <a class="badge badge-warning" href="https://cpandashboard.com/">Add dashboard</a>
+                  <a class="badge badge-warning" href="https://cpandashboard.com/" title="Adding the dashboard is just a pull-request away and it is awesome!">Add dashboard</a>
               [% END %]
           </td>
         </tr>

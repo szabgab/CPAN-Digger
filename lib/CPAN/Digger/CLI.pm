@@ -38,13 +38,14 @@ sub run {
         'version',
 	    'days:i',
         'html=s',
+        'filename=s',
     ) or usage();
     usage() if $args{help};
     if ($args{version}) {
         print "CPAN::Digger VERSION $VERSION\n";
         exit();
     }
-    usage() if not ($args{author} xor $args{recent});
+    usage() if not ($args{author} xor $args{recent} xor $args{filename});
 
 
     if ($args{html} and -d $args{html}) {
@@ -66,6 +67,8 @@ Usage: $0
 
         --author PAUSEID
         --limit N
+
+        --filename path/to/file
 
         --report           (Show text report at the end of processing.)
         --html DIR         Create HTML pages in the given directory.

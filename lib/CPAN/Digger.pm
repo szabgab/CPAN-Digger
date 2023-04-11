@@ -396,6 +396,14 @@ sub collect {
         my $author = $mcpan->author($self->{author});
         #print $author;
         $rset = $author->releases;
+    } elsif ($self->{filename}) {
+        open my $fh, '<', $self->{filename} or die "Could not open '$self->{filename}' $!";
+        my @releases = <$fh>;
+        chomp @releases;
+        my @either = map { { distribution =>  $_ } } @releases;
+        $rset = $mcpan->release( {
+            either => \@either
+        });
     } else {
         $rset  = $mcpan->recent($self->{recent});
     }

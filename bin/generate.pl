@@ -3,6 +3,12 @@ use warnings;
 use 5.010;
 use MetaCPAN::Client;
 
+# Count how many releases by each author among the LIMIT number of most recent
+# releases in the last 7 days.
+# This script is used only to generate this page: https://cpan-digger.perlmaven.com/recent/stats
+# and the related json file at https://cpan-digger.perlmaven.com/recent/stats.json
+# It is run by the CI
+
 use Template ();
 use DateTime;
 #use DateTime::Format::ISO8601;

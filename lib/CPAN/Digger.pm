@@ -7,14 +7,16 @@ our $VERSION = '1.04';
 use Capture::Tiny qw(capture);
 use Cwd qw(getcwd);
 use Data::Dumper qw(Dumper);
+use DateTime         ();
 use Exporter qw(import);
 use File::Copy::Recursive qw(rcopy);
 use File::Spec ();
 use File::Temp qw(tempdir);
+use JSON ();
 use Log::Log4perl ();
 use LWP::UserAgent ();
 use MetaCPAN::Client ();
-use DateTime         ();
+use Path::Tiny qw(path);
 use Template ();
 
 my @ci_names = qw(travis github_actions circleci appveyor azure_pipeline gitlab_pipeline bitbucket_pipeline jenkins);
@@ -29,6 +31,7 @@ my %no_ci_authors = map { $_ => 1 } qw(SISYPHUS GENE PERLANCAR);
 my %no_ci_distros = map { $_ => 1 } qw(Kelp-Module-Sereal);
 
 use CPAN::Digger::DB qw(get_fields);
+my $json = JSON->new->allow_nonref;
 
 my $tempdir = tempdir( CLEANUP => ($ENV{KEEP_TEMPDIR} ? 0 : 1) );
 
@@ -49,6 +52,8 @@ sub new {
     if ($self->{days}) {
         $self->{start_date}     = $dt->add( days => -$self->{days} )->ymd;
     }
+    $self->{data} = "data"; # data folder
+    mkdir $self->{data};
 
     $self->{db} = CPAN::Digger::DB->new(db => $self->{db});
 
@@ -450,13 +455,25 @@ sub collect {
     my %distros;
     my @fields = get_fields();
     while ( my $release = $rset->next ) {
-            # $logger->info("Release: " . $release);
+            $logger->info("Release: " . $release->name);
+            $logger->info("Distribution: " . $release->distribution);
+            my $data_file = File::Spec->catfile($self->{data}, $release->distribution . '.json');
+            $logger->info("data file $data_file");
+            my $data = {};
+            if (-e $data_file) {
+                open my $fh, '<:encoding(utf8)', $data_file or die $!;
+                $data = $json->decode( path($data_file)->slurp_utf8 );
+            }
+
             if ($self->{days}) {
 	            next if $release->date lt $self->{start_date};
 	            next if $self->{end_date} le $release->date;
             }
+
+            # $logger->info("status: $release->{data}{status}");
+            # There are releases where the status os 'cpan'. They can be in the recent if for example they dev releases
+            # with a _ in their version number such as Astro-SpaceTrack-0.161_01
             next if $release->{data}{status} ne 'latest';
-            # $logger->info("Release: " . $release->name);
             $self->{total}++;
 
     		next if $distros{ $release->distribution }; # We have already deal with this in this session
@@ -464,10 +481,12 @@ sub collect {
 
             my $row = $self->{db}->db_get_distro($release->distribution);
             next if $row and $row->{version} eq $release->version; # we already have this in the database (shall we call last?)
-            my %data = $self->get_data($mcpan, $release);
-            #die Dumper \%data;
-            $self->{db}->db_insert_into(@data{@fields});
-            push @all_the_distributions, \%data;
+            my %meta_data = $self->get_data($mcpan, $release);
+            $self->{db}->db_insert_into(@meta_data{@fields});
+            push @all_the_distributions, \%meta_data;
+            $data->{meta} = \%meta_data;
+
+            path($data_file)->spew($json->pretty->encode( $data ));
     }
 
     if ($self->{author}) {
@@ -477,7 +496,6 @@ sub collect {
         }
     }
     $self->{all_the_distributions} = \@all_the_distributions;
-
 }
 
 

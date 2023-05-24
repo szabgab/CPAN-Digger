@@ -8,7 +8,6 @@ use DBI;
 use Exporter qw(import);
 use File::HomeDir ();
 use FindBin ();
-use Path::Tiny qw(path);
 
 our @EXPORT_OK = qw(get_fields);
 

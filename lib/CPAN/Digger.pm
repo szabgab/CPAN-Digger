@@ -416,6 +416,7 @@ sub collect {
 	            next if $release->date lt $self->{start_date};
 	            next if $self->{end_date} le $release->date;
             }
+            next if $release->{data}{status} ne 'latest';
             # $logger->info("Release: " . $release->name);
             $self->{total}++;
 

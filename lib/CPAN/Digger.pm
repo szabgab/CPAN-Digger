@@ -400,19 +400,28 @@ sub stdout_report {
 sub run {
     my ($self) = @_;
 
+    $self->setup_logger;
     $self->collect;
+    $self->check_files_on_vcs;
+    $self->stdout_report;
+    $self->html;
 }
 
-sub collect {
-    my ($self) = @_;
 
-    my @all_the_distributions;
+sub setup_logger {
+    my ($self) = @_;
 
     my $log_level = $self->{log}; # TODO: shall we validate?
     Log::Log4perl->easy_init({
         level => $log_level,
         layout   => '%d{yyyy-MM-dd HH:mm:ss} - %p - %m%n',
     });
+}
+
+sub collect {
+    my ($self) = @_;
+
+    my @all_the_distributions;
 
     my $logger = Log::Log4perl->get_logger();
     $logger->info('Starting');
@@ -469,9 +478,6 @@ sub collect {
     }
     $self->{all_the_distributions} = \@all_the_distributions;
 
-    $self->check_files_on_vcs;
-    $self->stdout_report;
-    $self->html;
 }
 
 

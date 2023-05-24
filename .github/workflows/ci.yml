@@ -61,7 +61,7 @@ jobs:
             make test
 
       - name: Create pages
-        if: ${{ matrix.perl-version == '5.36' && github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request' }}
         run: |
             perl -Ilib bin/cpan-digger --version
             cp -r static _site
@@ -71,7 +71,7 @@ jobs:
             perl -Ilib bin/cpan-digger --recent 200 --vcs --sleep 2 --html _site/recent
 
       - name: Generate report
-        if: ${{ matrix.perl-version == '5.36' && github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request' }}
         run: |
             perl bin/generate.pl _site/recent 1000
 

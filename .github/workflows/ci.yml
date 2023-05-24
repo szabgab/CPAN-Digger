@@ -19,15 +19,9 @@ concurrency:
 jobs:
   generate:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        perl-version:
-          - '5.36'
-#          - 'latest'
     container:
-      image: perldocker/perl-tester:${{ matrix.perl-version }}     # https://hub.docker.com/r/perldocker/perl-tester
-    name: Perl ${{ matrix.perl-version }}
+      image: perldocker/perl-tester:5.36     # https://hub.docker.com/r/perldocker/perl-tester
+    name: Perl
     steps:
 
       - name: Setup Pages

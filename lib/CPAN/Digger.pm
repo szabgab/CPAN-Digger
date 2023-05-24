@@ -340,7 +340,7 @@ sub html {
 }
 
 
-sub report {
+sub stdout_report {
     my ($self) = @_;
 
     return if not $self->{report};
@@ -455,7 +455,7 @@ sub collect {
     }
 
 
-    $self->report;
+    $self->stdout_report;
     $self->html;
 }
 

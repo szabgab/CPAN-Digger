@@ -397,6 +397,12 @@ sub stdout_report {
     }
 }
 
+sub run {
+    my ($self) = @_;
+
+    $self->collect;
+}
+
 sub collect {
     my ($self) = @_;
 

@@ -53,7 +53,7 @@ sub run {
         exit(1);
     }
     my $cd = CPAN::Digger->new(%args);
-    $cd->collect();
+    $cd->run;
 }
 
 

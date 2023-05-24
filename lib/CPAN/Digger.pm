@@ -340,6 +340,30 @@ sub html {
 }
 
 
+sub check_files_on_vcs {
+    my ($self) = @_;
+
+    return if not $self->{check_vcs};
+
+    my @fields = get_fields();
+
+    my $logger = Log::Log4perl->get_logger();
+
+    $logger->info("Starting to check GitHub");
+    for my $data (@{$self->{all_the_distributions}}) {
+        my $distribution = $data->{distribution};
+        my $data_ref = $self->{db}->db_get_distro($distribution);
+        next if not $data_ref->{vcs_name};
+
+        analyze_vcs($data_ref);
+
+        my %data = %$data_ref;
+        $self->{db}->db_update($distribution, @data{@fields});
+        sleep $self->{sleep} if $self->{sleep};
+    }
+}
+
+
 sub stdout_report {
     my ($self) = @_;
 
@@ -437,24 +461,9 @@ sub collect {
             @all_the_distributions = @all_the_distributions[0 .. $self->{limit}-1];
         }
     }
+    $self->{all_the_distributions} = \@all_the_distributions;
 
-    # Check on the VCS
-    if ($self->{check_vcs}) {
-        $logger->info("Starting to check GitHub");
-        for my $data (@all_the_distributions) {
-            my $distribution = $data->{distribution};
-            my $data_ref = $self->{db}->db_get_distro($distribution);
-            next if not $data_ref->{vcs_name};
-
-            analyze_vcs($data_ref);
-
-            my %data = %$data_ref;
-            $self->{db}->db_update($distribution, @data{@fields});
-            sleep $self->{sleep} if $self->{sleep};
-        }
-    }
-
-
+    $self->check_files_on_vcs;
     $self->stdout_report;
     $self->html;
 }

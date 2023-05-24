@@ -466,17 +466,17 @@ sub collect {
             }
 
             if ($self->{days}) {
-	            next if $release->date lt $self->{start_date};
-	            next if $self->{end_date} le $release->date;
+                next if $release->date lt $self->{start_date};
+                next if $self->{end_date} le $release->date;
             }
 
             # $logger->info("status: $release->{data}{status}");
-            # There are releases where the status os 'cpan'. They can be in the recent if for example they dev releases
+            # There are releases where the status is 'cpan'. They can be in the recent if for example they dev releases
             # with a _ in their version number such as Astro-SpaceTrack-0.161_01
             next if $release->{data}{status} ne 'latest';
             $self->{total}++;
 
-    		next if $distros{ $release->distribution }; # We have already deal with this in this session
+            next if $distros{ $release->distribution }; # We have already deal with this in this session
             $distros{ $release->distribution } = 1;
 
             my $row = $self->{db}->db_get_distro($release->distribution);

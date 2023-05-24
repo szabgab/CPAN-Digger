@@ -39,11 +39,6 @@ jobs:
         run: |
             cpanm --installdeps --notest .
 
-      - name: Show Errors on Ubuntu
-        if:  ${{ failure() && matrix.runner == 'ubuntu-latest' }}
-        run: |
-           cat /home/runner/.cpanm/work/*/build.log
-
       - name: Regular tests
         run: |
             perl Makefile.PL

@@ -391,8 +391,20 @@ sub html {
     $self->read_dashboards;
 
     my @distros = @{ $self->get_every_distro };
+
+    $self->html_report('recent.html', \@distros);
+
+    $self->save_page('index.tt', 'index.html', {
+        version => $VERSION,
+        timestamp => DateTime->now,
+    });
+}
+
+sub html_report {
+    my ($self, $page, $distros) = @_;
+
     my %stats = (
-        total => scalar @distros,
+        total => scalar @$distros,
         has_vcs => 0,
         vcs => {},
         has_ci => 0,
@@ -403,7 +415,7 @@ sub html {
     for my $ci (@ci_names) {
         $stats{ci}{$ci} = 0;
     }
-    for my $dist (@distros) {
+    for my $dist (@$distros) {
         #print Dumper $dist;
         $dist->{dashboard} = $self->{dashboards}{ $dist->{author} };
         if ($dist->{vcs_name}) {
@@ -437,17 +449,13 @@ sub html {
         $stats{has_ci_percentage} = int(100 * $stats{has_ci} / $stats{total});
     }
 
-    $self->save_page('index.tt', 'index.html', {
-        version => $VERSION,
-        timestamp => DateTime->now,
-    });
-
-    $self->save_page('main.tt', 'recent.html', {
-        distros => \@distros,
+    $self->save_page('main.tt', $page, {
+        distros => $distros,
         version => $VERSION,
         timestamp => DateTime->now,
         stats => \%stats,
     });
+
 }
 
 sub save_page {

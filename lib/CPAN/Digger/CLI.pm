@@ -21,7 +21,7 @@ sub run {
         limit   => undef,
         days    => undef,
         html    => undef,
-        data    => 'data',
+        data    => 'cpan-digger',
     );
 
     GetOptions(
@@ -70,14 +70,16 @@ Usage: $0
         --filename path    Get the releases of the distributions listed in the file
         --distro NAME      Get the specific distribution
 
-        --report           (Show text report at the end of processing.)
+    Get from VCS
+        --vcs              Fetch information from GitHub, GitLab, etc.
+        --sleep SECONDS    Wait time between git clone operations, defaults to 0
+
+
+        --report           Show text report at the end of processing.
         --html DIR         Create HTML pages in the given directory.
         --log LEVEL        [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF] (default is INFO)
 
-        --vcs              Fetch information from github, gitlab
-        --sleep SECONDS    (Wait time between git clone operations, defaults to 0)
-
-        --data DIR         Provide the folder where we store the data files, defaults to ./data
+        --data DIR         Provide the folder where we store the data files, defaults to ./cpan-digger
 
         --version
         --help

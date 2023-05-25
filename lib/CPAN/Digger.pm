@@ -1,7 +1,6 @@
 package CPAN::Digger;
 use strict;
 use warnings FATAL => 'all';
-#use warnings;
 
 our $VERSION = '1.04';
 
@@ -375,6 +374,7 @@ sub get_every_distro {
         my $data = read_data($data_file);
         push @distros, $data;
     }
+    @distros = sort { $b->{date} cmp $a->{date} } @distros;
     return \@distros;
 }
 
@@ -383,16 +383,30 @@ sub html {
     my ($self) = @_;
 
     return if not $self->{html};
-    if (not -d $self->{html}) {
-        mkdir $self->{html};
-    }
+    mkdir $self->{html};
+    mkdir "$self->{html}/author";
+    mkdir "$self->{html}/lists";
     rcopy("static", $self->{html});
 
     $self->read_dashboards;
 
     my @distros = @{ $self->get_every_distro };
+    my $count = 0;
+    my @recent = grep { $count++ < 50 } @distros;
+    $self->html_report('recent.html', \@recent);
 
-    $self->html_report('recent.html', \@distros);
+    # TODO: shall we have a fixed list of authors, all the authors, or authors who release anything in the last N days?
+    my @authors = sort ('SZABGAB', 'DAVECROSS');
+    for my $author (@authors) {
+        my @filtered = grep { $_->{author} eq $author } @distros;
+        $self->html_report("author/$author.html", \@filtered);
+    }
+
+    $self->save_page('authors.tt', 'author/index.html', {
+        version => $VERSION,
+        timestamp => DateTime->now,
+        authors => \@authors,
+    });
 
     $self->save_page('index.tt', 'index.html', {
         version => $VERSION,

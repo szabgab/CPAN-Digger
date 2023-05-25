@@ -1,0 +1,7 @@
+<h1>Authors</h1>
+
+<ul>
+  [% FOREACH author IN authors %]
+    <li><a href="/author/[% author %]">[% author %]</a></li>
+  [% END %]
+</ul>

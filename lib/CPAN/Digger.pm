@@ -58,6 +58,100 @@ sub new {
     return $self;
 }
 
+sub run {
+    my ($self) = @_;
+
+    $self->setup_logger;
+    $self->collect_from_metacpan;
+    $self->check_files_on_vcs;
+    $self->stdout_report;
+    $self->html;
+}
+
+sub setup_logger {
+    my ($self) = @_;
+
+    my $log_level = $self->{log}; # TODO: shall we validate?
+    Log::Log4perl->easy_init({
+        level => $log_level,
+        layout   => '%d{yyyy-MM-dd HH:mm:ss} - %p - %m%n',
+    });
+}
+
+sub collect_from_metacpan {
+    my ($self) = @_;
+
+    return if not $self->{author} and not $self->{filename} and not $self->{recent};
+
+    #my @all_the_distributions;
+
+    my $logger = Log::Log4perl->get_logger();
+    $logger->info('Starting');
+    $logger->info("Recent: $self->{recent}") if $self->{recent};
+    $logger->info("Author: $self->{author}") if $self->{author};
+
+    my $mcpan = MetaCPAN::Client->new();
+    my $rset;
+    if ($self->{author}) {
+        my $author = $mcpan->author($self->{author});
+        #print $author;
+        $rset = $author->releases;
+    } elsif ($self->{filename}) {
+        open my $fh, '<', $self->{filename} or die "Could not open '$self->{filename}' $!";
+        my @releases = <$fh>;
+        chomp @releases;
+        my @either = map { { distribution =>  $_ } } @releases;
+        $rset = $mcpan->release( {
+            either => \@either
+        });
+    } elsif ($self->{recent}) {
+        $rset  = $mcpan->recent($self->{recent});
+    } else {
+
+    }
+    $logger->info("MetaCPAN::Client::ResultSet received with a total of $rset->{total} releases");
+    #my %distros;
+    while ( my $release = $rset->next ) {
+            #$logger->info("Release: " . $release->name);
+            $logger->info("Distribution: " . $release->distribution);
+            my $data_file = File::Spec->catfile($self->{data}, $release->distribution . '.json');
+            $logger->info("data file $data_file");
+            my $data = read_data($data_file);
+
+            if ($self->{days}) {
+                next if $release->date lt $self->{start_date};
+                next if $self->{end_date} le $release->date;
+            }
+            $self->{total}++;
+            next if defined $data->{meta}{version} and $data->{meta}{version} eq $release->version;
+
+            # $logger->info("status: $release->{data}{status}");
+            # There are releases where the status is 'cpan'. They can be in the recent if for example they dev releases
+            # with a _ in their version number such as Astro-SpaceTrack-0.161_01
+            next if $release->{data}{status} ne 'latest';
+
+            #next if $distros{ $release->distribution }; # We have already deal with this in this session
+            #$distros{ $release->distribution } = 1;
+
+            #my $row = $self->{db}->db_get_distro($release->distribution);
+            #next if $row and $row->{version} eq $release->version; # we already have this in the database (shall we call last?)
+            my %meta_data = $self->get_data($mcpan, $release);
+            #push @all_the_distributions, \%meta_data;
+            $data->{meta} = \%meta_data;
+
+            path($data_file)->spew($json->pretty->encode( $data ));
+    }
+
+    #if ($self->{author}) {
+    #    @all_the_distributions = reverse sort {$a->{date} cmp $b->{date}} @all_the_distributions;
+    #    if ($self->{limit} and @all_the_distributions > $self->{limit}) {
+    #        @all_the_distributions = @all_the_distributions[0 .. $self->{limit}-1];
+    #    }
+    #}
+    #$self->{all_the_distributions} = \@all_the_distributions;
+}
+
+
 sub read_dashboards {
     my ($self) = @_;
     my @pathes = ('dashboard', '/home/gabor/cpan/dashboard');
@@ -438,27 +532,6 @@ sub count_unique {
     return $unique_distro, scalar(keys %authors), $vcs_count, $ci_count, $bugtracker_count;
 }
 
-sub run {
-    my ($self) = @_;
-
-    $self->setup_logger;
-    $self->collect;
-    $self->check_files_on_vcs;
-    $self->stdout_report;
-    $self->html;
-}
-
-
-sub setup_logger {
-    my ($self) = @_;
-
-    my $log_level = $self->{log}; # TODO: shall we validate?
-    Log::Log4perl->easy_init({
-        level => $log_level,
-        layout   => '%d{yyyy-MM-dd HH:mm:ss} - %p - %m%n',
-    });
-}
-
 sub read_data {
     my ($data_file) = @_;
     if (-e $data_file) {
@@ -466,79 +539,6 @@ sub read_data {
         return $json->decode( path($data_file)->slurp_utf8 );
     }
     return {};
-}
-
-sub collect {
-    my ($self) = @_;
-
-    return if not $self->{author} and not $self->{filename} and not $self->{recent};
-
-    #my @all_the_distributions;
-
-    my $logger = Log::Log4perl->get_logger();
-    $logger->info('Starting');
-    $logger->info("Recent: $self->{recent}") if $self->{recent};
-    $logger->info("Author: $self->{author}") if $self->{author};
-
-    my $mcpan = MetaCPAN::Client->new();
-    my $rset;
-    if ($self->{author}) {
-        my $author = $mcpan->author($self->{author});
-        #print $author;
-        $rset = $author->releases;
-    } elsif ($self->{filename}) {
-        open my $fh, '<', $self->{filename} or die "Could not open '$self->{filename}' $!";
-        my @releases = <$fh>;
-        chomp @releases;
-        my @either = map { { distribution =>  $_ } } @releases;
-        $rset = $mcpan->release( {
-            either => \@either
-        });
-    } elsif ($self->{recent}) {
-        $rset  = $mcpan->recent($self->{recent});
-    } else {
-
-    }
-    $logger->info("MetaCPAN::Client::ResultSet received with a total of $rset->{total} releases");
-    #my %distros;
-    while ( my $release = $rset->next ) {
-            #$logger->info("Release: " . $release->name);
-            $logger->info("Distribution: " . $release->distribution);
-            my $data_file = File::Spec->catfile($self->{data}, $release->distribution . '.json');
-            $logger->info("data file $data_file");
-            my $data = read_data($data_file);
-
-            if ($self->{days}) {
-                next if $release->date lt $self->{start_date};
-                next if $self->{end_date} le $release->date;
-            }
-            $self->{total}++;
-            next if defined $data->{meta}{version} and $data->{meta}{version} eq $release->version;
-
-            # $logger->info("status: $release->{data}{status}");
-            # There are releases where the status is 'cpan'. They can be in the recent if for example they dev releases
-            # with a _ in their version number such as Astro-SpaceTrack-0.161_01
-            next if $release->{data}{status} ne 'latest';
-
-            #next if $distros{ $release->distribution }; # We have already deal with this in this session
-            #$distros{ $release->distribution } = 1;
-
-            #my $row = $self->{db}->db_get_distro($release->distribution);
-            #next if $row and $row->{version} eq $release->version; # we already have this in the database (shall we call last?)
-            my %meta_data = $self->get_data($mcpan, $release);
-            #push @all_the_distributions, \%meta_data;
-            $data->{meta} = \%meta_data;
-
-            path($data_file)->spew($json->pretty->encode( $data ));
-    }
-
-    #if ($self->{author}) {
-    #    @all_the_distributions = reverse sort {$a->{date} cmp $b->{date}} @all_the_distributions;
-    #    if ($self->{limit} and @all_the_distributions > $self->{limit}) {
-    #        @all_the_distributions = @all_the_distributions[0 .. $self->{limit}-1];
-    #    }
-    #}
-    #$self->{all_the_distributions} = \@all_the_distributions;
 }
 
 

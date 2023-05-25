@@ -8,16 +8,19 @@ our $VERSION = '1.04';
 use Capture::Tiny qw(capture);
 use Cwd qw(getcwd);
 use Data::Dumper qw(Dumper);
+use Data::Structure::Util qw(unbless);
 use DateTime         ();
 use Exporter qw(import);
 use File::Copy::Recursive qw(rcopy);
 use File::Spec ();
+use File::Basename qw(basename);
 use File::Temp qw(tempdir);
 use JSON ();
 use Log::Log4perl ();
 use LWP::UserAgent ();
 use MetaCPAN::Client ();
 use Path::Tiny qw(path);
+use Storable qw(dclone);
 use Template ();
 
 my @ci_names = qw(travis github_actions circleci appveyor azure_pipeline gitlab_pipeline bitbucket_pipeline jenkins);
@@ -31,7 +34,6 @@ my %no_ci_authors = map { $_ => 1 } qw(SISYPHUS GENE PERLANCAR);
 
 my %no_ci_distros = map { $_ => 1 } qw(Kelp-Module-Sereal);
 
-my $json = JSON->new->allow_nonref;
 
 my $tempdir = tempdir( CLEANUP => ($ENV{KEEP_TEMPDIR} ? 0 : 1) );
 
@@ -62,6 +64,8 @@ sub run {
     my ($self) = @_;
 
     $self->setup_logger;
+    my $logger = Log::Log4perl->get_logger();
+    $logger->info('Process started');
 
     my $rset = $self->get_releases_from_metacpan;
     $self->process_data_from_metacpan($rset); # also fetch extra data: test coverage report
@@ -69,6 +73,7 @@ sub run {
     $self->check_files_on_vcs;
     $self->stdout_report;
     $self->html;
+    $logger->info('Process ended');
 }
 
 sub setup_logger {
@@ -87,7 +92,6 @@ sub get_releases_from_metacpan {
     return if not $self->{author} and not $self->{filename} and not $self->{recent};
 
     my $logger = Log::Log4perl->get_logger();
-    $logger->info('Starting');
     $logger->info("Recent: $self->{recent}") if $self->{recent};
     $logger->info("Author: $self->{author}") if $self->{author};
 
@@ -127,40 +131,36 @@ sub process_data_from_metacpan {
     while ( my $release = $rset->next ) {
             #$logger->info("Release: " . $release->name);
             $logger->info("Distribution: " . $release->distribution);
-            my $data_file = File::Spec->catfile($self->{data}, $release->distribution . '.json');
-            $logger->info("data file $data_file");
-            my $data = read_data($data_file);
 
             if ($self->{days}) {
                 next if $release->date lt $self->{start_date};
                 next if $self->{end_date} le $release->date;
             }
+
+            my $data_file = File::Spec->catfile($self->{data}, $release->distribution . '.json');
+            $logger->info("data file $data_file");
+            my $data = read_data($data_file);
+
             $self->{total}++;
-            next if defined $data->{meta}{version} and $data->{meta}{version} eq $release->version;
+            next if defined $data->{version} and $data->{version} eq $release->version;
 
             # $logger->info("status: $release->{data}{status}");
             # There are releases where the status is 'cpan'. They can be in the recent if for example they dev releases
             # with a _ in their version number such as Astro-SpaceTrack-0.161_01
             next if $release->{data}{status} ne 'latest';
 
-            #my $row = $self->{db}->db_get_distro($release->distribution);
-            #next if $row and $row->{version} eq $release->version; # we already have this in the database (shall we call last?)
-            my %meta_data = $self->get_data($mcpan, $release);
-            $data->{meta} = \%meta_data;
+            $data->{metacpan} = $release;
+            $self->update_data($data);
 
-            path($data_file)->spew($json->pretty->encode( $data ));
+            save_data($data_file, $data);
     }
 }
 
 
 sub read_dashboards {
     my ($self) = @_;
-    my @pathes = ('dashboard', '/home/gabor/cpan/dashboard');
-    for my $path (@pathes) {
-        if (-e $path) {
-            $self->{dashboards} = { map { m{.*/([^/]+)\.json$}; $1 => 1 } glob "$path/authors/*.json" };
-        }
-    }
+    my $path = 'dashboard';
+    $self->{dashboards} = { map { substr(basename($_), 0, -5) => 1 } glob "$path/authors/*.json" };
 }
 
 sub get_vcs {
@@ -191,28 +191,29 @@ sub get_vcs {
     }
 }
 
-sub get_data {
-    my ($self, $mcpan, $release) = @_;
+sub update_data {
+    my ($self, $data) = @_;
 
     my $logger = Log::Log4perl->get_logger();
-    my %data = (
-        distribution => $release->distribution,
-        version      => $release->version,
-        author       => $release->author,
-        date         => $release->date,
-    );
-    #die Dumper $release;
+
+    my $release = $data->{metacpan};
 
     $logger->debug('dist: ', $release->distribution);
     $logger->debug('      ', $release->author);
+
+    $data->{distribution} = $release->distribution;
+    $data->{version}      = $release->version;
+    $data->{author}       = $release->author;
+    $data->{date}         = $release->date;
+
     my @licenses = @{ $release->license };
-    $data{licenses} = join ' ', @licenses;
-    $logger->debug('      ',  $data{licenses});
+    $data->{licenses} = join ' ', @licenses;
+    $logger->debug('      ',  $data->{licenses});
     for my $license (@licenses) {
         if ($license eq 'unknown') {
-            $logger->error("Unknown license '$license' for $data{distribution}");
+            $logger->error("Unknown license '$license' for $data->{distribution}");
         } elsif (not exists $known_licenses{$license}) {
-            $logger->warn("Unknown license '$license' for $data{distribution}. Probably CPAN::Digger needs to be updated");
+            $logger->warn("Unknown license '$license' for $data->{distribution}. Probably CPAN::Digger needs to be updated");
         }
     }
     # if there are not licenses =>
@@ -223,8 +224,8 @@ sub get_data {
     if ($resources{repository}) {
         my ($vcs_url, $vcs_name) = get_vcs($resources{repository});
         if ($vcs_url) {
-            $data{vcs_url} = $vcs_url;
-            $data{vcs_name} = $vcs_name;
+            $data->{vcs_url} = $vcs_url;
+            $data->{vcs_name} = $vcs_name;
             $logger->debug("      $vcs_name: $vcs_url");
             if ($vcs_url =~ m{http://}) {
                 $logger->warn("Repository URL $vcs_url is http and not https");
@@ -235,8 +236,9 @@ sub get_data {
     } else {
         $logger->error('No repository for ', $release->distribution);
     }
-    $self->get_bugtracker(\%resources, \%data);
+    $self->get_bugtracker(\%resources, $data);
 
+    my $mcpan = MetaCPAN::Client->new();
     my $cover = $mcpan->cover($release->name);
     if (defined $cover->criteria) {
         $logger->info("Cover " . Dumper $cover->criteria);
@@ -247,12 +249,10 @@ sub get_data {
         #   'statement' => '89.76',
         #   'branch' => '75.51'
         # };
-        $data{cover_total} = $cover->criteria->{'total'};
-        #$logger->info(Dumper $data{cover});
+        $data->{cover_total} = $cover->criteria->{'total'};
+        #$logger->info(Dumper $data->{cover});
     }
-    $data{vcs_last_checked} = 0;
-
-    return %data;
+    $data->{vcs_last_checked} = 0;
 }
 
 sub get_bugtracker {
@@ -398,7 +398,9 @@ sub html {
     for my $ci (@ci_names) {
         $stats{ci}{$ci} = 0;
     }
+    print Dumper $self->{dashboards};
     for my $dist (@distros) {
+        #print Dumper $dist;
         $dist->{dashboard} = $self->{dashboards}{ $dist->{author} };
         if ($dist->{vcs_name}) {
             $stats{has_vcs}++;
@@ -466,14 +468,15 @@ sub check_files_on_vcs {
     for my $data_file ( $dir->children ) {
         $logger->info("$data_file");
         my $data = read_data($data_file);
-        $logger->info("vcs_name: " . ($data->{meta}{vcs_name} // "MISSING"));
+        $logger->info("vcs_name: " . ($data->{vcs_name} // "MISSING"));
 
-        next if not $data->{meta}{vcs_name};
-        next if $data->{meta}{vcs_last_checked};
+        next if not $data->{vcs_name};
+        next if $data->{vcs_last_checked};
 
-        analyze_vcs($data->{meta});
-        $data->{meta}{vcs_last_checked} = DateTime->now->strftime("%Y-%m-%dT%H:%M:%S");
-        path($data_file)->spew($json->pretty->encode( $data ));
+        analyze_vcs($data);
+        $data->{vcs_last_checked} = DateTime->now->strftime("%Y-%m-%dT%H:%M:%S");
+        save_data($data_file, $data);
+
         sleep $self->{sleep} if $self->{sleep};
     }
 }
@@ -492,9 +495,9 @@ sub stdout_report {
     }
     for my $distro (@distros) {
         #die Dumper $distro;
-        printf "%s %-40s %-7s", $distro->{meta}{date}, $distro->{meta}{distribution}, ($distro->{meta}{vcs_url} ? '' : 'NO VCS');
+        printf "%s %-40s %-7s", $distro->{date}, $distro->{distribution}, ($distro->{vcs_url} ? '' : 'NO VCS');
         if ($self->{check_vcs}) {
-            printf "%-7s", ($distro->{meta}{has_ci} ? '' : 'NO CI');
+            printf "%-7s", ($distro->{has_ci} ? '' : 'NO CI');
         }
         print "\n";
     }
@@ -520,21 +523,29 @@ sub count_unique {
     my $bugtracker_count = 0;
 
     for my $distro (@$distros) {
-        $logger->info("$distro->{meta}{author} $distro->{meta}{distribution} $distro->{meta}{date}");
-        next if defined($start_date) and $start_date gt $distro->{meta}{date};
-        next if defined($end_date) and $end_date lt $distro->{meta}{date};
+        $logger->info("$distro->{author} $distro->{distribution} $distro->{date}");
+        next if defined($start_date) and $start_date gt $distro->{date};
+        next if defined($end_date) and $end_date lt $distro->{date};
 
         $unique_distro++;
-        $authors{ $distro->{meta}{author} } = 1;
-        $vcs_count++ if $distro->{meta}{vcs_name};
-        $ci_count++ if $distro->{meta}{has_ci};
-        $bugtracker_count++ if $distro->{meta}{issues};
+        $authors{ $distro->{author} } = 1;
+        $vcs_count++ if $distro->{vcs_name};
+        $ci_count++ if $distro->{has_ci};
+        $bugtracker_count++ if $distro->{issues};
     }
     return $unique_distro, scalar(keys %authors), $vcs_count, $ci_count, $bugtracker_count;
 }
 
+sub save_data {
+    my ($data_file, $data) = @_;
+    my $json = JSON->new->allow_nonref;
+    path($data_file)->spew($json->pretty->encode( unbless dclone $data ));
+}
+
 sub read_data {
     my ($data_file) = @_;
+
+    my $json = JSON->new->allow_nonref;
     if (-e $data_file) {
         open my $fh, '<:encoding(utf8)', $data_file or die $!;
         return $json->decode( path($data_file)->slurp_utf8 );

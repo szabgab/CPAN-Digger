@@ -52,7 +52,7 @@ sub new {
     if ($self->{days}) {
         $self->{start_date}     = $dt->add( days => -$self->{days} )->ymd;
     }
-    $self->{data} = "data"; # data folder
+    $self->{data} = $args{data}; # data folder where we store the json files
     mkdir $self->{data};
 
     return $self;
@@ -502,7 +502,7 @@ sub collect {
     $logger->info("MetaCPAN::Client::ResultSet received with a total of $rset->{total} releases");
     #my %distros;
     while ( my $release = $rset->next ) {
-            $logger->info("Release: " . $release->name);
+            #$logger->info("Release: " . $release->name);
             $logger->info("Distribution: " . $release->distribution);
             my $data_file = File::Spec->catfile($self->{data}, $release->distribution . '.json');
             $logger->info("data file $data_file");

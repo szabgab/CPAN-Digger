@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 
+use File::Temp qw(tempdir);
 use Test::More;
 use Mock::Quick qw(qclass);
 use Storable qw(dclone);
@@ -140,9 +141,11 @@ BEGIN {
 use CPAN::Digger::CLI;
 
 
-subtest recent_in_memory => sub {
+subtest recent => sub {
+    my $dir = tempdir( CLEANUP => 0 );
+    diag "tempdir: $dir";
     my ($out, $err, $exit) = capture {
-        local @ARGV = ('--recent', '2', '--report', '--log', 'OFF');
+        local @ARGV = ('--data', $dir, '--recent', '2', '--report', '--log', 'OFF');
         CPAN::Digger::CLI::run();
     };
 

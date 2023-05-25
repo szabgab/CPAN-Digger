@@ -21,6 +21,7 @@ sub run {
         limit   => undef,
         days    => undef,
         html    => undef,
+        data    => 'data',
     );
 
     GetOptions(
@@ -36,6 +37,7 @@ sub run {
         'version',
 	    'days:i',
         'html=s',
+        'data=s',
         'filename=s',
     ) or usage();
     usage() if $args{help};
@@ -74,6 +76,8 @@ Usage: $0
 
         --vcs              Fetch information from github, gitlab
         --sleep SECONDS    (Wait time between git clone operations, defaults to 0)
+
+        --data DIR         Provide the folder where we store the data files, defaults to ./data
 
         --version
         --help

@@ -142,7 +142,7 @@ use CPAN::Digger::CLI;
 
 
 subtest recent => sub {
-    my $dir = tempdir( CLEANUP => 0 );
+    my $dir = tempdir( CLEANUP => 1 );
     diag "tempdir: $dir";
     my ($out, $err, $exit) = capture {
         local @ARGV = ('--data', $dir, '--recent', '2', '--report', '--log', 'OFF');

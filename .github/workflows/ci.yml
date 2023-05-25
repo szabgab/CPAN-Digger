@@ -59,10 +59,10 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
         run: ./generate.sh
 
-      - name: Generate report
-        if: ${{ github.event_name != 'pull_request' }}
-        run: |
-            perl bin/generate.pl _site/recent 1000
+      #- name: Generate report
+      #  if: ${{ github.event_name != 'pull_request' }}
+      #  run: |
+      #      perl bin/generate.pl _site/recent 1000
 
       - name: Upload artifact
         if: github.ref == 'refs/heads/main'

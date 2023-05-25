@@ -12,6 +12,7 @@ WriteMakefile(
     dist          => { COMPRESS => 'gzip', SUFFIX => 'gz' },
     PREREQ_PM => {
         'Capture::Tiny'    => 0,
+        'Data::Structure::Util' => 0,
         'DateTime'         => 0,
         'DateTime::Format::ISO8601' => 0,
         'File::Copy::Recursive' => 0,

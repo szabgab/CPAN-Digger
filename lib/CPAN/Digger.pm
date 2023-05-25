@@ -247,7 +247,7 @@ sub update_data {
     my $mcpan = MetaCPAN::Client->new();
     my $cover = $mcpan->cover($release->name);
     if (defined $cover->criteria) {
-        $logger->info("Cover " . Dumper $cover->criteria);
+        #$logger->info("Cover " . Dumper $cover->criteria);
         # {
         #   'condition' => '79.69',
         #   'subroutine' => '89.06',
@@ -383,9 +383,8 @@ sub html {
     my ($self) = @_;
 
     return if not $self->{html};
-    if (-d $self->{html}) {
-        return;
-        #mkdir $self->{html};
+    if (not -d $self->{html}) {
+        mkdir $self->{html};
     }
     rcopy("static", $self->{html});
 
@@ -404,7 +403,6 @@ sub html {
     for my $ci (@ci_names) {
         $stats{ci}{$ci} = 0;
     }
-    print Dumper $self->{dashboards};
     for my $dist (@distros) {
         #print Dumper $dist;
         $dist->{dashboard} = $self->{dashboards}{ $dist->{author} };
@@ -439,6 +437,23 @@ sub html {
         $stats{has_ci_percentage} = int(100 * $stats{has_ci} / $stats{total});
     }
 
+    $self->save_page('index.tt', 'index.html', {
+        distros => \@distros,
+        version => $VERSION,
+        timestamp => DateTime->now,
+        stats => \%stats,
+    });
+
+    $self->save_page('main.tt', 'recent.html', {
+        distros => \@distros,
+        version => $VERSION,
+        timestamp => DateTime->now,
+        stats => \%stats,
+    });
+}
+
+sub save_page {
+    my ($self, $template, $file, $params) = @_;
 
     my $tt = Template->new({
         INCLUDE_PATH => './templates',
@@ -446,16 +461,11 @@ sub html {
         WRAPPER      => 'wrapper.tt',
     }) or die "$Template::ERROR\n";
 
-    my $report;
-    $tt->process('main.tt', {
-        distros => \@distros,
-        version => $VERSION,
-        timestamp => DateTime->now,
-        stats => \%stats,
-    }, \$report) or die $tt->error(), "\n";
-    my $html_file = File::Spec->catfile($self->{html}, 'index.html');
+    my $html;
+    $tt->process($template, $params, \$html) or die $tt->error(), "\n";
+    my $html_file = File::Spec->catfile($self->{html}, $file);
     open(my $fh, '>', $html_file) or die "Could not open '$html_file'";
-    print $fh $report;
+    print $fh $html;
     close $fh;
 }
 

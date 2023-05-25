@@ -47,10 +47,6 @@ sub run {
         exit();
     }
 
-    if ($args{html} and -d $args{html}) {
-        print("HTML folder $args{html} already exists. Aborting.\n");
-        exit(1);
-    }
     my $cd = CPAN::Digger->new(%args);
     $cd->run;
 }

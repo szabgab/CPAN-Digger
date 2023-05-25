@@ -438,10 +438,8 @@ sub html {
     }
 
     $self->save_page('index.tt', 'index.html', {
-        distros => \@distros,
         version => $VERSION,
         timestamp => DateTime->now,
-        stats => \%stats,
     });
 
     $self->save_page('main.tt', 'recent.html', {

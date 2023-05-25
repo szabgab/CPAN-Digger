@@ -39,14 +39,13 @@ sub run {
         'html=s',
         'data=s',
         'filename=s',
+        'distro=s',
     ) or usage();
     usage() if $args{help};
     if ($args{version}) {
         print "CPAN::Digger VERSION $VERSION\n";
         exit();
     }
-    #usage() if not ($args{author} xor $args{recent} xor $args{filename});
-
 
     if ($args{html} and -d $args{html}) {
         print("HTML folder $args{html} already exists. Aborting.\n");
@@ -61,14 +60,15 @@ sub usage {
     die qq{CPAN::Digger VERSION $VERSION
 
 Usage: $0
-    Required exactly one of them:
-        --recent N         (Number of the most recent packages to check)
+    What to get from MetaCPAN:
+        --recent N         Number of the most recent packages to check
         --days N
 
-        --author PAUSEID
+        --author PAUSEID   Get all the released of an author
         --limit N
 
-        --filename path/to/file
+        --filename path    Get the releases of the distributions listed in the file
+        --distro NAME      Get the specific distribution
 
         --report           (Show text report at the end of processing.)
         --html DIR         Create HTML pages in the given directory.

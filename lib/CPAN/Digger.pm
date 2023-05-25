@@ -89,11 +89,13 @@ sub setup_logger {
 sub get_releases_from_metacpan {
     my ($self) = @_;
 
-    return if not $self->{author} and not $self->{filename} and not $self->{recent};
+    return if not $self->{author} and not $self->{filename} and not $self->{recent} and not $self->{distro};
 
     my $logger = Log::Log4perl->get_logger();
     $logger->info("Recent: $self->{recent}") if $self->{recent};
     $logger->info("Author: $self->{author}") if $self->{author};
+    $logger->info("Filename $self->{filename}") if $self->{filename};
+    $logger->info("Distribution $self->{distro}") if $self->{distro};
 
     my $mcpan = MetaCPAN::Client->new();
     my $rset;
@@ -109,10 +111,14 @@ sub get_releases_from_metacpan {
         $rset = $mcpan->release( {
             either => \@either
         });
+    } elsif ($self->{distro}) {
+        $rset = $mcpan->release({
+            either => [{ distribution => $self->{distro} }]
+        });
     } elsif ($self->{recent}) {
         $rset  = $mcpan->recent($self->{recent});
     } else {
-
+        die "How did we get here?";
     }
     $logger->info("MetaCPAN::Client::ResultSet received with a total of $rset->{total} releases");
     return $rset;
@@ -539,7 +545,7 @@ sub count_unique {
 sub save_data {
     my ($data_file, $data) = @_;
     my $json = JSON->new->allow_nonref;
-    path($data_file)->spew($json->pretty->encode( unbless dclone $data ));
+    path($data_file)->spew_utf8($json->pretty->encode( unbless dclone $data ));
 }
 
 sub read_data {

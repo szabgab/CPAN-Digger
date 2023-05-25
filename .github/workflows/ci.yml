@@ -65,6 +65,7 @@ jobs:
             perl bin/generate.pl _site/recent 1000
 
       - name: Upload artifact
+        if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v1
 
 

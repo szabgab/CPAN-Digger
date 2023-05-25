@@ -17,7 +17,6 @@ sub run {
         log    => 'INFO',
         help   => undef,
         sleep  => 0,
-        db     => undef,
         version => undef,
         limit   => undef,
         days    => undef,
@@ -27,7 +26,6 @@ sub run {
     GetOptions(
         \%args,
         'author=s',
-        'db=s',
         'recent=i',
         'limit=i',
         'sleep=i',
@@ -45,7 +43,7 @@ sub run {
         print "CPAN::Digger VERSION $VERSION\n";
         exit();
     }
-    usage() if not ($args{author} xor $args{recent} xor $args{filename});
+    #usage() if not ($args{author} xor $args{recent} xor $args{filename});
 
 
     if ($args{html} and -d $args{html}) {
@@ -76,8 +74,6 @@ Usage: $0
 
         --vcs              Fetch information from github, gitlab
         --sleep SECONDS    (Wait time between git clone operations, defaults to 0)
-
-        --db PATH          (path to SQLite database file, if not supplied using in-memory database)
 
         --version
         --help

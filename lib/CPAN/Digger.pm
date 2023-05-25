@@ -1,6 +1,7 @@
 package CPAN::Digger;
 use strict;
 use warnings FATAL => 'all';
+#use warnings;
 
 our $VERSION = '1.04';
 
@@ -30,7 +31,6 @@ my %no_ci_authors = map { $_ => 1 } qw(SISYPHUS GENE PERLANCAR);
 
 my %no_ci_distros = map { $_ => 1 } qw(Kelp-Module-Sereal);
 
-use CPAN::Digger::DB qw(get_fields);
 my $json = JSON->new->allow_nonref;
 
 my $tempdir = tempdir( CLEANUP => ($ENV{KEEP_TEMPDIR} ? 0 : 1) );
@@ -54,8 +54,6 @@ sub new {
     }
     $self->{data} = "data"; # data folder
     mkdir $self->{data};
-
-    $self->{db} = CPAN::Digger::DB->new(db => $self->{db});
 
     return $self;
 }
@@ -157,6 +155,7 @@ sub get_data {
         $data{cover_total} = $cover->criteria->{'total'};
         #$logger->info(Dumper $data{cover});
     }
+    $data{vcs_last_checked} = 0;
 
     return %data;
 }
@@ -266,6 +265,19 @@ sub analyze_github {
     $data->{azure_pipeline} = -e "$repo/azure-pipelines.yml";
 }
 
+sub get_every_distro {
+    my ($self) = @_;
+
+    my @distros;
+    my $dir = path($self->{data});
+    for my $data_file ( $dir->children ) {
+        my $data = read_data($data_file);
+        push @distros, $data;
+    }
+    return \@distros;
+}
+
+
 sub html {
     my ($self) = @_;
 
@@ -278,7 +290,7 @@ sub html {
 
     $self->read_dashboards;
 
-    my @distros = @{ $self->{db}->db_get_every_distro() };
+    my @distros = @{ $self->get_every_distro };
     my %stats = (
         total => scalar @distros,
         has_vcs => 0,
@@ -350,20 +362,23 @@ sub check_files_on_vcs {
 
     return if not $self->{check_vcs};
 
-    my @fields = get_fields();
-
     my $logger = Log::Log4perl->get_logger();
 
     $logger->info("Starting to check GitHub");
-    for my $data (@{$self->{all_the_distributions}}) {
-        my $distribution = $data->{distribution};
-        my $data_ref = $self->{db}->db_get_distro($distribution);
-        next if not $data_ref->{vcs_name};
+    $logger->info("Tempdir: $tempdir");
 
-        analyze_vcs($data_ref);
+    my $dir = path($self->{data});
+    for my $data_file ( $dir->children ) {
+        $logger->info("$data_file");
+        my $data = read_data($data_file);
+        $logger->info("vcs_name: " . ($data->{meta}{vcs_name} // "MISSING"));
 
-        my %data = %$data_ref;
-        $self->{db}->db_update($distribution, @data{@fields});
+        next if not $data->{meta}{vcs_name};
+        next if $data->{meta}{vcs_last_checked};
+
+        analyze_vcs($data->{meta});
+        $data->{meta}{vcs_last_checked} = DateTime->now->strftime("%Y-%m-%dT%H:%M:%S");
+        path($data_file)->spew($json->pretty->encode( $data ));
         sleep $self->{sleep} if $self->{sleep};
     }
 }
@@ -376,30 +391,51 @@ sub stdout_report {
 
     print "Report\n";
     print "------------\n";
-    my @distros = @{ $self->{db}->db_get_every_distro() };
+    my @distros = @{ $self->get_every_distro };
     if ($self->{limit} and @distros > $self->{limit}) {
         @distros = @distros[0 .. $self->{limit}-1];
     }
     for my $distro (@distros) {
         #die Dumper $distro;
-        printf "%s %-40s %-7s", $distro->{date}, $distro->{distribution}, ($distro->{vcs_url} ? '' : 'NO VCS');
+        printf "%s %-40s %-7s", $distro->{meta}{date}, $distro->{meta}{distribution}, ($distro->{meta}{vcs_url} ? '' : 'NO VCS');
         if ($self->{check_vcs}) {
-            printf "%-7s", ($distro->{has_ci} ? '' : 'NO CI');
+            printf "%-7s", ($distro->{meta}{has_ci} ? '' : 'NO CI');
         }
         print "\n";
     }
 
     if ($self->{days}) {
-        my $distros = $self->{db}->get_distro_count($self->{start_date}, $self->{end_date});
-        my $authors = $self->{db}->get_author_count($self->{start_date}, $self->{end_date});
-        my $vcs_count = $self->{db}->get_vcs_count($self->{start_date}, $self->{end_date});
-        my $ci_count = $self->{db}->get_ci_count($self->{start_date}, $self->{end_date});
-        my $bugtracker_count = $self->{db}->get_bugtracker_count($self->{start_date}, $self->{end_date});
+        my ($distro_count, $authors, $vcs_count, $ci_count, $bugtracker_count) = count_unique(\@distros, $self->{start_date}, $self->{end_date});
         printf
             "Last week there were a total of %s uploads to CPAN of %s distinct distributions by %s different authors. Number of distributions with link to VCS: %s. Number of distros with CI: %s. Number of distros with bugtracker: %s.\n",
-            $self->{total}, $distros, $authors, $vcs_count,
+            $self->{total}, $distro_count, $authors, $vcs_count,
             $ci_count, $bugtracker_count;
+        print " $self->{total}; $distro_count; $authors; $vcs_count; $ci_count; $bugtracker_count;\n";
     }
+}
+
+sub count_unique {
+    my ($distros, $start_date, $end_date) = @_;
+    my $logger = Log::Log4perl->get_logger();
+
+    my $unique_distro = 0;
+    my %authors; # number of different authors in the given time period
+    my $vcs_count = 0;
+    my $ci_count = 0;
+    my $bugtracker_count = 0;
+
+    for my $distro (@$distros) {
+        $logger->info("$distro->{meta}{author} $distro->{meta}{distribution} $distro->{meta}{date}");
+        next if defined($start_date) and $start_date gt $distro->{meta}{date};
+        next if defined($end_date) and $end_date lt $distro->{meta}{date};
+
+        $unique_distro++;
+        $authors{ $distro->{meta}{author} } = 1;
+        $vcs_count++ if $distro->{meta}{vcs_name};
+        $ci_count++ if $distro->{meta}{has_ci};
+        $bugtracker_count++ if $distro->{meta}{issues};
+    }
+    return $unique_distro, scalar(keys %authors), $vcs_count, $ci_count, $bugtracker_count;
 }
 
 sub run {
@@ -423,14 +459,24 @@ sub setup_logger {
     });
 }
 
+sub read_data {
+    my ($data_file) = @_;
+    if (-e $data_file) {
+        open my $fh, '<:encoding(utf8)', $data_file or die $!;
+        return $json->decode( path($data_file)->slurp_utf8 );
+    }
+    return {};
+}
+
 sub collect {
     my ($self) = @_;
 
-    my @all_the_distributions;
+    return if not $self->{author} and not $self->{filename} and not $self->{recent};
+
+    #my @all_the_distributions;
 
     my $logger = Log::Log4perl->get_logger();
     $logger->info('Starting');
-    $logger->info("Tempdir: $tempdir");
     $logger->info("Recent: $self->{recent}") if $self->{recent};
     $logger->info("Author: $self->{author}") if $self->{author};
 
@@ -448,54 +494,51 @@ sub collect {
         $rset = $mcpan->release( {
             either => \@either
         });
-    } else {
+    } elsif ($self->{recent}) {
         $rset  = $mcpan->recent($self->{recent});
+    } else {
+
     }
     $logger->info("MetaCPAN::Client::ResultSet received with a total of $rset->{total} releases");
-    my %distros;
-    my @fields = get_fields();
+    #my %distros;
     while ( my $release = $rset->next ) {
             $logger->info("Release: " . $release->name);
             $logger->info("Distribution: " . $release->distribution);
             my $data_file = File::Spec->catfile($self->{data}, $release->distribution . '.json');
             $logger->info("data file $data_file");
-            my $data = {};
-            if (-e $data_file) {
-                open my $fh, '<:encoding(utf8)', $data_file or die $!;
-                $data = $json->decode( path($data_file)->slurp_utf8 );
-            }
+            my $data = read_data($data_file);
 
             if ($self->{days}) {
                 next if $release->date lt $self->{start_date};
                 next if $self->{end_date} le $release->date;
             }
+            $self->{total}++;
+            next if defined $data->{meta}{version} and $data->{meta}{version} eq $release->version;
 
             # $logger->info("status: $release->{data}{status}");
             # There are releases where the status is 'cpan'. They can be in the recent if for example they dev releases
             # with a _ in their version number such as Astro-SpaceTrack-0.161_01
             next if $release->{data}{status} ne 'latest';
-            $self->{total}++;
 
-            next if $distros{ $release->distribution }; # We have already deal with this in this session
-            $distros{ $release->distribution } = 1;
+            #next if $distros{ $release->distribution }; # We have already deal with this in this session
+            #$distros{ $release->distribution } = 1;
 
-            my $row = $self->{db}->db_get_distro($release->distribution);
-            next if $row and $row->{version} eq $release->version; # we already have this in the database (shall we call last?)
+            #my $row = $self->{db}->db_get_distro($release->distribution);
+            #next if $row and $row->{version} eq $release->version; # we already have this in the database (shall we call last?)
             my %meta_data = $self->get_data($mcpan, $release);
-            $self->{db}->db_insert_into(@meta_data{@fields});
-            push @all_the_distributions, \%meta_data;
+            #push @all_the_distributions, \%meta_data;
             $data->{meta} = \%meta_data;
 
             path($data_file)->spew($json->pretty->encode( $data ));
     }
 
-    if ($self->{author}) {
-        @all_the_distributions = reverse sort {$a->{date} cmp $b->{date}} @all_the_distributions;
-        if ($self->{limit} and @all_the_distributions > $self->{limit}) {
-            @all_the_distributions = @all_the_distributions[0 .. $self->{limit}-1];
-        }
-    }
-    $self->{all_the_distributions} = \@all_the_distributions;
+    #if ($self->{author}) {
+    #    @all_the_distributions = reverse sort {$a->{date} cmp $b->{date}} @all_the_distributions;
+    #    if ($self->{limit} and @all_the_distributions > $self->{limit}) {
+    #        @all_the_distributions = @all_the_distributions[0 .. $self->{limit}-1];
+    #    }
+    #}
+    #$self->{all_the_distributions} = \@all_the_distributions;
 }
 
 

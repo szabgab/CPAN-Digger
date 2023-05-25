@@ -14,8 +14,6 @@ WriteMakefile(
         'Capture::Tiny'    => 0,
         'DateTime'         => 0,
         'DateTime::Format::ISO8601' => 0,
-        'DBI'              => 0,
-        'DBD::SQLite'      => 0,
         'File::Copy::Recursive' => 0,
         'JSON'             => 0,
         'Log::Log4perl'    => 0,

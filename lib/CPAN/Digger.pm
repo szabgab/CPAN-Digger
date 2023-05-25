@@ -62,7 +62,10 @@ sub run {
     my ($self) = @_;
 
     $self->setup_logger;
-    $self->collect_from_metacpan;
+
+    my $rset = $self->get_releases_from_metacpan;
+    $self->process_data_from_metacpan($rset); # also fetch extra data: test coverage report
+
     $self->check_files_on_vcs;
     $self->stdout_report;
     $self->html;
@@ -78,7 +81,7 @@ sub setup_logger {
     });
 }
 
-sub collect_from_metacpan {
+sub get_releases_from_metacpan {
     my ($self) = @_;
 
     return if not $self->{author} and not $self->{filename} and not $self->{recent};
@@ -110,6 +113,19 @@ sub collect_from_metacpan {
 
     }
     $logger->info("MetaCPAN::Client::ResultSet received with a total of $rset->{total} releases");
+    return $rset;
+}
+
+sub process_data_from_metacpan {
+    my ($self, $rset) = @_;
+
+    return if not $rset;
+
+    my $logger = Log::Log4perl->get_logger();
+    $logger->info("Process data from metacpan");
+
+    my $mcpan = MetaCPAN::Client->new();
+
     #my %distros;
     while ( my $release = $rset->next ) {
             #$logger->info("Release: " . $release->name);

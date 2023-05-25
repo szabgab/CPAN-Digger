@@ -4,14 +4,13 @@
 * Analyze CPAN modules.
 * Find low-hanging fruit to fix on CPAN.
 
-## Several systems in one place
+## Overview
 
-For historcal reasons this repository contains sever systems.
-
-1. The data is collected into an SQLite database on the disk and there is a Mojolicious based web app to display the content. Not in use now.
-2. The data is collected into an in-memory SQLite database. A static HTML page is generated. This runs on GitHub Actions and the results are deployed on GitHub pages to [CPAN Digger](https://cpan-digger.perlmaven.com/)
-3. In-memory SQLite, the results are printed on STDOUT. This is used weekly to add a new line to the [MetaCPAN report](https://perlweekly.com/metacpan.html)
-4. The latest which is in planning phase: Data is collected to json files which are than cached on an S3 storage on Linode and static web pages are generated from the reports using GitHub Actions.
+* Data is collected in json files in the 'data' folder.
+* TODO The json files are cached on an S3 storage on Linode.
+* Static web pages are generated from the reports using GitHub Actions published as GitHub pages.
+* See [CPAN Digger](https://cpan-digger.perlmaven.com/)
+* Once a week the process is excuted locally. The results are printed on STDOUT. This is used weekly to add a new line to the [MetaCPAN report](https://perlweekly.com/metacpan.html) TODO: this report should be also generated on GitHub Actions.
 
 ## 1. Usage and development
 

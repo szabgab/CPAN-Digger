@@ -17,6 +17,7 @@ WriteMakefile(
         'DateTime::Format::ISO8601' => 0,
         'File::Copy::Recursive' => 0,
         'JSON'             => 0,
+        'List::MoreUtils'  => 0,
         'Log::Log4perl'    => 0,
         'LWP::UserAgent'   => 0,
         'MetaCPAN::Client' => 2.026,

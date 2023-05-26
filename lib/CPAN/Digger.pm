@@ -15,6 +15,7 @@ use File::Spec ();
 use File::Basename qw(basename);
 use File::Temp qw(tempdir);
 use JSON ();
+use List::MoreUtils qw(uniq);
 use Log::Log4perl ();
 use LWP::UserAgent ();
 use MetaCPAN::Client ();
@@ -395,8 +396,7 @@ sub html {
     my @recent = grep { $count++ < 50 } @distros;
     $self->html_report('recent.html', \@recent);
 
-    # TODO: shall we have a fixed list of authors, all the authors, or authors who release anything in the last N days?
-    my @authors = sort ('SZABGAB', 'DAVECROSS');
+    my @authors = uniq map { $_->{author} } @distros;
     for my $author (@authors) {
         my @filtered = grep { $_->{author} eq $author } @distros;
         $self->html_report("author/$author.html", \@filtered);

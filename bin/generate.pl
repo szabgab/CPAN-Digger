@@ -61,7 +61,7 @@ sub main {
         #say $dt > $before;
         #say $release->name;
         #say $release->;
-        say $release->author;
+        #say $release->author;
         $stats{authors}{$release->author}{count}++;
         last if defined $limit and $limit-- <= 0;
     }

@@ -63,9 +63,11 @@ sub new {
 sub run {
     my ($self) = @_;
 
-    $self->setup_logger;
-    my $logger = Log::Log4perl->get_logger();
-    $logger->info('Process started');
+    my $start = DateTime->now;
+
+    $self->setup_logger($start);
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info('CPAN::Digger started');
 
     my $rset = $self->get_releases_from_metacpan;
     $self->process_data_from_metacpan($rset); # also fetch extra data: test coverage report
@@ -73,17 +75,28 @@ sub run {
     $self->check_files_on_vcs;
     $self->stdout_report;
     $self->html;
-    $logger->info('Process ended');
+
+    my $end = DateTime->now;
+    my ($minutes, $seconds) = ($end-$start)->in_units('minutes', 'seconds');
+    $logger->info("CPAN:Digger ended. Elapsed time: $minutes minutes $seconds seconds");
 }
 
 sub setup_logger {
-    my ($self) = @_;
+    my ($self, $start) = @_;
 
     my $log_level = $self->{log}; # TODO: shall we validate?
-    Log::Log4perl->easy_init({
-        level => $log_level,
-        layout   => '%d{yyyy-MM-dd HH:mm:ss} - %p - %m%n',
-    });
+    my $logfile = $start->strftime("%Y-%m-%d-%H-%M-%S");
+
+    my $conf = qq(
+      log4perl.category.digger           = $log_level, Logfile
+      log4perl.appender.Logfile          = Log::Log4perl::Appender::File
+      log4perl.appender.Logfile.filename = digger-$logfile.log
+      log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::PatternLayout
+      log4perl.appender.Logfile.layout.ConversionPattern = %d{yyyy-MM-dd HH:mm:ss} [%r] %F %L %p %m%n
+    );
+
+    Log::Log4perl::init( \$conf );
+
 }
 
 sub get_releases_from_metacpan {
@@ -91,7 +104,7 @@ sub get_releases_from_metacpan {
 
     return if not $self->{author} and not $self->{filename} and not $self->{recent} and not $self->{distro};
 
-    my $logger = Log::Log4perl->get_logger();
+    my $logger = Log::Log4perl->get_logger('digger');
     $logger->info("Recent: $self->{recent}") if $self->{recent};
     $logger->info("Author: $self->{author}") if $self->{author};
     $logger->info("Filename $self->{filename}") if $self->{filename};
@@ -129,7 +142,7 @@ sub process_data_from_metacpan {
 
     return if not $rset;
 
-    my $logger = Log::Log4perl->get_logger();
+    my $logger = Log::Log4perl->get_logger('digger');
     $logger->info("Process data from metacpan");
 
     my $mcpan = MetaCPAN::Client->new();
@@ -200,7 +213,7 @@ sub get_vcs {
 sub update_data {
     my ($self, $data) = @_;
 
-    my $logger = Log::Log4perl->get_logger();
+    my $logger = Log::Log4perl->get_logger('digger');
 
     my $release = $data->{metacpan};
 
@@ -264,7 +277,7 @@ sub update_data {
 sub get_bugtracker {
     my ($self, $resources, $data) = @_;
 
-    my $logger = Log::Log4perl->get_logger();
+    my $logger = Log::Log4perl->get_logger('digger');
     if (not $resources->{bugtracker} or not $resources->{bugtracker}{web}) {
         $logger->error("No bugtracker for $data->{distribution}");
         return;
@@ -279,7 +292,7 @@ sub get_bugtracker {
 
 sub analyze_vcs {
     my ($data) = @_;
-    my $logger = Log::Log4perl->get_logger();
+    my $logger = Log::Log4perl->get_logger('digger');
 
     my $vcs_url = $data->{vcs_url};
     my $repo_name = (split '\/', $vcs_url)[-1];
@@ -495,7 +508,7 @@ sub check_files_on_vcs {
 
     return if not $self->{check_vcs};
 
-    my $logger = Log::Log4perl->get_logger();
+    my $logger = Log::Log4perl->get_logger('digger');
 
     $logger->info("Starting to check GitHub");
     $logger->info("Tempdir: $tempdir");
@@ -550,7 +563,7 @@ sub stdout_report {
 
 sub count_unique {
     my ($distros, $start_date, $end_date) = @_;
-    my $logger = Log::Log4perl->get_logger();
+    my $logger = Log::Log4perl->get_logger('digger');
 
     my $unique_distro = 0;
     my %authors; # number of different authors in the given time period

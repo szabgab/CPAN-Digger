@@ -409,7 +409,7 @@ sub html {
     my @recent = grep { $count++ < 50 } @distros;
     $self->html_report('recent.html', \@recent);
 
-    my @authors = uniq map { $_->{author} } @distros;
+    my @authors = sort {$a cmp $b} uniq map { $_->{author} } @distros;
     for my $author (@authors) {
         my @filtered = grep { $_->{author} eq $author } @distros;
         $self->html_report("author/$author.html", \@filtered);

@@ -5,8 +5,8 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME          => 'CPAN::Digger',
     AUTHOR        => 'Gabor Szabo <gabor@szabgab.com>',
-    VERSION_FROM  => 'lib/CPAN/Digger.pm',
-    ABSTRACT_FROM => 'lib/CPAN/Digger.pm',
+    VERSION       => '1.00',
+    ABSTRACT      => 'CPAN Digger',
     LICENSE       => 'perl',
     EXE_FILES     => ['bin/cpan-digger'],
     dist          => { COMPRESS => 'gzip', SUFFIX => 'gz' },

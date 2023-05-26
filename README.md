@@ -80,3 +80,11 @@ See the command here: https://github.com/szabgab/perlweekly/blob/master/bin/meta
 * http://www.annocpan.org/ is now something else, that link should be removed for sure
 * Is there a link in the docs to http://rt.cpan.org/ while the module actually uses some other bug tracker?
 
+## Using Docker
+
+The following command will build the Docker image and run the data collection process inside a Docker container
+
+```
+./docker.sh
+```
+

@@ -19,7 +19,7 @@ sub run {
         \%args,
         'author=s',
         'authors',
-        'coverage',
+        'coverage=i',
         'data=s',
         'days:i',
         'distro=s',
@@ -62,6 +62,8 @@ Usage: $0
 
         --filename path    Get the releases of the distributions listed in the file
         --distro NAME      Get the specific distribution
+
+        --coverage         Get all the coverage data
 
     Get from VCS
         --vcs              Fetch information from GitHub, GitLab, etc.

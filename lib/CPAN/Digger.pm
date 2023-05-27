@@ -61,6 +61,7 @@ sub new {
     mkdir "$self->{data}/metacpan";
     mkdir "$self->{data}/metacpan/distributions";
     mkdir "$self->{data}/metacpan/authors";
+    mkdir "$self->{data}/metacpan/coverage";
 
     return $self;
 }
@@ -266,15 +267,38 @@ sub get_coverage_data {
 
     my $mcpan = MetaCPAN::Client->new();
 
-    my @filenames = $self->get_all_distribution_filenames;
+    my @distribution_filenames = $self->get_all_distribution_filenames;
     my $counter = 0;
-    for my $filename (@filenames) {
-        my $data = read_data($filename);
-        my $release = $data->{data}{name};
-        $logger->info("name: $release");
-        my $cover = $mcpan->cover($data->{data}{name});
-        #$logger->info(Dumper $cover->criteria);
-        exit if ++$counter > 100;
+    for my $distribution_file (@distribution_filenames) {
+        #$logger->info("distribution_file: $distribution_file");
+        my $distribution_data = read_data($distribution_file);
+        my $release = $distribution_data->{data}{name};
+        my $date = $distribution_data->{data}{date};
+        $logger->info("name: $release at $date");
+
+        my $prefix = substr(basename($distribution_file), 0, 2);
+        mkdir File::Spec->catfile($self->{data}, 'metacpan', 'coverage', $prefix);
+        #my $distribution = $distribution_data->{distribution});
+        my $coverage_filename = File::Spec->catfile($self->{data}, 'metacpan', 'coverage', $prefix, basename($distribution_file));
+
+        # If we don't receive any coverage data from MetaCPAN we can't know if this is because the coverage data has not arrived yet
+        # or because there will never be coverage data for this distribution.
+        # We don't want to ask for coverage data forever so we have to decide how much we are ready to hope for it to arrive.
+        # Hence the following
+        # If there is coverage file and coverage data for the current release we don't fetch.
+        # If there is coverage file, not coverage data, and TIME has passed since the date of this release, we don't fetch.
+        #   {data}{date}
+
+        my $old_criteria = read_data($coverage_filename);
+        next if %$old_criteria and $old_criteria->{release} eq $release;
+
+        $logger->info("Fetching coverage for $release");
+        my $cover = $mcpan->cover($release);
+        my $report = $cover->criteria;
+        $report->{release} = $release;
+        save_data($coverage_filename, $report);
+
+        last if ++$counter > $self->{coverage};
     }
 }
 

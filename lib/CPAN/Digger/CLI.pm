@@ -24,6 +24,7 @@ sub run {
         data    => 'cpan-digger',
 
         authors => undef,
+        releases => undef,
     );
 
     GetOptions(
@@ -43,6 +44,7 @@ sub run {
         'data=s',
         'filename=s',
         'distro=s',
+        'releases',
     ) or usage();
     usage() if $args{help};
     if ($args{version}) {
@@ -61,6 +63,7 @@ sub usage {
 Usage: $0
     What to get from MetaCPAN:
         --authors          Get all the authors
+        --releases         Get all the releases
 
         --recent N         Number of the most recent packages to check
         --days N

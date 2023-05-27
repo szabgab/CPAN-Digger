@@ -58,7 +58,7 @@ sub new {
     $self->{data} = $args{data}; # data folder where we store the json files
     mkdir $self->{data};
     mkdir "$self->{data}/metacpan";
-    mkdir "$self->{data}/metacpan/releases";
+    mkdir "$self->{data}/metacpan/distributions";
     mkdir "$self->{data}/metacpan/authors";
 
     return $self;
@@ -131,6 +131,8 @@ sub download_authors_from_metacpan {
 sub metacpan_stats {
     #my $mcpan = MetaCPAN::Client->new();
 
+    # Foo-Bar is a distribution
+    # Foo-Bar-0.02 is a release
     # Total numbers collected on 2023.05.27
     #my $all = $mcpan->all('releases');  # 365966
     #my $all = $mcpan->all('authors'); # 14374
@@ -146,13 +148,12 @@ sub metacpan_stats {
 sub get_releases_from_metacpan {
     my ($self) = @_;
 
-    return if not $self->{author} and not $self->{filename} and not $self->{recent} and not $self->{distro};
-
     my $logger = Log::Log4perl->get_logger('digger');
     $logger->info("Recent: $self->{recent}") if $self->{recent};
     $logger->info("Author: $self->{author}") if $self->{author};
     $logger->info("Filename $self->{filename}") if $self->{filename};
     $logger->info("Distribution $self->{distro}") if $self->{distro};
+    $logger->info("All the releases") if $self->{releases};
 
     my $mcpan = MetaCPAN::Client->new();
     my $rset;
@@ -174,8 +175,11 @@ sub get_releases_from_metacpan {
         });
     } elsif ($self->{recent}) {
         $rset  = $mcpan->recent($self->{recent});
+    } elsif ($self->{releases}) {
+        $rset = $mcpan->release( { status => 'latest' }); # ~ 39230
     } else {
-        die "How did we get here?";
+        #die "How did we get here?";
+        return;
     }
     $logger->info("MetaCPAN::Client::ResultSet received with a total of $rset->{total} releases");
     return $rset;
@@ -192,31 +196,38 @@ sub process_data_from_metacpan {
     my $mcpan = MetaCPAN::Client->new();
 
     while ( my $release = $rset->next ) {
-            #$logger->info("Release: " . $release->name);
-            $logger->info("Distribution: " . $release->distribution);
-
-            if ($self->{days}) {
-                next if $release->date lt $self->{start_date};
-                next if $self->{end_date} le $release->date;
-            }
-
-            my $data_file = File::Spec->catfile($self->{data}, $release->distribution . '.json');
-            $logger->info("data file $data_file");
-            my $data = read_data($data_file);
-
-            $self->{total}++;
-            next if defined $data->{version} and $data->{version} eq $release->version;
-
-            # $logger->info("status: $release->{data}{status}");
-            # There are releases where the status is 'cpan'. They can be in the recent if for example they dev releases
-            # with a _ in their version number such as Astro-SpaceTrack-0.161_01
-            next if $release->{data}{status} ne 'latest';
-
-            $data->{metacpan} = $release;
-            $self->update_data($data);
-
-            save_data($data_file, $data);
+        #$logger->info("Release: " . $release->name);
+        #$logger->info("Distribution: " . $release->distribution);
+        my $distribution =  lc $release->distribution;
+        my $prefix = substr($distribution, 0, 2);
+        mkdir File::Spec->catfile($self->{data}, 'metacpan', 'distributions', $prefix);
+        my $data_file = File::Spec->catfile($self->{data}, 'metacpan', 'distributions', $prefix, "$distribution.json");
+        $logger->info("data file $data_file");
+        save_data($data_file, $release);
     }
+}
+
+sub update_meta_data {
+    my ($self) = @_;
+    # go over all the files in the distribution folder
+    #
+        #if ($self->{days}) {
+        #    next if $release->date lt $self->{start_date};
+        #    next if $self->{end_date} le $release->date;
+        #}
+
+        #my $data = read_data($data_file);
+
+        #$self->{total}++;
+        #next if defined $data->{version} and $data->{version} eq $release->version;
+
+        ## $logger->info("status: $release->{data}{status}");
+        ## There are releases where the status is 'cpan'. They can be in the recent if for example they dev releases
+        ## with a _ in their version number such as Astro-SpaceTrack-0.161_01
+        #next if $release->{data}{status} ne 'latest';
+
+        #$data->{metacpan} = $release;
+        #$self->update_data($data);
 }
 
 

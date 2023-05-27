@@ -58,8 +58,10 @@ sub new {
         $self->{start_date}     = $dt->add( days => -$self->{days} )->ymd;
     }
     $self->{data} = $args{data}; # data folder where we store the json files
+    mkdir "logs";
     mkdir $self->{data};
     mkdir "$self->{data}/metacpan";
+    mkdir "$self->{data}";
     mkdir "$self->{data}/metacpan/distributions";
     mkdir "$self->{data}/metacpan/authors";
     mkdir "$self->{data}/metacpan/coverage";
@@ -100,7 +102,7 @@ sub setup_logger {
     my $conf = qq(
       log4perl.category.digger           = $log_level, Logfile
       log4perl.appender.Logfile          = Log::Log4perl::Appender::File
-      log4perl.appender.Logfile.filename = digger-$logfile.log
+      log4perl.appender.Logfile.filename = logs/digger-$logfile.log
       log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::PatternLayout
       log4perl.appender.Logfile.layout.ConversionPattern = %d{yyyy-MM-dd HH:mm:ss} [%r] %F %L %p %m%n
     );

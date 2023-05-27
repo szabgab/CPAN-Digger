@@ -13,7 +13,7 @@ use DateTime         ();
 use DateTime::Duration;
 use Exporter qw(import);
 use File::Copy::Recursive qw(rcopy);
-use File::Spec ();
+use File::Spec::Functions qw(catfile);
 use File::Basename qw(basename);
 use File::Temp qw(tempdir);
 use JSON ();
@@ -126,9 +126,9 @@ sub download_authors_from_metacpan {
     while (my $author = $all->next) {
         my $pauseid = uc $author->pauseid;
         my $prefix = substr($pauseid, 0, 2);
-        my $filename = File::Spec->catfile($dir, $prefix, "$pauseid.json");
+        my $filename = catfile($dir, $prefix, "$pauseid.json");
 
-        mkdir File::Spec->catfile($dir, $prefix);
+        mkdir catfile($dir, $prefix);
         $logger->info("Saving to $filename");
         save_data($filename, $author);
     }
@@ -207,8 +207,8 @@ sub process_data_from_metacpan {
         #$logger->info("Distribution: " . $release->distribution);
         my $distribution =  lc $release->distribution;
         my $prefix = substr($distribution, 0, 2);
-        mkdir File::Spec->catfile($self->{data}, 'metacpan', 'distributions', $prefix);
-        my $data_file = File::Spec->catfile($self->{data}, 'metacpan', 'distributions', $prefix, "$distribution.json");
+        mkdir catfile($self->{data}, 'metacpan', 'distributions', $prefix);
+        my $data_file = catfile($self->{data}, 'metacpan', 'distributions', $prefix, "$distribution.json");
         $logger->info("data file $data_file");
         save_data($data_file, $release);
     }
@@ -226,12 +226,12 @@ sub read_dir {
 sub get_all_distribution_filenames {
     my ($self) = @_;
 
-    my $dir = File::Spec->catfile($self->{data}, 'metacpan', 'distributions');
+    my $dir = catfile($self->{data}, 'metacpan', 'distributions');
     my @prefixes = read_dir($dir);
 
     my @filenames;
     for my $prefix (@prefixes) {
-        push @filenames, map { File::Spec->catfile($dir, $prefix, $_) } read_dir(File::Spec->catfile($dir, $prefix));
+        push @filenames, map { catfile($dir, $prefix, $_) } read_dir(catfile($dir, $prefix));
     }
 
     return @filenames;
@@ -280,9 +280,9 @@ sub get_coverage_data {
         $logger->info("name: $release at $date");
 
         my $prefix = substr(basename($distribution_file), 0, 2);
-        mkdir File::Spec->catfile($self->{data}, 'metacpan', 'coverage', $prefix);
+        mkdir catfile($self->{data}, 'metacpan', 'coverage', $prefix);
         #my $distribution = $distribution_data->{distribution});
-        my $coverage_filename = File::Spec->catfile($self->{data}, 'metacpan', 'coverage', $prefix, basename($distribution_file));
+        my $coverage_filename = catfile($self->{data}, 'metacpan', 'coverage', $prefix, basename($distribution_file));
 
         # If we don't receive any coverage data from MetaCPAN we can't know if this is because the coverage data has not arrived yet
         # or because there will never be coverage data for this distribution.
@@ -613,7 +613,7 @@ sub save_page {
 
     my $html;
     $tt->process($template, $params, \$html) or die $tt->error(), "\n";
-    my $html_file = File::Spec->catfile($self->{html}, $file);
+    my $html_file = catfile($self->{html}, $file);
     open(my $fh, '>', $html_file) or die "Could not open '$html_file'";
     print $fh $html;
     close $fh;

@@ -51,6 +51,7 @@ sub new {
     $self->{total} = 0;
 
     my $dt = DateTime->now;
+    $self->{start_time} = $dt;
     $self->{end_date}       = $dt->ymd;
     if ($self->{days}) {
         $self->{start_date}     = $dt->add( days => -$self->{days} )->ymd;
@@ -67,9 +68,8 @@ sub new {
 sub run {
     my ($self) = @_;
 
-    my $start = DateTime->now;
 
-    $self->setup_logger($start);
+    $self->setup_logger($self->{start_time});
     my $logger = Log::Log4perl->get_logger('digger');
     $logger->info('CPAN::Digger started');
 
@@ -85,7 +85,7 @@ sub run {
     $self->html;
 
     my $end = DateTime->now;
-    my ($minutes, $seconds) = ($end-$start)->in_units('minutes', 'seconds');
+    my ($minutes, $seconds) = ($end-$self->{start_time})->in_units('minutes', 'seconds');
     $logger->info("CPAN:Digger ended. Elapsed time: $minutes minutes $seconds seconds");
 }
 

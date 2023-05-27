@@ -78,6 +78,8 @@ sub run {
     my $rset = $self->get_releases_from_metacpan;
     $self->process_data_from_metacpan($rset); # also fetch extra data: test coverage report
 
+    $self->get_coverage_data;
+
     $self->check_files_on_vcs;
     $self->stdout_report;
     $self->html;
@@ -196,6 +198,7 @@ sub process_data_from_metacpan {
     my $mcpan = MetaCPAN::Client->new();
 
     while ( my $release = $rset->next ) {
+        next if $release->{data}{status} ne 'latest';
         #$logger->info("Release: " . $release->name);
         #$logger->info("Distribution: " . $release->distribution);
         my $distribution =  lc $release->distribution;
@@ -207,9 +210,33 @@ sub process_data_from_metacpan {
     }
 }
 
+sub read_dir {
+    my ($dir) = @_;
+
+    opendir(my $dh, $dir) or die "Could not open directory $dir. $!";
+    my @entries = grep { $_ ne '.' and $_ ne '..' } readdir $dh;
+    closedir $dh;
+    return @entries;
+}
+
+sub get_all_distribution_filenames {
+    my ($self) = @_;
+
+    my $dir = File::Spec->catfile($self->{data}, 'metacpan', 'distributions');
+    my @prefixes = read_dir($dir);
+
+    my @filenames;
+    for my $prefix (@prefixes) {
+        push @filenames, map { File::Spec->catfile($dir, $prefix, $_) } read_dir(File::Spec->catfile($dir, $prefix));
+    }
+
+    return @filenames;
+}
+
+
 sub update_meta_data {
     my ($self) = @_;
-    # go over all the files in the distribution folder
+
     #
         #if ($self->{days}) {
         #    next if $release->date lt $self->{start_date};
@@ -224,10 +251,31 @@ sub update_meta_data {
         ## $logger->info("status: $release->{data}{status}");
         ## There are releases where the status is 'cpan'. They can be in the recent if for example they dev releases
         ## with a _ in their version number such as Astro-SpaceTrack-0.161_01
-        #next if $release->{data}{status} ne 'latest';
 
         #$data->{metacpan} = $release;
         #$self->update_data($data);
+}
+
+sub get_coverage_data {
+    my ($self) = @_;
+
+    return if not $self->{coverage};
+
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Get coverage data from MetaCPAN");
+
+    my $mcpan = MetaCPAN::Client->new();
+
+    my @filenames = $self->get_all_distribution_filenames;
+    my $counter = 0;
+    for my $filename (@filenames) {
+        my $data = read_data($filename);
+        my $release = $data->{data}{name};
+        $logger->info("name: $release");
+        my $cover = $mcpan->cover($data->{data}{name});
+        #$logger->info(Dumper $cover->criteria);
+        exit if ++$counter > 100;
+    }
 }
 
 
@@ -312,20 +360,6 @@ sub update_data {
     }
     $self->get_bugtracker(\%resources, $data);
 
-    my $mcpan = MetaCPAN::Client->new();
-    my $cover = $mcpan->cover($release->name);
-    if (defined $cover->criteria) {
-        #$logger->info("Cover " . Dumper $cover->criteria);
-        # {
-        #   'condition' => '79.69',
-        #   'subroutine' => '89.06',
-        #   'total' => '85.19',
-        #   'statement' => '89.76',
-        #   'branch' => '75.51'
-        # };
-        $data->{cover_total} = $cover->criteria->{'total'};
-        #$logger->info(Dumper $data->{cover});
-    }
     $data->{vcs_last_checked} = 0;
 }
 

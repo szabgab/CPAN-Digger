@@ -64,12 +64,10 @@ sub new {
     $self->{data} = $args{data}; # data folder where we store the json files
     mkdir "logs";
     mkdir "repos";
-    mkdir $self->{data};
-    mkdir "$self->{data}/meta";
-    mkdir "$self->{data}/metacpan";
-    mkdir "$self->{data}/metacpan/distributions";
-    mkdir "$self->{data}/metacpan/authors";
-    mkdir "$self->{data}/metacpan/coverage";
+    make_path "$self->{data}/meta";
+    make_path "$self->{data}/metacpan/distributions";
+    make_path "$self->{data}/metacpan/authors";
+    make_path "$self->{data}/metacpan/coverage";
 
     return $self;
 }

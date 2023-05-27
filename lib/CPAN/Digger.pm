@@ -92,7 +92,7 @@ sub run {
     $self->check_files_on_vcs;
 
     #$self->stdout_report;
-    #$self->html;
+    $self->html;
 
     my $end = DateTime->now;
     my ($minutes, $seconds) = ($end-$self->{start_time})->in_units('minutes', 'seconds');
@@ -433,6 +433,13 @@ sub clone_one_vcs {
 sub read_dashboards {
     my ($self) = @_;
     my $path = 'dashboard';
+    if (not -e $path) {
+        system "$git clone https://github.com/davorg/dashboard.git";
+    } else {
+        chdir $path;
+        system "git pull";
+        chdir "..";
+    }
     $self->{dashboards} = { map { substr(basename($_), 0, -5) => 1 } glob "$path/authors/*.json" };
 }
 
@@ -562,12 +569,14 @@ sub html {
     my ($self) = @_;
 
     return if not $self->{html};
+
     mkdir $self->{html};
     mkdir "$self->{html}/author";
     mkdir "$self->{html}/lists";
     rcopy("static", $self->{html});
 
     $self->read_dashboards;
+    return;
 
     my @distros = @{ $self->get_every_distro };
     my $count = 0;

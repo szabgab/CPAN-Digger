@@ -128,6 +128,21 @@ sub download_authors_from_metacpan {
     }
 }
 
+sub metacpan_stats {
+    #my $mcpan = MetaCPAN::Client->new();
+
+    # Total numbers collected on 2023.05.27
+    #my $all = $mcpan->all('releases');  # 365966
+    #my $all = $mcpan->all('authors'); # 14374
+    #my $all = $mcpan->all('modules'); # 28882019
+    #my $all = $mcpan->all('distributions'); # 44213
+    #my $all = $mcpan->all('favorites'); # 47071
+    #my $all = $mcpan->release( { status => 'latest' }); # 39230
+    #say $all->total;
+    # say $all; # MetaCPAN::Client::ResultSet
+}
+
+
 sub get_releases_from_metacpan {
     my ($self) = @_;
 

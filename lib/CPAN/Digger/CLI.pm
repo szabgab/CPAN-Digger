@@ -22,11 +22,14 @@ sub run {
         days    => undef,
         html    => undef,
         data    => 'cpan-digger',
+
+        authors => undef,
     );
 
     GetOptions(
         \%args,
         'author=s',
+        'authors',
         'recent=i',
         'limit=i',
         'sleep=i',
@@ -57,6 +60,8 @@ sub usage {
 
 Usage: $0
     What to get from MetaCPAN:
+        --authors          Get all the authors
+
         --recent N         Number of the most recent packages to check
         --days N
 

@@ -1,6 +1,7 @@
 package CPAN::Digger;
 use strict;
 use warnings FATAL => 'all';
+use feature 'say';
 
 our $VERSION = '1.04';
 
@@ -56,6 +57,9 @@ sub new {
     }
     $self->{data} = $args{data}; # data folder where we store the json files
     mkdir $self->{data};
+    mkdir "$self->{data}/metacpan";
+    mkdir "$self->{data}/metacpan/releases";
+    mkdir "$self->{data}/metacpan/authors";
 
     return $self;
 }
@@ -68,6 +72,8 @@ sub run {
     $self->setup_logger($start);
     my $logger = Log::Log4perl->get_logger('digger');
     $logger->info('CPAN::Digger started');
+
+    $self->download_authors_from_metacpan;
 
     my $rset = $self->get_releases_from_metacpan;
     $self->process_data_from_metacpan($rset); # also fetch extra data: test coverage report
@@ -99,6 +105,29 @@ sub setup_logger {
 
 }
 
+sub download_authors_from_metacpan {
+    my ($self) = @_;
+
+    return if not $self->{authors};
+
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Download authors from MetaCPAN");
+
+    my @authors;
+    my $mcpan = MetaCPAN::Client->new();
+    my $all = $mcpan->all('authors'); # ~ 14374
+    my $dir = "$self->{data}/metacpan/authors";
+    while (my $author = $all->next) {
+        my $pauseid = uc $author->pauseid;
+        my $prefix = substr($pauseid, 0, 2);
+        my $filename = File::Spec->catfile($dir, $prefix, "$pauseid.json");
+
+        mkdir File::Spec->catfile($dir, $prefix);
+        $logger->info("Saving to $filename");
+        save_data($filename, $author);
+    }
+}
+
 sub get_releases_from_metacpan {
     my ($self) = @_;
 
@@ -114,7 +143,7 @@ sub get_releases_from_metacpan {
     my $rset;
     if ($self->{author}) {
         my $author = $mcpan->author($self->{author});
-        #print $author;
+        #say $author;
         $rset = $author->releases;
     } elsif ($self->{filename}) {
         open my $fh, '<', $self->{filename} or die "Could not open '$self->{filename}' $!";
@@ -443,7 +472,7 @@ sub html_report {
         $stats{ci}{$ci} = 0;
     }
     for my $dist (@$distros) {
-        #print Dumper $dist;
+        #say Dumper $dist;
         $dist->{dashboard} = $self->{dashboards}{ $dist->{author} };
         if ($dist->{vcs_name}) {
             $stats{has_vcs}++;

@@ -53,9 +53,32 @@ See the command here: https://github.com/szabgab/perlweekly/blob/master/bin/meta
 
 ### Meta Data from MetaCPAN
 
-* Download data of some distributions that are marked as 'latest' from MetaCPAN.
+One-time:
+
+* Download data of all the "latest" releases from MetaCPAN and save them in JSON files.
+* Download data of all the authors and save them in JSON files.
+
+Cron job:
+* Download the most recently uploaded "latest" releases from MetaCPAN and save them in JSON files.
+* Go over the JSON files of the releases, try to clone the git repository if it don't have it yet. git pull if we already have it.
+* Go over the JSON files of the releases and fetch data from the GitHub API. (e.g. information about issues, Pull-Requests etc.)
+    * TODO: When should we do this? Some data might be available from MetaCPAN, but other not. If the sha of the repo changed that can be a trigger, but things will change in GitHub even without the sha chaning. (e.g. new open issues and PRs).
+* Go over all the cloned repositories and analyze them.
+    * The analyzis will both check if certain files exist (e.g. is there GitHub Actions) and run Perl::Critic and maybe other things.
+    * There will be also an analysis of the GitHub history. (which files changed etc.)
+    * We run the analyzis if either of these is true
+        * This is the first time we see the repo
+        * the sha of the repository changed
+        * the version number of our analyzis changed.
+* Generate the web site from all the JSON files.
+
 * Some of the data can change on MetaCPAN even without a new release, for example the data that comes from cpantesters and cpancover.
 * We need to be able to update the data in the json files.
+
+* release JSON files should be lower case as well. and they should be in metacpan/releases/HH/release-name.json
+* author JSON files should go into metacpan/authors/AA/author.json
+* When cloning repo lowercase the URL before cloning so we will only have lower-case addresses and folders. We should not be impacted by a change in case.
+    * repos/github/user/repository
 
 
 * Collect data from the most recent commit on GitHub. (e.g. does the project have Makefile.PL or dist.ini or both), run Perl::Critic on the code. This information can be update if there is a commit on the default branch of the project. Even without a new release to CPAN. (--vcs flag)

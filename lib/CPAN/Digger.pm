@@ -10,6 +10,7 @@ use Cwd qw(getcwd);
 use Data::Dumper qw(Dumper);
 use Data::Structure::Util qw(unbless);
 use DateTime         ();
+use DateTime::Duration;
 use Exporter qw(import);
 use File::Copy::Recursive qw(rcopy);
 use File::Spec ();
@@ -287,10 +288,11 @@ sub get_coverage_data {
         # Hence the following
         # If there is coverage file and coverage data for the current release we don't fetch.
         # If there is coverage file, not coverage data, and TIME has passed since the date of this release, we don't fetch.
-        #   {data}{date}
+        my $TIME = DateTime::Duration->new(days => 1);
 
         my $old_criteria = read_data($coverage_filename);
-        next if %$old_criteria and $old_criteria->{release} eq $release;
+        next if %$old_criteria and $old_criteria->{release} eq $release and exists $old_criteria->{total};
+        next if %$old_criteria and $old_criteria->{release} eq $release and $date lt $self->{start_time} - $TIME;
 
         $logger->info("Fetching coverage for $release");
         my $cover = $mcpan->cover($release);
@@ -298,7 +300,7 @@ sub get_coverage_data {
         $report->{release} = $release;
         save_data($coverage_filename, $report);
 
-        last if ++$counter > $self->{coverage};
+        last if ++$counter >= $self->{coverage};
     }
 }
 

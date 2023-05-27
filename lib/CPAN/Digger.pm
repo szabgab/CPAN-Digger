@@ -91,7 +91,7 @@ sub run {
     $self->update_meta_data_from_releases;
 
     $self->clone_vcs;
-    #$self->check_files_on_vcs;
+    $self->check_files_on_vcs;
 
     #$self->stdout_report;
     #$self->html;
@@ -394,6 +394,8 @@ sub clone_vcs {
         }
 
         last if ++$counter >= $self->{clone_vcs};
+
+        sleep $self->{sleep} if $self->{sleep};
     }
 }
 
@@ -515,52 +517,6 @@ sub check_repo {
 }
 
 
-
-sub analyze_vcs {
-    my ($data) = @_;
-    my $logger = Log::Log4perl->get_logger('digger');
-
-    my $vcs_url = $data->{vcs_url};
-    my $repo_name = (split '\/', $vcs_url)[-1];
-    $logger->info("Analyze repo '$vcs_url' in directory $repo_name");
-
-    my $git = 'git';
-
-    my @cmd = ($git, "clone", "--depth", "1", $data->{vcs_url});
-    my $cwd = getcwd();
-    chdir($tempdir);
-    my ($out, $err, $exit_code) = capture {
-        system(@cmd);
-    };
-    chdir($cwd);
-    my $repo = "$tempdir/$repo_name";
-    $logger->debug("REPO path '$repo'");
-
-    if ($exit_code != 0) {
-        # TODO capture stderr and include in the log
-        $logger->error("Failed to clone $vcs_url");
-        return;
-    }
-
-    if ($data->{vcs_name} eq 'GitHub') {
-        analyze_github($data, $repo);
-    }
-    if ($data->{vcs_name} eq 'GitLab') {
-        analyze_gitlab($data, $repo);
-    }
-    if ($data->{vcs_name} eq 'Bitbucket') {
-        analyze_bitbucket($data, $repo);
-    }
-
-
-    for my $ci (@ci_names) {
-        $logger->debug("Is CI '$ci'?");
-        if ($data->{$ci}) {
-            $logger->debug("CI '$ci' found!");
-            $data->{has_ci} = 1;
-        }
-    }
-}
 
 sub analyze_bitbucket {
     my ($data, $repo) = @_;
@@ -717,27 +673,42 @@ sub save_page {
 sub check_files_on_vcs {
     my ($self) = @_;
 
-    return if not $self->{check_vcs};
+    return if not $self->{metavcs};
 
     my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Starting to check VCS");
 
-    $logger->info("Starting to check GitHub");
-    $logger->info("Tempdir: $tempdir");
+    my @meta_filenames = $self->get_all_meta_filenames;
+    my $counter = 0;
+    for my $meta_file (@meta_filenames) {
+        my $meta = read_data($meta_file);
+        next if not $meta->{repo_url};
+        my $repo_folder = catfile($meta->{repo_folder}, $meta->{repo_name});
+        next if not -e $repo_folder; # not cloned yet
 
-    my $dir = path($self->{data});
-    for my $data_file ( $dir->children ) {
-        $logger->info("$data_file");
-        my $data = read_data($data_file);
-        $logger->info("vcs_name: " . ($data->{vcs_name} // "MISSING"));
+        $logger->info("folder: $repo_folder");
 
-        next if not $data->{vcs_name};
-        next if $data->{vcs_last_checked};
+        #next if $data->{vcs_last_checked};
+        if ($meta->{repo_vendor} eq 'github') {
+            analyze_github($meta, $repo_folder);
+        }
+        if ($meta->{repo_vendor} eq 'gitlab') {
+            analyze_gitlab($meta, $repo_folder);
+        }
+        if ($meta->{repo_vendor} eq 'bitbucket') {
+            analyze_bitbucket($meta, $repo_folder);
+        }
 
-        analyze_vcs($data);
-        $data->{vcs_last_checked} = DateTime->now->strftime("%Y-%m-%dT%H:%M:%S");
-        save_data($data_file, $data);
+        for my $ci (@ci_names) {
+            $logger->debug("Is CI '$ci'?");
+            if ($meta->{$ci}) {
+                $logger->debug("CI '$ci' found!");
+                $meta->{has_ci} = 1;
+            }
+        }
 
-        sleep $self->{sleep} if $self->{sleep};
+        $meta->{vcs_last_checked} = DateTime->now->strftime("%Y-%m-%dT%H:%M:%S");
+        save_data($meta_file, $meta);
     }
 }
 
@@ -756,7 +727,7 @@ sub stdout_report {
     for my $distro (@distros) {
         #die Dumper $distro;
         printf "%s %-40s %-7s", $distro->{date}, $distro->{distribution}, ($distro->{vcs_url} ? '' : 'NO VCS');
-        if ($self->{check_vcs}) {
+        if ($self->{metavcs}) {
             printf "%-7s", ($distro->{has_ci} ? '' : 'NO CI');
         }
         print "\n";

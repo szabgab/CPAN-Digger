@@ -29,6 +29,7 @@ sub run {
         'limit=i',
         'log=s',
         'meta',
+        'metavcs',
         'recent=i',
         'releases',
         'report',
@@ -73,6 +74,7 @@ Usage: $0
 
     Local processing
         --meta             Generate meta files from releases.json files
+        --metavcs          Update the meta files from local VCS clones
 
         --report           Show text report at the end of processing.
         --html DIR         Create HTML pages in the given directory.

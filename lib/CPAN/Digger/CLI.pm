@@ -32,7 +32,7 @@ sub run {
         'releases',
         'report',
         'sleep=i',
-        'vcs',
+        'clone=i',
         'version',
     ) or usage();
     usage() if $args{help};

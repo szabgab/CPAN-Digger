@@ -25,6 +25,9 @@ use Path::Tiny qw(path);
 use Storable qw(dclone);
 use Template ();
 
+my $git = 'git';
+my $root = getcwd();
+
 my @ci_names = qw(travis github_actions circleci appveyor azure_pipeline gitlab_pipeline bitbucket_pipeline jenkins);
 
 # Authors who indicated (usually in an email exchange with Gabor) that they don't have public VCS and are not
@@ -48,7 +51,7 @@ sub new {
         $self->{$key} = $args{$key};
     }
     $self->{log} = uc $self->{log};
-    $self->{check_vcs} = delete $self->{vcs};
+    $self->{clone_vcs} = delete $self->{clone};
     $self->{total} = 0;
 
     my $dt = DateTime->now;
@@ -59,6 +62,7 @@ sub new {
     }
     $self->{data} = $args{data}; # data folder where we store the json files
     mkdir "logs";
+    mkdir "repos";
     mkdir $self->{data};
     mkdir "$self->{data}/metacpan";
     mkdir "$self->{data}";
@@ -83,10 +87,11 @@ sub run {
     $self->process_data_from_metacpan($rset); # also fetch extra data: test coverage report
 
     $self->get_coverage_data;
+    $self->clone_vcs;
 
-    $self->check_files_on_vcs;
-    $self->stdout_report;
-    $self->html;
+    #$self->check_files_on_vcs;
+    #$self->stdout_report;
+    #$self->html;
 
     my $end = DateTime->now;
     my ($minutes, $seconds) = ($end-$self->{start_time})->in_units('minutes', 'seconds');
@@ -240,23 +245,14 @@ sub get_all_distribution_filenames {
 
 sub update_meta_data {
     my ($self) = @_;
-
-    #
-        #if ($self->{days}) {
         #    next if $release->date lt $self->{start_date};
         #    next if $self->{end_date} le $release->date;
         #}
-
-        #my $data = read_data($data_file);
-
-        #$self->{total}++;
-        #next if defined $data->{version} and $data->{version} eq $release->version;
 
         ## $logger->info("status: $release->{data}{status}");
         ## There are releases where the status is 'cpan'. They can be in the recent if for example they dev releases
         ## with a _ in their version number such as Astro-SpaceTrack-0.161_01
 
-        #$data->{metacpan} = $release;
         #$self->update_data($data);
 }
 
@@ -306,6 +302,66 @@ sub get_coverage_data {
     }
 }
 
+sub clone_vcs {
+    my ($self) = @_;
+
+    return if not $self->{clone_vcs};
+
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Clone VCSes");
+
+    my @distribution_filenames = $self->get_all_distribution_filenames;
+    my $counter = 0;
+    for my $distribution_file (@distribution_filenames) {
+        my $distribution_data = read_data($distribution_file);
+        my $repository = $distribution_data->{data}{resources}{repository};
+        if (not $repository) {
+            $logger->error("distribution $distribution_data->{distribution} has no repository");
+            next;
+        }
+        my ($real_repo_url, $folder, $name, $vendor) = get_vcs($repository);
+        next if not $vendor;
+
+        $logger->info("VCS: $vendor $real_repo_url");
+
+        if (check_repo($real_repo_url)) {
+            $self->clone_one_vcs($real_repo_url, $folder, $name);
+        }
+
+        last if ++$counter >= $self->{clone_vcs};
+    }
+}
+
+sub clone_one_vcs {
+    my ($self, $git_url, $folder, $name) = @_;
+
+    my $logger = Log::Log4perl::get_logger("digger");
+    $logger->info("Cloning $git_url to $folder");
+
+    chdir($folder);
+    my @cmd;
+    if (-e $name) {
+        chdir($name);
+        # TODO: check if the git_url is the same as our remote or if it has moved; we can update the remote easily
+        @cmd = ($git, "pull");
+    } else {
+        @cmd = ($git, "clone", $git_url);
+    }
+    $logger->info(join(" ", @cmd));
+    my ($out, $err, $exit_code) = capture {
+        system(@cmd);
+    };
+    chdir($root);
+    if ($exit_code) {
+        $logger->error("exit code: $exit_code");
+        $logger->error("stdout: $out");
+        $logger->error("stderr: $err");
+        return;
+    }
+
+    return 1;
+}
+
 
 sub read_dashboards {
     my ($self) = @_;
@@ -315,30 +371,42 @@ sub read_dashboards {
 
 sub get_vcs {
     my ($repository) = @_;
-    if ($repository) {
-        #        $html .= sprintf qq{<a href="%s">%s %s</a><br>\n}, $repository->{$k}, $k, $repository->{$k};
-        # Try to get the web link
-        my $url = $repository->{web};
+
+    my $logger = Log::Log4perl->get_logger('digger');
+
+    return if not $repository;
+
+    # Try to get the web link
+    my $url = $repository->{web};
+    if (not $url) {
+        $url = $repository->{url};
         if (not $url) {
-            $url = $repository->{url};
-            if (not $url) {
-                return;
-            }
-            $url =~ s{^git://}{https://};
-            $url =~ s{\.git$}{};
+            $logger->error("No URL found");
+            return;
         }
-        my $name = "repository";
-        if ($url =~ m{^https?://github.com/}) {
-            $name = 'GitHub';
-        }
-        if ($url =~ m{^https?://gitlab.com/}) {
-            $name = 'GitLab';
-        }
-        if ($url =~ m{^https?://bitbucket.org/}) {
-            $name = 'Bitbucket';
-        }
-        return $url, $name;
     }
+
+    $url = lc $url;
+    $url =~ s{^git://}{https://};
+    $url =~ s{^http://}{https://};
+    $url =~ s{\.git$}{};
+
+    my $vendor = "repository";
+    my $git_url;
+    if ($url =~ m{https://(github\.com|gitlab\.com|bitbucket\.org)/([a-zA-Z0-9-]+)/([a-zA-Z0-9_-]+)}) {
+        my $vendor_host = $1;
+        my $owner = $2;
+        my $name = $3;
+        $vendor = substr($vendor_host, 0, -4);
+        $git_url = "https://$vendor_host/$owner/$name";
+        my $folder = catfile('repos', $vendor, $owner);
+        mkdir catfile('repos', $vendor);
+        mkdir $folder;
+        return $git_url, $folder, $name, $vendor;
+    }
+
+    $logger->error("Unrecognized vendor for $url");
+    return;
 }
 
 sub update_data {
@@ -407,13 +475,10 @@ sub get_bugtracker {
     }
 }
 
-sub analyze_vcs {
-    my ($data) = @_;
-    my $logger = Log::Log4perl->get_logger('digger');
+sub check_repo {
+    my ($vcs_url) = @_;
 
-    my $vcs_url = $data->{vcs_url};
-    my $repo_name = (split '\/', $vcs_url)[-1];
-    $logger->info("Analyze repo '$vcs_url' in directory $repo_name");
+    my $logger = Log::Log4perl->get_logger('digger');
 
     my $ua = LWP::UserAgent->new(timeout => 5);
     my $response = $ua->get($vcs_url);
@@ -428,7 +493,21 @@ sub analyze_vcs {
     }
     if ($response->redirects) {
         $logger->error("Repository '$vcs_url' is being redirected. Please update the link in the META file");
+        return;
     }
+
+    return 1;
+}
+
+
+
+sub analyze_vcs {
+    my ($data) = @_;
+    my $logger = Log::Log4perl->get_logger('digger');
+
+    my $vcs_url = $data->{vcs_url};
+    my $repo_name = (split '\/', $vcs_url)[-1];
+    $logger->info("Analyze repo '$vcs_url' in directory $repo_name");
 
     my $git = 'git';
 

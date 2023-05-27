@@ -15,6 +15,7 @@ use Exporter qw(import);
 use File::Copy::Recursive qw(rcopy);
 use File::Spec::Functions qw(catfile);
 use File::Basename qw(basename);
+use File::Path qw(make_path);
 use File::Temp qw(tempdir);
 use JSON ();
 use List::MoreUtils qw(uniq);
@@ -230,6 +231,22 @@ sub read_dir {
     return @entries;
 }
 
+sub get_all_meta_filenames {
+    my ($self) = @_;
+
+    my $dir = catfile($self->{data}, 'meta');
+    my @prefixes = read_dir($dir);
+
+    my @filenames;
+    for my $prefix (@prefixes) {
+        push @filenames, map { catfile($dir, $prefix, $_) } read_dir(catfile($dir, $prefix));
+    }
+
+    return @filenames;
+}
+
+
+
 sub get_all_distribution_filenames {
     my ($self) = @_;
 
@@ -365,15 +382,16 @@ sub clone_vcs {
     my $logger = Log::Log4perl->get_logger('digger');
     $logger->info("Clone VCSes");
 
-    my @distribution_filenames = $self->get_all_distribution_filenames;
+    my @meta_filenames = $self->get_all_meta_filenames;
     my $counter = 0;
-    for my $distribution_file (@distribution_filenames) {
-        my $distribution_data = read_data($distribution_file);
+    for my $meta_file (@meta_filenames) {
+        my $meta = read_data($meta_file);
+        next if not $meta->{repo_url};
 
-        #my $repo_is_accessible = check_repo($real_repo_url);
-        #if ($repo_is_accessible) {
-        #    $self->clone_one_vcs($real_repo_url, $folder, $name);
-        #}
+        my $repo_is_accessible = check_repo($meta->{repo_url});
+        if ($repo_is_accessible) {
+            $self->clone_one_vcs($meta->{repo_url}, $meta->{repo_folder}, $meta->{repo_name});
+        }
 
         last if ++$counter >= $self->{clone_vcs};
     }
@@ -384,6 +402,8 @@ sub clone_one_vcs {
 
     my $logger = Log::Log4perl::get_logger("digger");
     $logger->info("Cloning $git_url to $folder");
+
+    make_path $folder;
 
     chdir($folder);
     my @cmd;
@@ -447,8 +467,6 @@ sub get_vcs {
         $vendor = substr($vendor_host, 0, -4);
         $git_url = "https://$vendor_host/$owner/$name";
         my $folder = catfile('repos', $vendor, $owner);
-        mkdir catfile('repos', $vendor);
-        mkdir $folder;
         return $git_url, $folder, $name, $vendor;
     }
 

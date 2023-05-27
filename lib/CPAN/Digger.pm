@@ -276,23 +276,23 @@ sub update_meta_data_from_releases {
         mkdir catfile($self->{data}, 'meta', $prefix);
         my $meta_filename = catfile($self->{data}, 'meta', $prefix, basename($distribution_file));
         $logger->info("distribution $distribution_file => $meta_filename");
-        my %meta;
         my $distribution = $distribution_data->{distribution};
         $logger->debug("distribution: $distribution");
         my $repository = $distribution_data->{data}{resources}{repository};
+        my $meta = read_data($meta_filename);
         if ($repository) {
             my ($real_repo_url, $folder, $name, $vendor) = get_vcs($repository);
             if ($vendor) {
-                $meta{repo_url} = $real_repo_url;
-                $meta{repo_folder} = $folder;
-                $meta{repo_name} = $name;
-                $meta{repo_vendor} = $vendor;
+                $meta->{repo_url} = $real_repo_url;
+                $meta->{repo_folder} = $folder;
+                $meta->{repo_name} = $name;
+                $meta->{repo_vendor} = $vendor;
                 $logger->info("VCS: $vendor $real_repo_url");
             }
         } else {
             $logger->error("distribution $distribution has no repository");
         }
-        save_data($meta_filename, \%meta);
+        save_data($meta_filename, $meta);
     }
 
     #$logger->debug('      ', $release->author);

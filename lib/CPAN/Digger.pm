@@ -64,8 +64,8 @@ sub new {
     mkdir "logs";
     mkdir "repos";
     mkdir $self->{data};
+    mkdir "$self->{data}/meta";
     mkdir "$self->{data}/metacpan";
-    mkdir "$self->{data}";
     mkdir "$self->{data}/metacpan/distributions";
     mkdir "$self->{data}/metacpan/authors";
     mkdir "$self->{data}/metacpan/coverage";
@@ -87,9 +87,11 @@ sub run {
     $self->get_release_data_from_metacpan($rset);
 
     $self->get_coverage_data;
-    $self->clone_vcs;
+    $self->update_meta_data_from_releases;
 
+    $self->clone_vcs;
     #$self->check_files_on_vcs;
+
     #$self->stdout_report;
     #$self->html;
 
@@ -242,18 +244,71 @@ sub get_all_distribution_filenames {
     return @filenames;
 }
 
-
-sub update_meta_data {
+sub update_meta_data_from_releases {
     my ($self) = @_;
-        #    next if $release->date lt $self->{start_date};
-        #    next if $self->{end_date} le $release->date;
-        #}
 
-        ## $logger->info("status: $release->{data}{status}");
-        ## There are releases where the status is 'cpan'. They can be in the recent if for example they dev releases
-        ## with a _ in their version number such as Astro-SpaceTrack-0.161_01
+    return if not $self->{meta};
 
-        #$self->update_data($data);
+    my $logger = Log::Log4perl->get_logger('digger');
+
+    my @distribution_filenames = $self->get_all_distribution_filenames;
+    my $counter = 0;
+    for my $distribution_file (@distribution_filenames) {
+        my $distribution_data = read_data($distribution_file);
+        my $prefix = substr(basename($distribution_file), 0, 2);
+        mkdir catfile($self->{data}, 'meta', $prefix);
+        my $meta_filename = catfile($self->{data}, 'meta', $prefix, basename($distribution_file));
+        $logger->info("distribution $distribution_file => $meta_filename");
+        my %meta;
+        my $distribution = $distribution_data->{distribution};
+        $logger->debug("distribution: $distribution");
+        my $repository = $distribution_data->{data}{resources}{repository};
+        if ($repository) {
+            my ($real_repo_url, $folder, $name, $vendor) = get_vcs($repository);
+            if ($vendor) {
+                $meta{repo_url} = $real_repo_url;
+                $meta{repo_folder} = $folder;
+                $meta{repo_name} = $name;
+                $meta{repo_vendor} = $vendor;
+                $logger->info("VCS: $vendor $real_repo_url");
+            }
+        } else {
+            $logger->error("distribution $distribution has no repository");
+        }
+        save_data($meta_filename, \%meta);
+    }
+
+    #$logger->debug('      ', $release->author);
+    #$data->{version}      = $release->version;
+    #$data->{author}       = $release->author;
+    #$data->{date}         = $release->date;
+
+    #my @licenses = @{ $release->license };
+    #$data->{licenses} = join ' ', @licenses;
+    #$logger->debug('      ',  $data->{licenses});
+    #for my $license (@licenses) {
+    #    if ($license eq 'unknown') {
+    #        $logger->error("Unknown license '$license' for $data->{distribution}");
+    #    } elsif (not exists $known_licenses{$license}) {
+    #        $logger->warn("Unknown license '$license' for $data->{distribution}. Probably CPAN::Digger needs to be updated");
+    #    }
+    #}
+    # if there are not licenses =>
+    # if there is a license called "unknonws"
+    # check against a known list of licenses (grow it later, or look it up somewhere?)
+    #my %resources = %{ $release->resources };
+    ##say '  ', join ' ', keys %resources;
+    #$self->get_bugtracker(\%resources, $data);
+
+    #$data->{vcs_last_checked} = 0;
+
+    #    next if $release->date lt $self->{start_date};
+    #    next if $self->{end_date} le $release->date;
+    #}
+
+    ## $logger->info("status: $release->{data}{status}");
+    ## There are releases where the status is 'cpan'. They can be in the recent if for example they dev releases
+    ## with a _ in their version number such as Astro-SpaceTrack-0.161_01
 }
 
 sub get_coverage_data {
@@ -314,19 +369,11 @@ sub clone_vcs {
     my $counter = 0;
     for my $distribution_file (@distribution_filenames) {
         my $distribution_data = read_data($distribution_file);
-        my $repository = $distribution_data->{data}{resources}{repository};
-        if (not $repository) {
-            $logger->error("distribution $distribution_data->{distribution} has no repository");
-            next;
-        }
-        my ($real_repo_url, $folder, $name, $vendor) = get_vcs($repository);
-        next if not $vendor;
 
-        $logger->info("VCS: $vendor $real_repo_url");
-
-        if (check_repo($real_repo_url)) {
-            $self->clone_one_vcs($real_repo_url, $folder, $name);
-        }
+        #my $repo_is_accessible = check_repo($real_repo_url);
+        #if ($repo_is_accessible) {
+        #    $self->clone_one_vcs($real_repo_url, $folder, $name);
+        #}
 
         last if ++$counter >= $self->{clone_vcs};
     }
@@ -407,56 +454,6 @@ sub get_vcs {
 
     $logger->error("Unrecognized vendor for $url");
     return;
-}
-
-sub update_data {
-    my ($self, $data) = @_;
-
-    my $logger = Log::Log4perl->get_logger('digger');
-
-    my $release = $data->{metacpan};
-
-    $logger->debug('dist: ', $release->distribution);
-    $logger->debug('      ', $release->author);
-
-    $data->{distribution} = $release->distribution;
-    $data->{version}      = $release->version;
-    $data->{author}       = $release->author;
-    $data->{date}         = $release->date;
-
-    my @licenses = @{ $release->license };
-    $data->{licenses} = join ' ', @licenses;
-    $logger->debug('      ',  $data->{licenses});
-    for my $license (@licenses) {
-        if ($license eq 'unknown') {
-            $logger->error("Unknown license '$license' for $data->{distribution}");
-        } elsif (not exists $known_licenses{$license}) {
-            $logger->warn("Unknown license '$license' for $data->{distribution}. Probably CPAN::Digger needs to be updated");
-        }
-    }
-    # if there are not licenses =>
-    # if there is a license called "unknonws"
-    # check against a known list of licenses (grow it later, or look it up somewhere?)
-    my %resources = %{ $release->resources };
-    #say '  ', join ' ', keys %resources;
-    if ($resources{repository}) {
-        my ($vcs_url, $vcs_name) = get_vcs($resources{repository});
-        if ($vcs_url) {
-            $data->{vcs_url} = $vcs_url;
-            $data->{vcs_name} = $vcs_name;
-            $logger->debug("      $vcs_name: $vcs_url");
-            if ($vcs_url =~ m{http://}) {
-                $logger->warn("Repository URL $vcs_url is http and not https");
-            }
-        } else {
-            $logger->error('Missing repository for ', $release->distribution);
-        }
-    } else {
-        $logger->error('No repository for ', $release->distribution);
-    }
-    $self->get_bugtracker(\%resources, $data);
-
-    $data->{vcs_last_checked} = 0;
 }
 
 sub get_bugtracker {

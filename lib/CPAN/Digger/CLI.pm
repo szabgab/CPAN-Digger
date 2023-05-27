@@ -28,6 +28,7 @@ sub run {
         'html=s',
         'limit=i',
         'log=s',
+        'meta',
         'recent=i',
         'releases',
         'report',
@@ -69,6 +70,9 @@ Usage: $0
         --vcs              Fetch information from GitHub, GitLab, etc.
         --sleep SECONDS    Wait time between git clone operations, defaults to 0
 
+
+    Local processing
+        --meta             Generate meta files from releases.json files
 
         --report           Show text report at the end of processing.
         --html DIR         Create HTML pages in the given directory.

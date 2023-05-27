@@ -83,8 +83,8 @@ sub run {
 
     $self->download_authors_from_metacpan;
 
-    my $rset = $self->get_releases_from_metacpan;
-    $self->process_data_from_metacpan($rset); # also fetch extra data: test coverage report
+    my $rset = $self->search_releases_on_metacpan;
+    $self->get_release_data_from_metacpan($rset);
 
     $self->get_coverage_data;
     $self->clone_vcs;
@@ -156,7 +156,7 @@ sub metacpan_stats {
 }
 
 
-sub get_releases_from_metacpan {
+sub search_releases_on_metacpan {
     my ($self) = @_;
 
     my $logger = Log::Log4perl->get_logger('digger');
@@ -196,7 +196,7 @@ sub get_releases_from_metacpan {
     return $rset;
 }
 
-sub process_data_from_metacpan {
+sub get_release_data_from_metacpan {
     my ($self, $rset) = @_;
 
     return if not $rset;

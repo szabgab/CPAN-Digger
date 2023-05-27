@@ -10,21 +10,9 @@ use CPAN::Digger;
 
 sub run {
     my %args = (
-        author   => undef,
-        authors  => undef,
         data     => 'cpan-digger',
-        days     => undef,
-        help     => undef,
-        html     => undef,
-        limit    => undef,
         log      => 'INFO',
-        recent   => undef,
-        releases => undef,
-        report   => undef,
         sleep    => 0,
-        vcs      => undef,
-        version  => undef,
-
     );
 
     GetOptions(

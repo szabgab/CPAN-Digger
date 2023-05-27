@@ -60,6 +60,8 @@ One-time:
 
 Cron job:
 * Download the most recently uploaded "latest" releases from MetaCPAN and save them in JSON files.
+* Download coverage data into separar JSON files.
+
 * Go over the JSON files of the releases, try to clone the git repository if it don't have it yet. git pull if we already have it.
 * Go over the JSON files of the releases and fetch data from the GitHub API. (e.g. information about issues, Pull-Requests etc.)
     * TODO: When should we do this? Some data might be available from MetaCPAN, but other not. If the sha of the repo changed that can be a trigger, but things will change in GitHub even without the sha chaning. (e.g. new open issues and PRs).
@@ -75,7 +77,7 @@ Cron job:
 * Some of the data can change on MetaCPAN even without a new release, for example the data that comes from cpantesters and cpancover.
 * We need to be able to update the data in the json files.
 
-* release JSON files should be lower case as well. and they should be in metacpan/releases/HH/release-name.json
+* distribution JSON files should be lower case as well. and they should be in metacpan/distribution/HH/distribution-name.json
 * author JSON files should go into metacpan/authors/AA/author.json
 * When cloning repo lowercase the URL before cloning so we will only have lower-case addresses and folders. We should not be impacted by a change in case.
     * repos/github/user/repository

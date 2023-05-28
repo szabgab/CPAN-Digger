@@ -576,12 +576,7 @@ sub html {
     $self->read_dashboards;
 
     $self->html_recent(\@distros);
-    $self->save_page('weekly.tt', 'weekly.html', {
-        version => $VERSION,
-        timestamp => DateTime->now,
-        report => $self->perlweekly_report,
-    });
-
+    $self->html_weekly;
     $self->html_authors(\@distros);
 
     $self->save_page('index.tt', 'index.html', {
@@ -590,6 +585,16 @@ sub html {
     });
 
     $logger->info("Generating HTML pages ended");
+}
+
+sub html_weekly {
+    my ($self) = @_;
+
+    $self->save_page('weekly.tt', 'weekly.html', {
+        version => $VERSION,
+        timestamp => DateTime->now,
+        report => $self->perlweekly_report,
+    });
 }
 
 sub html_recent {

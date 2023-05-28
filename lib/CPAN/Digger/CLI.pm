@@ -54,7 +54,8 @@ Usage: $0
         --releases         Get all the releases
 
         --recent N         Number of the most recent packages to check
-        --limit N
+
+        --limit N          Limit how many HTML pages are generated
 
         --distro NAME      Get the specific distribution
 

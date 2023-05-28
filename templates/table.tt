@@ -1,0 +1,135 @@
+    <table class="table table-striped table-hover" id="sort_table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Author</th>
+          <th>Date</th>
+          <th>VCS</th>
+          <th>Issues</th>
+          <th>CI</th>
+          <th>Licenses</th>
+          <th>Coverage</th>
+          <th>Dashboard</th>
+        </tr>
+      </thead>
+      <tbody>
+
+    [% FOREACH item IN distros %]
+        <tr>
+          <td><a href="https://metacpan.org/dist/[% item.distribution %]">[% item.distribution %]</a></td>
+          <td><a href="https://metacpan.org/author/[% item.author %]">[% item.author %]</a></td>
+          <td>[% item.release_date %]</td>
+          <td>
+              [% IF item.vcs_url %]
+                  <a href="[% item.vcs_url %]">[% item.vcs_name %]</a>
+              [% ELSIF item.vcs_not_interested %]
+                  <span class="badge badge-danger">No</span>
+              [% ELSE %]
+                  <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Add repo</a>
+              [% END %]
+          </td>
+          <td>
+              [% IF item.issues %]
+                  [% IF item.issues.match('https?://github.com/') %]
+                    <a href="[% item.issues %]">GitHub</a>
+                  [% ELSIF item.issues.match('https?://gitlab.com/') %]
+                    <a href="[% item.issues %]">GitLab</a>
+                  [% ELSIF item.issues.match('https?://rt.cpan.org/') %]
+                    <a href="[% item.issues %]">RT</a>
+                  [% ELSE %]
+                    <a class="badge badge-success" href="[% item.issues %]">View</a>
+                  [% END %]
+              [% ELSIF item.vcs_url %]
+                  <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Add bugtracker</a>
+              [% ELSIF item.vcs_not_interested %]
+                  <span class="badge badge-danger">No</span>
+              [% ELSE %]
+                  <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Add repo</a>
+              [% END %]
+          </td>
+          <td>
+              [% IF item.has_ci %]
+                    [% IF item.travis %]
+                        Travis<br>
+                    [% END %]
+                    [% IF item.jenkins %]
+                        Jenkins<br>
+                    [% END %]
+                    [% IF item.github_actions %]
+                        GitHub Actions<br>
+                    [% END %]
+                    [% IF item.appveyor %]
+                        Appveyor<br>
+                    [% END %]
+                    [% IF item.circleci %]
+                        CircleCI<br>
+                    [% END %]
+                    [% IF item.azure_pipeline %]
+                        Acure Pipelines
+                    [% END %]
+                    [% IF item.gitlab_pipeline %]
+                        Gitlab Pipelines
+                    [% END %]
+                    [% IF item.bitbucket_pipeline %]
+                        Bitbucket Pipelines
+                    [% END %]
+              [% ELSIF item.ci_not_interested %]
+                  <span class="badge badge-danger">No</span>
+              [% ELSIF item.vcs_url %]
+                  <a class="badge badge-warning" href="https://perlmaven.com/ci">Add CI</a>
+              [% ELSIF item.vcs_not_interested %]
+                  <span class="badge badge-danger">No</span>
+              [% ELSE %]
+                  <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-link-to-version-control-system-of-a-cpan-distributions">Add repo</a>
+              [% END %]
+          </td>
+          <td>
+              [% IF item.licenses != 'unknown' %]
+                [% item.licenses %]
+              [% ELSIF item.vcs_not_interested %]
+                <span class="badge badge-danger">No</span>
+              [% ELSE %]
+                <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-the-license-field-to-meta-files-on-cpan">Add license</a>
+              [% END %]
+          </td>
+          <td>
+              [% IF item.cover_total %]
+                <a href="http://cpancover.com/latest/[% item.distribution %]-[% item.version %]/index.html">[% item.cover_total %]</a>
+              [% ELSE %]
+                <a href="http://cpancover.com/latest/dist/[% item.distribution.substr(0, 1) %].html" title="Look for your distribution and click on the pilcrow sign in the log column to see the log">-</a>
+              [% END %]
+          </td>
+          <td>
+              [% IF item.dashboard %]
+                  <a class="badge badge-success" href="https://cpandashboard.com/[% item.author %]/">Visit</a>
+              [% ELSIF item.vcs_not_interested %]
+                  <span class="badge badge-danger">No</span>
+              [% ELSE %]
+                  <a class="badge badge-warning" href="https://cpandashboard.com/" title="Adding the dashboard is just a pull-request away and it is awesome!">Add dashboard</a>
+              [% END %]
+          </td>
+        </tr>
+   [% END %]
+      </tbody>
+    </table>
+
+
+<h2>Statistics</h2>
+<ul>
+   <li>Total: [% stats.total %]</li>
+   <li>Has VCS: [% stats.has_vcs %] ( [% stats.has_vcs_percentage %]% )</li>
+   <li>- GitHub: [% stats.vcs.GitHub %]</li>
+   <li>- GitLab: [% stats.vcs.GitLab %]</li>
+   <li>Has CI: [% stats.has_ci %] ( [% stats.has_ci_percentage %]% )</li>
+   <li>- GitHub Actions: [% stats.ci.github_actions %]</li>
+   <li>- Jenkins: [% stats.ci.jenkins %]</li>
+   <li>- Azure Pipeline: [% stats.ci.azure_pipeline %]</li>
+   <li>- Travis-CI: [% stats.ci.travis %]</li>
+   <li>- CircleCI: [% stats.ci.circleci %]</li>
+   <li>- Appveyor: [% stats.ci.appveyor %]</li>
+   <li>- GitLab Pipeline: [% stats.ci.gitlab_pipeline %]</li>
+   <li>- Bitbucket Pipelines: [% stats.ci.bitbucket_pipeline %]</li>
+   <li>Has Bugz: [% stats.has_bugz %] ( [% stats.has_bugz_percentage %]% )</li>
+</ul>
+
+

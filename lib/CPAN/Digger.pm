@@ -162,21 +162,12 @@ sub search_releases_on_metacpan {
 
     my $logger = Log::Log4perl->get_logger('digger');
     $logger->info("Recent: $self->{recent}") if $self->{recent};
-    $logger->info("Filename $self->{filename}") if $self->{filename};
     $logger->info("Distribution $self->{distro}") if $self->{distro};
     $logger->info("All the releases") if $self->{releases};
 
     my $mcpan = MetaCPAN::Client->new();
     my $rset;
-    if ($self->{filename}) {
-        open my $fh, '<', $self->{filename} or die "Could not open '$self->{filename}' $!";
-        my @releases = <$fh>;
-        chomp @releases;
-        my @either = map { { distribution =>  $_ } } @releases;
-        $rset = $mcpan->release( {
-            either => \@either
-        });
-    } elsif ($self->{distro}) {
+    if ($self->{distro}) {
         $rset = $mcpan->release({
             either => [{ distribution => $self->{distro} }]
         });

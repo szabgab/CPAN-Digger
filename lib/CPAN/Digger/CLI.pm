@@ -22,7 +22,6 @@ sub run {
         'data=s',
         'days:i',
         'distro=s',
-        'filename=s',
         'help',
         'html=s',
         'limit=i',
@@ -59,7 +58,6 @@ Usage: $0
         --days N
         --limit N
 
-        --filename path    Get the releases of the distributions listed in the file
         --distro NAME      Get the specific distribution
 
         --coverage         Get all the coverage data

@@ -570,6 +570,9 @@ sub html {
 
     return if not $self->{html};
 
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Start generating HTML pages");
+
     mkdir $self->{html};
     mkdir "$self->{html}/author";
     mkdir "$self->{html}/lists";

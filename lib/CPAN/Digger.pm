@@ -397,17 +397,19 @@ sub clone_one_vcs {
     if (-e catfile($folder, $name)) {
         return if $release_dt lt $self->{start_time} - $TIME_TO_PULL;
         # TODO: check if the vcs_url is the same as our remote or if it has moved; we can update the remote easily
+
+        chdir catfile($folder, $name);
         @cmd = ($git, "pull");
     } else {
         return if not $force and $release_dt lt $self->{start_time} - $TIME_TO_CLONE;
         my $vcs_is_accessible = check_repo($vcs_url);
         return if not $vcs_is_accessible;
 
+        chdir $folder;
         @cmd = ($git, "clone", $vcs_url);
     }
 
     $logger->info("cmd: @cmd");
-    chdir $folder;
     my ($out, $err, $exit_code) = capture {
         system(@cmd);
     };

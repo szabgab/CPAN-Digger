@@ -113,3 +113,16 @@ The following command will build the Docker image and run the data collection pr
 ./docker.sh
 ```
 
+## Old TODO items extracted from the HTML file
+<ul>
+    <li>Help module authors to ensure that each module that has a public Version Control System (VCS) also include a link to it in the meta files.</li>
+    <li>Help module authors to link to the preferred bug tracking system.</li>
+    <li>Help the projects to have a Continuous Integration (CI) system connected to their VCS.</li>
+    <li>Help module authors to add a license field to the meta files.</li>
+    <li>Help with the new (?) <b>contributing</b> file.</li>
+    <li>Suggest to add a Travis-CI badge to the README.md</li>
+    <li>Look at test coverage reports.</li>
+    <li>Maybe: Check if there are xt test?</li>
+    <li>Maybe: Check the Kwaletee metrics</li>
+</ul>
+

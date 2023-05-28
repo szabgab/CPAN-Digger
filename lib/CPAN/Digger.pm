@@ -131,6 +131,7 @@ sub download_authors_from_metacpan {
         $logger->info("Saving to $filename");
         save_data($filename, $author);
     }
+    $logger->info("Download authors from MetaCPAN finished");
 }
 
 sub metacpan_stats {
@@ -182,7 +183,7 @@ sub get_release_data_from_metacpan {
     return if not $rset;
 
     my $logger = Log::Log4perl->get_logger('digger');
-    $logger->info("Process data from metacpan");
+    $logger->info("Get releases from metacpan");
 
     my $mcpan = MetaCPAN::Client->new();
 
@@ -197,6 +198,8 @@ sub get_release_data_from_metacpan {
         $logger->info("data file $data_file");
         save_data($data_file, $release);
     }
+
+    $logger->info("Get releases from metacpan ended");
 }
 
 sub read_dir {
@@ -207,6 +210,7 @@ sub read_dir {
     closedir $dh;
     return @entries;
 }
+
 
 sub get_all_meta_filenames {
     my ($self) = @_;
@@ -221,7 +225,6 @@ sub get_all_meta_filenames {
 
     return @filenames;
 }
-
 
 
 sub get_all_distribution_filenames {
@@ -300,6 +303,7 @@ sub update_meta_data_from_releases {
     ## $logger->info("status: $release->{data}{status}");
     ## There are releases where the status is 'cpan'. They can be in the recent if for example they dev releases
     ## with a _ in their version number such as Astro-SpaceTrack-0.161_01
+    $logger->info("Update meta data from the releases ended");
 }
 
 sub get_coverage_data {
@@ -346,6 +350,8 @@ sub get_coverage_data {
 
         last if ++$counter >= $self->{coverage};
     }
+
+    $logger->info("Get coverage data from MetaCPAN ended");
 }
 
 sub clone_vcs {
@@ -368,6 +374,8 @@ sub clone_vcs {
 
         sleep $self->{sleep} if $self->{sleep};
     }
+
+    $logger->info("Clone VCSes ended");
 }
 
 sub clone_one_vcs {
@@ -375,7 +383,6 @@ sub clone_one_vcs {
 
     my $logger = Log::Log4perl::get_logger("digger");
     $logger->info("Cloning $vcs_url to $folder");
-
 
     # When we first clone we would like to clone all the repos (we will use the $force)
     # Later we would like to attempt to clone only repos of distros that were relesead in the last N minutes.
@@ -510,7 +517,6 @@ sub check_repo {
 }
 
 
-
 sub analyze_bitbucket {
     my ($data, $repo) = @_;
 
@@ -558,8 +564,7 @@ sub html {
     return if not $self->{html};
 
     my $logger = Log::Log4perl->get_logger('digger');
-    $logger->info("Start generating HTML pages");
-
+    $logger->info("Generating HTML pages");
 
     mkdir $self->{html};
     mkdir "$self->{html}/author";
@@ -597,6 +602,8 @@ sub html {
         version => $VERSION,
         timestamp => DateTime->now,
     });
+
+    $logger->info("Generating HTML pages ended");
 }
 
 sub html_report {
@@ -716,8 +723,6 @@ sub perlweekly_report {
     };
 }
 
-
-
 sub save_page {
     my ($self, $template, $file, $params) = @_;
 
@@ -734,7 +739,6 @@ sub save_page {
     print $fh $html;
     close $fh;
 }
-
 
 sub check_files_on_vcs {
     my ($self) = @_;

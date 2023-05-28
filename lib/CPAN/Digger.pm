@@ -44,7 +44,8 @@ my %no_ci_distros = map { $_ => 1 } qw(Kelp-Module-Sereal);
 
 my $tempdir = tempdir( CLEANUP => ($ENV{KEEP_TEMPDIR} ? 0 : 1) );
 
-my %known_licenses = map {$_ => 1} qw(agpl_3 apache_2_0 artistic_2 bsd mit gpl_2 gpl_3 lgpl_2_1 lgpl_3_0 perl_5); # open_source, unknown
+my %known_licenses = map {$_ => 1} qw(agpl_3 apache_1_1 apache_2_0 artistic_1 artistic_2 bsd freebsd gpl_1 gpl_2 gpl_3 lgpl_2_1 lgpl_3_0 mit mozilla_1_1 perl_5);
+# open_source, unknown, restricted, unrestricted, zlib
 
 sub new {
     my ($class, %args) = @_;

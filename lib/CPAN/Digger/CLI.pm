@@ -20,7 +20,6 @@ sub run {
         'authors',
         'coverage=i',
         'data=s',
-        'days:i',
         'distro=s',
         'force',
         'help',
@@ -31,7 +30,6 @@ sub run {
         'metavcs',
         'recent=i',
         'releases',
-        'report',
         'sleep=i',
         'clone=i',
         'version',
@@ -56,7 +54,6 @@ Usage: $0
         --releases         Get all the releases
 
         --recent N         Number of the most recent packages to check
-        --days N
         --limit N
 
         --distro NAME      Get the specific distribution
@@ -73,7 +70,6 @@ Usage: $0
         --meta             Generate meta files from releases.json files
         --metavcs          Update the meta files from local VCS clones
 
-        --report           Show text report at the end of processing.
         --html DIR         Create HTML pages in the given directory.
         --log LEVEL        [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF] (default is INFO)
 
@@ -82,12 +78,8 @@ Usage: $0
         --version
         --help
 
-    Sample usage for authors:
-        $0 --author SZABGAB --report --vcs --sleep 3
-
     Sample usage in general:
-        $0 --recent 30 --report --vcs --sleep 3
-
+        $0 --recent 30 --clone --sleep 3
 };
 }
 

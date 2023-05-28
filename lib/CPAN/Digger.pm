@@ -55,10 +55,6 @@ sub new {
 
     my $dt = DateTime->now;
     $self->{start_time} = $dt;
-    $self->{end_date}       = $dt->ymd;
-    if ($self->{days}) {
-        $self->{start_date}     = $dt->add( days => -$self->{days} )->ymd;
-    }
     $self->{data} = $args{data}; # data folder where we store the json files
     mkdir "logs";
     mkdir "repos";
@@ -89,7 +85,6 @@ sub run {
     $self->clone_vcs;
     $self->check_files_on_vcs;
 
-    #$self->stdout_report;
     $self->html;
 
     my $end = DateTime->now;
@@ -301,10 +296,6 @@ sub update_meta_data_from_releases {
     }
 
     #$data->{vcs_last_checked} = 0;
-
-    #    next if $release->date lt $self->{start_date};
-    #    next if $self->{end_date} le $release->date;
-    #}
 
     ## $logger->info("status: $release->{data}{status}");
     ## There are releases where the status is 'cpan'. They can be in the recent if for example they dev releases
@@ -561,7 +552,6 @@ sub get_every_distro {
     return @distros;
 }
 
-
 sub html {
     my ($self) = @_;
 
@@ -569,6 +559,7 @@ sub html {
 
     my $logger = Log::Log4perl->get_logger('digger');
     $logger->info("Start generating HTML pages");
+
 
     mkdir $self->{html};
     mkdir "$self->{html}/author";
@@ -582,6 +573,12 @@ sub html {
     my $count = 0;
     my @recent = grep { $count++ < 50 } @distros;
     $self->html_report('recent.html', \@recent);
+
+    $self->save_page('weekly.tt', 'weekly.html', {
+        version => $VERSION,
+        timestamp => DateTime->now,
+        report => $self->perlweekly_report,
+    });
 
     my @authors = sort {$a cmp $b} uniq map { $_->{author} } @distros;
     for my $author (@authors) {
@@ -661,6 +658,66 @@ sub html_report {
 
 }
 
+sub perlweekly_report {
+    my ($self) = @_;
+    # get the number of releases of the previous seven days. Display the start dates, including the name of the day Monday to Sunday. - using MetaCPAN::Client
+    # filter to the list of uniquie distributions
+    # count the authors
+    # count the VCS-es (from meta/ files)
+    # count the bugz-es (from meta/ files)
+    # count the CI-s (from meta/ files)
+
+    my $dt = $self->{start_time};
+    my $days = 7;
+    my $end_date       = $dt->ymd;
+    my $start_date     = $dt->add( days => -$days )->ymd;
+
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Start generating perlweekly report");
+    #say "$start_date  $end_date";
+    my $mcpan = MetaCPAN::Client->new();
+    my $rset  = $mcpan->recent(1000);
+    my $uploads = 0;
+    my %distributions;
+    my %authors;
+    my $vcs_count = 0;
+    my $ci_count = 0;
+    my $bugtracker_count = 0;
+
+    while (my $release = $rset->next) {
+        #die Dumper $release;
+        last if $release->{data}{date} lt $start_date;
+        next if $end_date le $release->{data}{date};
+
+        $uploads++;
+        $distributions{$release->{data}{distribution}} = 1;
+        $authors{ $release->{data}{author} } = 1;
+
+        # load the meta file
+        my $distro = lc $release->{data}{distribution};
+        my $prefix = substr($distro, 0, 2);
+        my $meta_file = catfile($self->{data}, 'meta', $prefix, "$distro.json");
+        # say $meta_file;
+        my $meta = read_data($meta_file);
+        $vcs_count++ if $meta->{vcs_name};
+        $ci_count++ if $meta->{has_ci};
+        $bugtracker_count++ if $meta->{issues};
+    }
+
+    return {
+        start_date       => $start_date,
+        end_date         => $end_date,
+        uploads          => $uploads,
+        distributions    => scalar(keys %distributions),
+        authors          => scalar(keys %authors),
+        vcs_count        => $vcs_count,
+        ci_count         => $ci_count,
+        bugtracker_count => $bugtracker_count,
+    };
+}
+
+
+
 sub save_page {
     my ($self, $template, $file, $params) = @_;
 
@@ -721,60 +778,6 @@ sub check_files_on_vcs {
     }
 }
 
-
-sub stdout_report {
-    my ($self) = @_;
-
-    return if not $self->{report};
-
-    print "Report\n";
-    print "------------\n";
-    my @distros = $self->get_every_distro;
-    if ($self->{limit} and @distros > $self->{limit}) {
-        @distros = @distros[0 .. $self->{limit}-1];
-    }
-    for my $distro (@distros) {
-        #die Dumper $distro;
-        printf "%s %-40s %-7s", $distro->{date}, $distro->{distribution}, ($distro->{vcs_url} ? '' : 'NO VCS');
-        if ($self->{metavcs}) {
-            printf "%-7s", ($distro->{has_ci} ? '' : 'NO CI');
-        }
-        print "\n";
-    }
-
-    if ($self->{days}) {
-        my ($distro_count, $authors, $vcs_count, $ci_count, $bugtracker_count) = count_unique(\@distros, $self->{start_date}, $self->{end_date});
-        printf
-            "Last week there were a total of %s uploads to CPAN of %s distinct distributions by %s different authors. Number of distributions with link to VCS: %s. Number of distros with CI: %s. Number of distros with bugtracker: %s.\n",
-            $self->{total}, $distro_count, $authors, $vcs_count,
-            $ci_count, $bugtracker_count;
-        print " $self->{total}; $distro_count; $authors; $vcs_count; $ci_count; $bugtracker_count;\n";
-    }
-}
-
-sub count_unique {
-    my ($distros, $start_date, $end_date) = @_;
-    my $logger = Log::Log4perl->get_logger('digger');
-
-    my $unique_distro = 0;
-    my %authors; # number of different authors in the given time period
-    my $vcs_count = 0;
-    my $ci_count = 0;
-    my $bugtracker_count = 0;
-
-    for my $distro (@$distros) {
-        $logger->info("$distro->{author} $distro->{distribution} $distro->{date}");
-        next if defined($start_date) and $start_date gt $distro->{date};
-        next if defined($end_date) and $end_date lt $distro->{date};
-
-        $unique_distro++;
-        $authors{ $distro->{author} } = 1;
-        $vcs_count++ if $distro->{vcs_name};
-        $ci_count++ if $distro->{has_ci};
-        $bugtracker_count++ if $distro->{issues};
-    }
-    return $unique_distro, scalar(keys %authors), $vcs_count, $ci_count, $bugtracker_count;
-}
 
 sub save_data {
     my ($data_file, $data) = @_;

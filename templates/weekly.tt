@@ -1,0 +1,20 @@
+<h1>Weekly report</h1>
+
+The source of the <a href="https://perlweekly.com/metacpan.html">Perl Weekly MetaCPAN report</a>.
+
+<div>Start Date [% report.start_date %]</div>
+<div>End Date [% report.end_date %]</div>
+<div>Number of uploads  (releases): [% report.uploads %]</div>
+<div>Number of distinct distributions: [% report.distributions %]</div>
+<div>Number of different authors: [% report.authors %]</div>
+<div>Number of distributions with link to VCS: [% report.vcs_count %]</div>
+<div>Number of distros with CI: [% report.ci_count %]</div>
+<div>Number of distros with bugtracker: [% report.bugtracker_count %]</div>
+
+
+<h2>Text to copy to Perl Weekly:</h2>
+<pre>
+[% report.uploads %]; [% report.distributions %]; [% report.authors %]; [% report.vcs_count %]; [% report.ci_count %]; [% report.bugtracker_count %];
+</pre>
+
+

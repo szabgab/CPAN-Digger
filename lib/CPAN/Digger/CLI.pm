@@ -61,7 +61,7 @@ Usage: $0
 
         --distro NAME      Get the specific distribution
 
-        --coverage         Get all the coverage data
+        --coverage N       Get the coverage data of N distributions
 
     Get from VCS
         --clone NUMBER     Fetch information from GitHub, GitLab, etc. for NUMBER projects.

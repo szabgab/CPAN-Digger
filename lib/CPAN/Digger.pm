@@ -280,27 +280,23 @@ sub update_meta_data_from_releases {
                 $logger->info("VCS: $vendor $real_vcs_url");
             }
             $self->get_bugtracker($distribution_data->{data}{resources}, $meta);
-
+            my @licenses = @{ $distribution_data->{data}{license} };
+            $meta->{licenses} = join ' ', @licenses;
+            $logger->info("      $meta->{licenses}");
+            for my $license (@licenses) {
+                if ($license eq 'unknown') {
+                    $logger->error("Unknown license '$license' for $meta->{distribution}");
+                } elsif (not exists $known_licenses{$license}) {
+                    $logger->warn("Unknown license '$license' for $meta->{distribution}. Probably CPAN::Digger needs to be updated");
+                }
+            }
+            # if there are not licenses =>
+            # if there is a license called "unknown"
         } else {
             $logger->error("distribution $distribution has no repository");
         }
         save_data($meta_filename, $meta);
     }
-
-
-    #my @licenses = @{ $release->license };
-    #$data->{licenses} = join ' ', @licenses;
-    #$logger->debug('      ',  $data->{licenses});
-    #for my $license (@licenses) {
-    #    if ($license eq 'unknown') {
-    #        $logger->error("Unknown license '$license' for $data->{distribution}");
-    #    } elsif (not exists $known_licenses{$license}) {
-    #        $logger->warn("Unknown license '$license' for $data->{distribution}. Probably CPAN::Digger needs to be updated");
-    #    }
-    #}
-    # if there are not licenses =>
-    # if there is a license called "unknonws"
-    # check against a known list of licenses (grow it later, or look it up somewhere?)
 
     #$data->{vcs_last_checked} = 0;
 

@@ -432,6 +432,7 @@ sub clone_one_vcs {
 
 sub read_dashboards {
     my ($self) = @_;
+
     my $path = 'dashboard';
     if (not -e $path) {
         system "$git clone https://github.com/davorg/dashboard.git";
@@ -554,14 +555,14 @@ sub analyze_github {
 sub get_every_distro {
     my ($self) = @_;
 
+    my @filenames = $self->get_all_distribution_filenames;
     my @distros;
-    my $dir = path($self->{data});
-    for my $data_file ( $dir->children ) {
+    for my $data_file (@filenames) {
         my $data = read_data($data_file);
         push @distros, $data;
     }
-    @distros = sort { $b->{date} cmp $a->{date} } @distros;
-    return \@distros;
+    @distros = sort { $b->{data}{date} cmp $a->{data}{date} } @distros;
+    return @distros;
 }
 
 
@@ -576,13 +577,13 @@ sub html {
     rcopy("static", $self->{html});
 
     $self->read_dashboards;
-    return;
 
-    my @distros = @{ $self->get_every_distro };
+    my @distros = $self->get_every_distro;
+
     my $count = 0;
     my @recent = grep { $count++ < 50 } @distros;
     $self->html_report('recent.html', \@recent);
-
+    return;
     my @authors = sort {$a cmp $b} uniq map { $_->{author} } @distros;
     for my $author (@authors) {
         my @filtered = grep { $_->{author} eq $author } @distros;
@@ -618,12 +619,12 @@ sub html_report {
     }
     for my $dist (@$distros) {
         #say Dumper $dist;
-        $dist->{dashboard} = $self->{dashboards}{ $dist->{author} };
+        $dist->{dashboard} = $self->{dashboards}{ $dist->{data}{author} };
         if ($dist->{vcs_name}) {
             $stats{has_vcs}++;
             $stats{vcs}{ $dist->{vcs_name} }++;
         } else {
-            if ($no_vcs_authors{ $dist->{author} }) {
+            if ($no_vcs_authors{ $dist->{data}{author} }) {
                 $dist->{vcs_not_interested} = 1;
             }
         }
@@ -636,7 +637,7 @@ sub html_report {
                 $stats{ci}{$ci}++ if $dist->{$ci};
             }
         } else {
-            if ($no_ci_authors{ $dist->{author} }) {
+            if ($no_ci_authors{ $dist->{data}{author} }) {
                 $dist->{ci_not_interested} = 1;
             }
             if ($no_ci_distros{ $dist->{distribution} }) {
@@ -644,6 +645,7 @@ sub html_report {
             }
         }
     }
+    #die Dumper $distros->[0];
     if ($stats{total}) {
         $stats{has_vcs_percentage} = int(100 * $stats{has_vcs} / $stats{total});
         $stats{has_bugz_percentage} = int(100 * $stats{has_bugz} / $stats{total});
@@ -727,7 +729,7 @@ sub stdout_report {
 
     print "Report\n";
     print "------------\n";
-    my @distros = @{ $self->get_every_distro };
+    my @distros = $self->get_every_distro;
     if ($self->{limit} and @distros > $self->{limit}) {
         @distros = @distros[0 .. $self->{limit}-1];
     }

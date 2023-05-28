@@ -371,7 +371,7 @@ sub clone_vcs {
         my $meta = read_data($meta_file);
         next if not $meta->{vcs_url};
 
-        $self->clone_one_vcs($meta->{vcs_url}, $meta->{vcs_folder}, $meta->{vcs_name}, $meta->{release_date}, $self->{force});
+        $self->clone_one_vcs($meta->{vcs_url}, $meta->{vcs_folder}, $meta->{vcs_name}, $meta->{distribution}, $meta->{release_date}, $self->{force});
 
         last if ++$counter >= $self->{clone_vcs};
 
@@ -380,7 +380,7 @@ sub clone_vcs {
 }
 
 sub clone_one_vcs {
-    my ($self, $vcs_url, $folder, $name, $release_date, $force) = @_;
+    my ($self, $vcs_url, $folder, $name, $distribution, $release_date, $force) = @_;
 
     my $logger = Log::Log4perl::get_logger("digger");
     $logger->info("Cloning $vcs_url to $folder");
@@ -403,7 +403,7 @@ sub clone_one_vcs {
         @cmd = ($git, "pull");
     } else {
         return if not $force and $release_dt lt $self->{start_time} - $TIME_TO_CLONE;
-        my $vcs_is_accessible = check_repo($vcs_url);
+        my $vcs_is_accessible = check_repo($vcs_url, $distribution);
         return if not $vcs_is_accessible;
 
         chdir $folder;
@@ -495,7 +495,7 @@ sub get_bugtracker {
 }
 
 sub check_repo {
-    my ($vcs_url) = @_;
+    my ($vcs_url, $distribution) = @_;
 
     my $logger = Log::Log4perl->get_logger('digger');
 
@@ -503,15 +503,15 @@ sub check_repo {
     my $response = $ua->get($vcs_url);
     my $status_line = $response->status_line;
     if ($status_line eq '404 Not Found') {
-        $logger->error("Repository '$vcs_url' Received 404 Not Found. Please update the link in the META file");
+        $logger->error("Repository '$vcs_url' of distribution $distribution Received 404 Not Found. Please update the link in the META file");
         return;
     }
     if ($response->code != 200) {
-        $logger->error("Repository '$vcs_url'  got a response of '$status_line'. Please report this to the maintainer of CPAN::Digger.");
+        $logger->error("Repository '$vcs_url' of distribution $distribution got a response of '$status_line'. Please report this to the maintainer of CPAN::Digger.");
         return;
     }
     if ($response->redirects) {
-        $logger->error("Repository '$vcs_url' is being redirected. Please update the link in the META file");
+        $logger->error("Repository '$vcs_url' of distribution $distribution is being redirected. Please update the link in the META file");
         return;
     }
 

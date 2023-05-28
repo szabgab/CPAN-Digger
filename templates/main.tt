@@ -30,8 +30,8 @@
     [% FOREACH item IN distros %]
         <tr>
           <td><a href="https://metacpan.org/dist/[% item.distribution %]">[% item.distribution %]</a></td>
-          <td><a href="https://metacpan.org/author/[% item.data.author %]">[% item.author %]</a></td>
-          <td>[% item.date %]</td>
+          <td><a href="https://metacpan.org/author/[% item.author %]">[% item.author %]</a></td>
+          <td>[% item.release_date %]</td>
           <td>
               [% IF item.vcs_url %]
                   <a href="[% item.vcs_url %]">[% item.vcs_name %]</a>

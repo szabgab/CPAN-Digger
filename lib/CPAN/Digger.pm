@@ -264,25 +264,28 @@ sub update_meta_data_from_releases {
         $logger->debug("distribution: $distribution");
         my $repository = $distribution_data->{data}{resources}{repository};
         my $meta = read_data($meta_filename);
+        $meta->{distribution} = $distribution_data->{distribution};
+        $meta->{release_date} = $distribution_data->{data}{date};
+        $meta->{version}      = $distribution_data->{data}{version};
+        $meta->{author}       = $distribution_data->{data}{author};
+
         if ($repository) {
-            my ($real_repo_url, $folder, $name, $vendor) = get_vcs($repository);
+            my ($real_vcs_url, $folder, $name, $vendor) = get_vcs($repository);
             if ($vendor) {
-                $meta->{repo_url} = $real_repo_url;
-                $meta->{repo_folder} = $folder;
-                $meta->{repo_name} = $name;
-                $meta->{repo_vendor} = $vendor;
-                $logger->info("VCS: $vendor $real_repo_url");
+                $meta->{vcs_url} = $real_vcs_url;
+                $meta->{vcs_folder} = $folder;
+                $meta->{vcs_name} = $name;
+                $meta->{vcs_vendor} = $vendor;
+                $logger->info("VCS: $vendor $real_vcs_url");
             }
+            $self->get_bugtracker($distribution_data->{data}{resources}, $meta);
+
         } else {
             $logger->error("distribution $distribution has no repository");
         }
         save_data($meta_filename, $meta);
     }
 
-    #$logger->debug('      ', $release->author);
-    #$data->{version}      = $release->version;
-    #$data->{author}       = $release->author;
-    #$data->{date}         = $release->date;
 
     #my @licenses = @{ $release->license };
     #$data->{licenses} = join ' ', @licenses;
@@ -297,9 +300,6 @@ sub update_meta_data_from_releases {
     # if there are not licenses =>
     # if there is a license called "unknonws"
     # check against a known list of licenses (grow it later, or look it up somewhere?)
-    #my %resources = %{ $release->resources };
-    ##say '  ', join ' ', keys %resources;
-    #$self->get_bugtracker(\%resources, $data);
 
     #$data->{vcs_last_checked} = 0;
 
@@ -370,11 +370,11 @@ sub clone_vcs {
     my $counter = 0;
     for my $meta_file (@meta_filenames) {
         my $meta = read_data($meta_file);
-        next if not $meta->{repo_url};
+        next if not $meta->{vcs_url};
 
-        my $repo_is_accessible = check_repo($meta->{repo_url});
-        if ($repo_is_accessible) {
-            $self->clone_one_vcs($meta->{repo_url}, $meta->{repo_folder}, $meta->{repo_name});
+        my $vcs_is_accessible = check_repo($meta->{vcs_url});
+        if ($vcs_is_accessible) {
+            $self->clone_one_vcs($meta->{vcs_url}, $meta->{vcs_folder}, $meta->{vcs_name});
         }
 
         last if ++$counter >= $self->{clone_vcs};
@@ -541,13 +541,13 @@ sub analyze_github {
 sub get_every_distro {
     my ($self) = @_;
 
-    my @filenames = $self->get_all_distribution_filenames;
+    my @filenames = $self->get_all_meta_filenames;
     my @distros;
     for my $data_file (@filenames) {
         my $data = read_data($data_file);
         push @distros, $data;
     }
-    @distros = sort { $b->{data}{date} cmp $a->{data}{date} } @distros;
+    @distros = sort { $b->{release_date} cmp $a->{release_date} } @distros;
     return @distros;
 }
 
@@ -562,9 +562,10 @@ sub html {
     mkdir "$self->{html}/lists";
     rcopy("static", $self->{html});
 
-    $self->read_dashboards;
 
     my @distros = $self->get_every_distro;
+
+    $self->read_dashboards;
 
     my $count = 0;
     my @recent = grep { $count++ < 50 } @distros;
@@ -605,12 +606,12 @@ sub html_report {
     }
     for my $dist (@$distros) {
         #say Dumper $dist;
-        $dist->{dashboard} = $self->{dashboards}{ $dist->{data}{author} };
+        $dist->{dashboard} = $self->{dashboards}{ $dist->{author} };
         if ($dist->{vcs_name}) {
             $stats{has_vcs}++;
             $stats{vcs}{ $dist->{vcs_name} }++;
         } else {
-            if ($no_vcs_authors{ $dist->{data}{author} }) {
+            if ($no_vcs_authors{ $dist->{author} }) {
                 $dist->{vcs_not_interested} = 1;
             }
         }
@@ -623,7 +624,7 @@ sub html_report {
                 $stats{ci}{$ci}++ if $dist->{$ci};
             }
         } else {
-            if ($no_ci_authors{ $dist->{data}{author} }) {
+            if ($no_ci_authors{ $dist->{author} }) {
                 $dist->{ci_not_interested} = 1;
             }
             if ($no_ci_distros{ $dist->{distribution} }) {
@@ -677,21 +678,21 @@ sub check_files_on_vcs {
     my $counter = 0;
     for my $meta_file (@meta_filenames) {
         my $meta = read_data($meta_file);
-        next if not $meta->{repo_url};
-        my $repo_folder = catfile($meta->{repo_folder}, $meta->{repo_name});
-        next if not -e $repo_folder; # not cloned yet
+        next if not $meta->{vcs_url};
+        my $vcs_folder = catfile($meta->{vcs_folder}, $meta->{vcs_name});
+        next if not -e $vcs_folder; # not cloned yet
 
-        $logger->info("folder: $repo_folder");
+        $logger->info("folder: $vcs_folder");
 
         #next if $data->{vcs_last_checked};
-        if ($meta->{repo_vendor} eq 'github') {
-            analyze_github($meta, $repo_folder);
+        if ($meta->{vcs_vendor} eq 'github') {
+            analyze_github($meta, $vcs_folder);
         }
-        if ($meta->{repo_vendor} eq 'gitlab') {
-            analyze_gitlab($meta, $repo_folder);
+        if ($meta->{vcs_vendor} eq 'gitlab') {
+            analyze_gitlab($meta, $vcs_folder);
         }
-        if ($meta->{repo_vendor} eq 'bitbucket') {
-            analyze_bitbucket($meta, $repo_folder);
+        if ($meta->{vcs_vendor} eq 'bitbucket') {
+            analyze_bitbucket($meta, $vcs_folder);
         }
 
         for my $ci (@ci_names) {

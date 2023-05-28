@@ -585,11 +585,18 @@ sub html {
         report => $self->perlweekly_report,
     });
 
-    my @authors = sort {$a cmp $b} uniq map { $_->{author} } @distros;
-    for my $author (@authors) {
-        $logger->info("Creating HTML page for author $author");
-        my @filtered = grep { $_->{author} eq $author } @distros;
-        $self->html_report("author/$author.html", \@filtered);
+    my @authors;
+    my @author_ids = sort {$a cmp $b} uniq map { $_->{author} } @distros;
+    for my $author_id (@author_ids) {
+        $logger->info("Creating HTML page for author $author_id");
+        my @filtered = grep { $_->{author} eq $author_id } @distros;
+        if (@filtered) {
+            $self->html_report("author/$author_id.html", \@filtered);
+            push @authors, {
+                id => $author_id,
+                count => scalar(@filtered),
+            };
+        }
     }
 
     $self->save_page('authors.tt', 'author/index.html', {

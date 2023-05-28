@@ -2,6 +2,6 @@
 
 <ul>
   [% FOREACH author IN authors %]
-    <li><a href="/author/[% author %]">[% author %]</a></li>
+    <li><a href="/author/[% author.id %]">[% author.id %] ([% author.count %])</a></li>
   [% END %]
 </ul>

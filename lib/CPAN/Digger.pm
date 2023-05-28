@@ -162,18 +162,13 @@ sub search_releases_on_metacpan {
 
     my $logger = Log::Log4perl->get_logger('digger');
     $logger->info("Recent: $self->{recent}") if $self->{recent};
-    $logger->info("Author: $self->{author}") if $self->{author};
     $logger->info("Filename $self->{filename}") if $self->{filename};
     $logger->info("Distribution $self->{distro}") if $self->{distro};
     $logger->info("All the releases") if $self->{releases};
 
     my $mcpan = MetaCPAN::Client->new();
     my $rset;
-    if ($self->{author}) {
-        my $author = $mcpan->author($self->{author});
-        #say $author;
-        $rset = $author->releases;
-    } elsif ($self->{filename}) {
+    if ($self->{filename}) {
         open my $fh, '<', $self->{filename} or die "Could not open '$self->{filename}' $!";
         my @releases = <$fh>;
         chomp @releases;

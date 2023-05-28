@@ -17,7 +17,6 @@ sub run {
 
     GetOptions(
         \%args,
-        'author=s',
         'authors',
         'coverage=i',
         'data=s',
@@ -58,8 +57,6 @@ Usage: $0
 
         --recent N         Number of the most recent packages to check
         --days N
-
-        --author PAUSEID   Get all the released of an author
         --limit N
 
         --filename path    Get the releases of the distributions listed in the file

@@ -11,6 +11,7 @@ use Data::Dumper qw(Dumper);
 use Data::Structure::Util qw(unbless);
 use DateTime         ();
 use DateTime::Duration;
+use DateTime::Format::ISO8601;
 use Exporter qw(import);
 use File::Copy::Recursive qw(rcopy);
 use File::Spec::Functions qw(catfile);
@@ -369,10 +370,7 @@ sub clone_vcs {
         my $meta = read_data($meta_file);
         next if not $meta->{vcs_url};
 
-        my $vcs_is_accessible = check_repo($meta->{vcs_url});
-        if ($vcs_is_accessible) {
-            $self->clone_one_vcs($meta->{vcs_url}, $meta->{vcs_folder}, $meta->{vcs_name});
-        }
+        $self->clone_one_vcs($meta->{vcs_url}, $meta->{vcs_folder}, $meta->{vcs_name}, $meta->{release_date}, $self->{force});
 
         last if ++$counter >= $self->{clone_vcs};
 
@@ -381,23 +379,35 @@ sub clone_vcs {
 }
 
 sub clone_one_vcs {
-    my ($self, $git_url, $folder, $name) = @_;
+    my ($self, $vcs_url, $folder, $name, $release_date, $force) = @_;
 
     my $logger = Log::Log4perl::get_logger("digger");
-    $logger->info("Cloning $git_url to $folder");
+    $logger->info("Cloning $vcs_url to $folder");
+
+
+    # When we first clone we would like to clone all the repos (we will use the $force)
+    # Later we would like to attempt to clone only repos of distros that were relesead in the last N minutes.
+    # We would also like to pull only repos of distros that were released in the last M days.
+    my $TIME_TO_CLONE = DateTime::Duration->new(days => 1);
+    my $TIME_TO_PULL = DateTime::Duration->new(days => 7);
+    my $release_dt = DateTime::Format::ISO8601->parse_datetime($release_date);
 
     make_path $folder;
-
-    chdir($folder);
     my @cmd;
-    if (-e $name) {
-        chdir($name);
-        # TODO: check if the git_url is the same as our remote or if it has moved; we can update the remote easily
+    if (-e catfile($folder, $name)) {
+        return if $release_dt lt $self->{start_time} - $TIME_TO_PULL;
+        # TODO: check if the vcs_url is the same as our remote or if it has moved; we can update the remote easily
         @cmd = ($git, "pull");
     } else {
-        @cmd = ($git, "clone", $git_url);
+        return if not $force and $release_dt lt $self->{start_time} - $TIME_TO_CLONE;
+        my $vcs_is_accessible = check_repo($vcs_url);
+        return if not $vcs_is_accessible;
+
+        @cmd = ($git, "clone", $vcs_url);
     }
-    $logger->info(join(" ", @cmd));
+
+    $logger->info("cmd: @cmd");
+    chdir $folder;
     my ($out, $err, $exit_code) = capture {
         system(@cmd);
     };
@@ -409,7 +419,7 @@ sub clone_one_vcs {
         return;
     }
 
-    return 1;
+    return;
 }
 
 

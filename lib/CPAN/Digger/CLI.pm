@@ -22,6 +22,7 @@ sub run {
         'data=s',
         'days:i',
         'distro=s',
+        'force',
         'help',
         'html=s',
         'limit=i',
@@ -65,6 +66,7 @@ Usage: $0
     Get from VCS
         --clone NUMBER     Fetch information from GitHub, GitLab, etc. for NUMBER projects.
         --sleep SECONDS    Wait time between git clone operations, defaults to 0
+        --force            Try to clone even for old releases
 
 
     Local processing

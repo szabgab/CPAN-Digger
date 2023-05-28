@@ -273,7 +273,7 @@ sub update_meta_data_from_releases {
         $meta->{cover_total}  = $coverage->{total};
 
         if ($repository) {
-            my ($real_vcs_url, $folder, $name, $vendor) = get_vcs($repository);
+            my ($real_vcs_url, $folder, $name, $vendor) = get_vcs($repository, $distribution);
             if ($vendor) {
                 $meta->{vcs_url} = $real_vcs_url;
                 $meta->{vcs_folder} = $folder;
@@ -287,9 +287,9 @@ sub update_meta_data_from_releases {
             $logger->info("      $meta->{licenses}");
             for my $license (@licenses) {
                 if ($license eq 'unknown') {
-                    $logger->error("Unknown license '$license' for $meta->{distribution}");
+                    $logger->error("Unknown license '$license' for $distribution");
                 } elsif (not exists $known_licenses{$license}) {
-                    $logger->warn("Unknown license '$license' for $meta->{distribution}. Probably CPAN::Digger needs to be updated");
+                    $logger->warn("Unknown license '$license' for $distribution. Probably CPAN::Digger needs to be updated");
                 }
             }
             # if there are not licenses =>
@@ -416,7 +416,7 @@ sub clone_one_vcs {
     };
     chdir($root);
     if ($exit_code) {
-        $logger->error("exit code: $exit_code");
+        $logger->error("exit code: $exit_code in command '@cmd' distribution $distribution");
         $logger->error("stdout: $out");
         $logger->error("stderr: $err");
         return;
@@ -441,7 +441,7 @@ sub read_dashboards {
 }
 
 sub get_vcs {
-    my ($repository) = @_;
+    my ($repository, $distribution) = @_;
 
     my $logger = Log::Log4perl->get_logger('digger');
 
@@ -452,7 +452,7 @@ sub get_vcs {
     if (not $url) {
         $url = $repository->{url};
         if (not $url) {
-            $logger->error("No URL found");
+            $logger->error("No URL found in distribution $distribution");
             return;
         }
     }
@@ -474,7 +474,7 @@ sub get_vcs {
         return $git_url, $folder, $name, $vendor;
     }
 
-    $logger->error("Unrecognized vendor for $url");
+    $logger->error("Unrecognized vendor for $url in distribution $distribution");
     return;
 }
 

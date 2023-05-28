@@ -585,7 +585,7 @@ sub html {
 
     my @authors = sort {$a cmp $b} uniq map { $_->{author} } @distros;
     for my $author (@authors) {
-        $log->info("Creating HTML page for author $author");
+        $logger->info("Creating HTML page for author $author");
         my @filtered = grep { $_->{author} eq $author } @distros;
         $self->html_report("author/$author.html", \@filtered);
     }

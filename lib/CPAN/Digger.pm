@@ -260,6 +260,9 @@ sub update_meta_data_from_releases {
         my $distribution_data = read_data($distribution_file);
         my $prefix = substr(basename($distribution_file), 0, 2);
         mkdir catfile($self->{data}, 'meta', $prefix);
+        my $coverage_filename = catfile($self->{data}, 'metacpan', 'coverage', $prefix, basename($distribution_file));
+        my $coverage = read_data($coverage_filename);
+
         my $meta_filename = catfile($self->{data}, 'meta', $prefix, basename($distribution_file));
         $logger->info("distribution $distribution_file => $meta_filename");
         my $distribution = $distribution_data->{distribution};
@@ -270,6 +273,7 @@ sub update_meta_data_from_releases {
         $meta->{release_date} = $distribution_data->{data}{date};
         $meta->{version}      = $distribution_data->{data}{version};
         $meta->{author}       = $distribution_data->{data}{author};
+        $meta->{cover_total}  = $coverage->{total};
 
         if ($repository) {
             my ($real_vcs_url, $folder, $name, $vendor) = get_vcs($repository);

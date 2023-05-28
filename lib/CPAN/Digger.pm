@@ -603,7 +603,7 @@ sub html_recent {
     my $count = 0;
     my @recent = grep { $count++ < 50 } @$distributions;
     my ($distros, $stats) = $self->prepare_html_report(\@recent);
-    $self->save_page('main.tt', 'recent.html', {
+    $self->save_page('recent.tt', 'recent.html', {
         distros => $distros,
         version => $VERSION,
         timestamp => DateTime->now,
@@ -627,17 +627,19 @@ sub html_authors {
         my @filtered = grep { $_->{author} eq $author_id } @$distributions;
         if (@filtered) {
             my ($distros, $stats) = $self->prepare_html_report(\@filtered);
-            $self->save_page('main.tt', "author/$author_id.html", {
+            my %author = (
+                id => $author_id,
+                count => scalar(@filtered),
+            );
+            $self->save_page('author.tt', "author/$author_id.html", {
                 distros => $distros,
                 version => $VERSION,
                 timestamp => DateTime->now,
                 stats => $stats,
+                author => \%author,
             });
 
-            push @authors, {
-                id => $author_id,
-                count => scalar(@filtered),
-            };
+            push @authors, \%author;
         }
         last if $self->{limit} and ++$counter >= $self->{limit};
     }

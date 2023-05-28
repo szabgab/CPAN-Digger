@@ -577,7 +577,14 @@ sub html {
 
     my $count = 0;
     my @recent = grep { $count++ < 50 } @distros;
-    $self->html_report('recent.html', \@recent);
+    my ($distros, $stats) = $self->prepare_html_report(\@recent);
+    $self->save_page('main.tt', 'recent.html', {
+        distros => $distros,
+        version => $VERSION,
+        timestamp => DateTime->now,
+        stats => $stats,
+    });
+
 
     $self->save_page('weekly.tt', 'weekly.html', {
         version => $VERSION,
@@ -591,7 +598,14 @@ sub html {
         $logger->info("Creating HTML page for author $author_id");
         my @filtered = grep { $_->{author} eq $author_id } @distros;
         if (@filtered) {
-            $self->html_report("author/$author_id.html", \@filtered);
+            my ($distros, $stats) = $self->prepare_html_report(\@filtered);
+            $self->save_page('main.tt', "author/$author_id.html", {
+                distros => $distros,
+                version => $VERSION,
+                timestamp => DateTime->now,
+                stats => $stats,
+            });
+
             push @authors, {
                 id => $author_id,
                 count => scalar(@filtered),
@@ -613,8 +627,9 @@ sub html {
     $logger->info("Generating HTML pages ended");
 }
 
-sub html_report {
-    my ($self, $page, $distros) = @_;
+sub prepare_html_report {
+    my ($self, $distributions) = @_;
+    my $distros = dclone $distributions;
 
     my %stats = (
         total => scalar @$distros,
@@ -663,13 +678,7 @@ sub html_report {
         $stats{has_ci_percentage} = int(100 * $stats{has_ci} / $stats{total});
     }
 
-    $self->save_page('main.tt', $page, {
-        distros => $distros,
-        version => $VERSION,
-        timestamp => DateTime->now,
-        stats => \%stats,
-    });
-
+    return $distros, \%stats;
 }
 
 sub perlweekly_report {

@@ -592,12 +592,29 @@ sub html {
         report => $self->perlweekly_report,
     });
 
+    $self->html_authors(\@distros);
+
+    $self->save_page('index.tt', 'index.html', {
+        version => $VERSION,
+        timestamp => DateTime->now,
+    });
+
+    $logger->info("Generating HTML pages ended");
+}
+
+sub html_authors {
+    my ($self, $distributions) = @_;
+
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Generating HTML pages for authors");
+
+
     my @authors;
-    my @author_ids = sort {$a cmp $b} uniq map { $_->{author} } @distros;
+    my @author_ids = sort {$a cmp $b} uniq map { $_->{author} } @$distributions;
     my $counter = 0;
     for my $author_id (@author_ids) {
         $logger->info("Creating HTML page for author $author_id");
-        my @filtered = grep { $_->{author} eq $author_id } @distros;
+        my @filtered = grep { $_->{author} eq $author_id } @$distributions;
         if (@filtered) {
             my ($distros, $stats) = $self->prepare_html_report(\@filtered);
             $self->save_page('main.tt', "author/$author_id.html", {
@@ -621,12 +638,7 @@ sub html {
         authors => \@authors,
     });
 
-    $self->save_page('index.tt', 'index.html', {
-        version => $VERSION,
-        timestamp => DateTime->now,
-    });
-
-    $logger->info("Generating HTML pages ended");
+    $logger->info("Generating HTML pages for authors ended");
 }
 
 sub prepare_html_report {

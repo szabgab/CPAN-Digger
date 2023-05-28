@@ -575,17 +575,7 @@ sub html {
 
     $self->read_dashboards;
 
-    my $count = 0;
-    my @recent = grep { $count++ < 50 } @distros;
-    my ($distros, $stats) = $self->prepare_html_report(\@recent);
-    $self->save_page('main.tt', 'recent.html', {
-        distros => $distros,
-        version => $VERSION,
-        timestamp => DateTime->now,
-        stats => $stats,
-    });
-
-
+    $self->html_recent(\@distros);
     $self->save_page('weekly.tt', 'weekly.html', {
         version => $VERSION,
         timestamp => DateTime->now,
@@ -601,6 +591,21 @@ sub html {
 
     $logger->info("Generating HTML pages ended");
 }
+
+sub html_recent {
+    my ($self, $distributions) = @_;
+
+    my $count = 0;
+    my @recent = grep { $count++ < 50 } @$distributions;
+    my ($distros, $stats) = $self->prepare_html_report(\@recent);
+    $self->save_page('main.tt', 'recent.html', {
+        distros => $distros,
+        version => $VERSION,
+        timestamp => DateTime->now,
+        stats => $stats,
+    });
+}
+
 
 sub html_authors {
     my ($self, $distributions) = @_;

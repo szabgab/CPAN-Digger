@@ -63,7 +63,7 @@ Usage: $0
         --coverage         Get all the coverage data
 
     Get from VCS
-        --vcs              Fetch information from GitHub, GitLab, etc.
+        --clone NUMBER     Fetch information from GitHub, GitLab, etc. for NUMBER projects.
         --sleep SECONDS    Wait time between git clone operations, defaults to 0
 
 

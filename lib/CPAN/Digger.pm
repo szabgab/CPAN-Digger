@@ -17,7 +17,6 @@ use File::Copy::Recursive qw(rcopy);
 use File::Spec::Functions qw(catfile);
 use File::Basename qw(basename);
 use File::Path qw(make_path);
-use File::Temp qw(tempdir);
 use JSON ();
 use List::MoreUtils qw(uniq);
 use Log::Log4perl ();
@@ -40,9 +39,6 @@ my %no_vcs_authors = map { $_ => 1 } qw(PEVANS NLNETLABS RATCLIFFE JPIERCE GWYN 
 my %no_ci_authors = map { $_ => 1 } qw(SISYPHUS GENE PERLANCAR);
 
 my %no_ci_distros = map { $_ => 1 } qw(Kelp-Module-Sereal);
-
-
-my $tempdir = tempdir( CLEANUP => ($ENV{KEEP_TEMPDIR} ? 0 : 1) );
 
 my %known_licenses = map {$_ => 1} qw(agpl_3 apache_1_1 apache_2_0 artistic_1 artistic_2 bsd freebsd gpl_1 gpl_2 gpl_3 lgpl_2_1 lgpl_3_0 mit mozilla_1_1 perl_5);
 # open_source, unknown, restricted, unrestricted, zlib

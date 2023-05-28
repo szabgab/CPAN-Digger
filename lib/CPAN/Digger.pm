@@ -251,6 +251,7 @@ sub update_meta_data_from_releases {
     return if not $self->{meta};
 
     my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Update meta data from the releases");
 
     my @distribution_filenames = $self->get_all_distribution_filenames;
     my $counter = 0;

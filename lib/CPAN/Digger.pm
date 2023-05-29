@@ -772,7 +772,7 @@ sub save_page {
 
     my %params = %$params;
     $params{version} = $VERSION;
-    $params{timestamp} = $self->{start_time};
+    $params{timestamp} = "$self->{start_time}+00:00";
 
     my $tt = Template->new({
         INCLUDE_PATH => './templates',

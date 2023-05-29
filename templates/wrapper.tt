@@ -30,7 +30,7 @@
 [% content -%]
     </div>
     <footer>
-CPAN Digger written by <a href="https://twitter.com/szabgab">@szabgab</a> / Code on <a href="https://github.com/szabgab/CPAN-Digger">GitHub</a> / Last updated: [% timestamp %] /
+CPAN Digger written by <a href="https://twitter.com/szabgab">@szabgab</a> / Code on <a href="https://github.com/szabgab/CPAN-Digger">GitHub</a> / Last updated: <span class="localdate" x-date="[% timestamp %]"></span> /
 Support the work via <a href="https://www.patreon.com/szabgab">Patreon</a> or <a href="https://github.com/sponsors/szabgab">GitHub</a>.
     </footer>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

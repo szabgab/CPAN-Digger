@@ -1,0 +1,16 @@
+<h1>CPAN Digger</h1>
+    <div>
+    Showing information about <a href="https://metacpan.org/release/[% distro.distribution %]">[% distro.distribution %]</a> version [% distro.version %]
+    released on [% distro.release_date %] by <a href="/author/[% distro.author %]">[% distro.author %]</a>.
+
+    <div>licenses: [% distro.licenses %]</div>
+    <div>Repository: <a href="[% distro.vcs_url %]">[% distro.vcs_vendor %]</a></div>
+    <div>Issues: <a href="[% distro.issues %]">issues</a></div>
+
+    </div>
+
+<h2>Runtime Dependencies</h2>
+
+    [% INCLUDE table.tt %]
+
+

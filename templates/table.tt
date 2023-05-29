@@ -1,3 +1,4 @@
+    Total: [% distros.size %]
     <table class="table table-striped table-hover" id="sort_table">
       <thead>
         <tr>
@@ -16,7 +17,7 @@
 
     [% FOREACH item IN distros %]
         <tr>
-          <td><a href="https://metacpan.org/dist/[% item.distribution %]">[% item.distribution %]</a></td>
+          <td><a href="/dist/[% item.distribution %]">[% item.distribution %]</a></td>
           <td><a href="/author/[% item.author %]">[% item.author %]</a></td>
           <td>[% item.release_date %]</td>
           <td>

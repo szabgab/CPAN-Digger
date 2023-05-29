@@ -22,6 +22,7 @@ use List::MoreUtils qw(uniq);
 use Log::Log4perl ();
 use LWP::UserAgent ();
 use MetaCPAN::Client ();
+use Module::CoreList;
 use Path::Tiny qw(path);
 use Storable qw(dclone);
 use Template ();
@@ -567,7 +568,91 @@ sub get_every_distro {
         push @distros, $data;
     }
     @distros = sort { $b->{release_date} cmp $a->{release_date} } @distros;
+
+    $self->{distro_to_meta} = {};
+    for my $distro (@distros) {
+        $self->{distro_to_meta}{$distro->{distribution}} = $distro;
+    }
     return @distros;
+}
+
+sub get_dependencies {
+    my ($self, $distro_name) = @_;
+
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Get dependencies of $distro_name");
+
+    my @distributions;
+    # say $distro_name;
+    my %seen;
+    my @dependencies = ($distro_name);
+    while (@dependencies) {
+        my $current_distro_name = shift @dependencies;
+        next if $seen{$current_distro_name};
+        $logger->info("Processing dependencies of $current_distro_name");
+
+        push @distributions, $self->{distro_to_meta}{$current_distro_name};
+        $seen{$current_distro_name} = 1;
+        for my $dep (@{ $self->{dependencies}{$current_distro_name} }) {
+            next if $dep->{phase} ne 'runtime';
+            #die Dumper $dep;
+            my $module = $dep->{module};
+            next if $module eq 'perl';
+            next if Module::CoreList->first_release($module);
+            if (not $self->{module_to_distro}{$module}) {
+                if (not $seen{$module}) {
+                    $logger->warn("Module $module is a dependency, but we could not find which distribution provides it. Is it core?");
+                    $seen{$module} = 1;
+                }
+            } else {
+                my $new_distro = $self->{module_to_distro}{$module};
+                # module was utf8
+                #next if $new_distro eq 'perl';
+                push @dependencies, $new_distro;
+            }
+        }
+    }
+
+    return @distributions;
+}
+
+sub load_dependencies {
+    my ($self) = @_;
+
+    my $logger = Log::Log4perl->get_logger('digger');
+
+    my@distros = $self->get_all_distribution_filenames;
+    my %dependencies;
+    my %module_to_distro;
+    for my $distro_filename (@distros) {
+        my $distro =  read_data($distro_filename);
+        # die Dumper $distro->{data}{dependency};
+        # [
+        #   {
+        #     'phase' =>  # build, runtime, configure
+        #     'version' => '0',
+        #     'relationship' => 'requires',
+        #     'module' => 'ExtUtils::MakeMaker'
+        #   },
+        # ]
+
+        $dependencies{$distro->{distribution}} = $distro->{data}{dependency};
+        for my $module (@{ $distro->{data}{provides} }) {
+            if ($module_to_distro{$module}) {
+                if ($module_to_distro{$module} eq $distro->{distribution}) {
+                    $logger->warn("Module $module provided twice by $distro->{distribution}");
+                    # Date-Simple' is provided twice by 'Date-Simple'
+                } else {
+                    $logger->error("Module $module provided by two different distributions. Both by '$module_to_distro{$module}' and by '$distro->{distribution}'");
+                    # TODO: How will cpanm decide which one to install when the user wants to install the module? The newer release?
+                    # Module Datahub::Factory::Importer::VKC provided by two distributions both 'Datahub-Factory-Arthub' and 'Datahub-Factory-VKC'
+                }
+            }
+            $module_to_distro{$module} = $distro->{distribution};
+        }
+    }
+    $self->{dependencies} = \%dependencies;
+    $self->{module_to_distro} = \%module_to_distro;
 }
 
 sub html {
@@ -579,6 +664,7 @@ sub html {
     $logger->info("Generating HTML pages");
 
     mkdir $self->{html};
+    mkdir "$self->{html}/dist";
     mkdir "$self->{html}/author";
     mkdir "$self->{html}/lists";
     rcopy("static", $self->{html});
@@ -589,6 +675,7 @@ sub html {
 
     $self->html_recent(\@distros);
     $self->html_weekly;
+    $self->html_distributions(\@distros);
     $self->html_authors(\@distros);
 
     $self->save_page('index.tt', 'index.html', {
@@ -596,6 +683,30 @@ sub html {
 
     $logger->info("Generating HTML pages ended");
 }
+
+sub html_distributions {
+    my ($self, $distributions) = @_;
+
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Generating HTML pages for distributions");
+
+    $self->load_dependencies;
+
+    my $counter = 0;
+    for my $distribution (@$distributions) {
+        #say Dumper $distribution;
+        my @distros = $self->get_dependencies($distribution->{distribution});
+        $self->save_page('distribution.tt', "dist/$distribution->{distribution}.html", {
+            distro => $distribution,
+            distros => \@distros,
+        });
+
+        last if $self->{limit} and ++$counter >= $self->{limit};
+    }
+    $logger->info("Generating HTML pages for distributions ended");
+}
+
+
 
 sub html_weekly {
     my ($self) = @_;

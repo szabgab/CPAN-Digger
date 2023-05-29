@@ -387,6 +387,18 @@ sub clone_one_vcs {
     # When we first clone we would like to clone all the repos (we will use the $force)
     # Later we would like to attempt to clone only repos of distros that were relesead in the last N minutes.
     # We would also like to pull only repos of distros that were released in the last M days.
+    # The problem is that if someone removes travis and adds GitHub Actions (or makes any other change to the git repository)
+    # without releasing a new verssion - which can happen to someone who would only want to modernize the infrastructurs
+    # We won't be able to show this.
+    # Time measurements on 2023.05.29 on the server where CPAN Digger runs of `git pull` on a GitHub-based project that has nothing to bring.
+    # `time git pull` shows  0.245s   if the remote is https://github.com
+    # `time git pull` shows  0.726s   if the remote is git@github.com
+    # the logs indicate 260 ms  (based on the %r report of Log::Log4perl
+    # On 2023.05.29
+    # find cpan-digger/metacpan/distributions/ | grep json | wc    indicates 39,195 entries
+    # ll repos/*/* | grep ^d | wc      indicates that that there are 16,118 repositories.
+    # CPAN.Rocks indicates 39,209 distributions, 13,538 of them having git. 32 hg, 21 svn
+    # So if we execute git pull on all the 13,538 repos it will take about 3384 sec, roughly 1 hour.
     my $TIME_TO_CLONE = DateTime::Duration->new(days => 1);
     my $TIME_TO_PULL = DateTime::Duration->new(days => 7);
     my $release_dt = DateTime::Format::ISO8601->parse_datetime($release_date);
@@ -394,7 +406,7 @@ sub clone_one_vcs {
     make_path $folder;
     my @cmd;
     if (-e catfile($folder, $name)) {
-        return if $release_dt lt $self->{start_time} - $TIME_TO_PULL;
+        return if not $self->{pull} and $release_dt lt $self->{start_time} - $TIME_TO_PULL;
         # TODO: check if the vcs_url is the same as our remote or if it has moved; we can update the remote easily
 
         chdir catfile($folder, $name);

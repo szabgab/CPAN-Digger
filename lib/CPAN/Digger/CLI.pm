@@ -28,6 +28,7 @@ sub run {
         'log=s',
         'meta',
         'metavcs',
+        'pull',
         'recent=i',
         'releases',
         'sleep=i',
@@ -65,6 +66,7 @@ Usage: $0
         --clone NUMBER     Fetch information from GitHub, GitLab, etc. for NUMBER projects.
         --sleep SECONDS    Wait time between git clone operations, defaults to 0
         --force            Try to clone even for old releases
+        --pull             Try to git pull even if there was no recent release
 
 
     Local processing

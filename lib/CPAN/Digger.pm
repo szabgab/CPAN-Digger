@@ -592,8 +592,6 @@ sub html {
     $self->html_authors(\@distros);
 
     $self->save_page('index.tt', 'index.html', {
-        version => $VERSION,
-        timestamp => DateTime->now,
     });
 
     $logger->info("Generating HTML pages ended");
@@ -603,8 +601,6 @@ sub html_weekly {
     my ($self) = @_;
 
     $self->save_page('weekly.tt', 'weekly.html', {
-        version => $VERSION,
-        timestamp => DateTime->now,
         report => $self->perlweekly_report,
     });
 }
@@ -617,8 +613,6 @@ sub html_recent {
     my ($distros, $stats) = $self->prepare_html_report(\@recent);
     $self->save_page('recent.tt', 'recent.html', {
         distros => $distros,
-        version => $VERSION,
-        timestamp => DateTime->now,
         stats => $stats,
     });
 }
@@ -645,8 +639,6 @@ sub html_authors {
             );
             $self->save_page('author.tt', "author/$author_id.html", {
                 distros => $distros,
-                version => $VERSION,
-                timestamp => DateTime->now,
                 stats => $stats,
                 author => \%author,
             });
@@ -657,8 +649,6 @@ sub html_authors {
     }
 
     $self->save_page('authors.tt', 'author/index.html', {
-        version => $VERSION,
-        timestamp => DateTime->now,
         authors => \@authors,
     });
 
@@ -780,6 +770,10 @@ sub perlweekly_report {
 sub save_page {
     my ($self, $template, $file, $params) = @_;
 
+    my %params = %$params;
+    $params{version} = $VERSION;
+    $params{timestamp} = $self->{start_time};
+
     my $tt = Template->new({
         INCLUDE_PATH => './templates',
         INTERPOLATE  => 1,
@@ -787,7 +781,7 @@ sub save_page {
     }) or die "$Template::ERROR\n";
 
     my $html;
-    $tt->process($template, $params, \$html) or die $tt->error(), "\n";
+    $tt->process($template, \%params, \$html) or die $tt->error(), "\n";
     my $html_file = catfile($self->{html}, $file);
     open(my $fh, '>', $html_file) or die "Could not open '$html_file'";
     print $fh $html;

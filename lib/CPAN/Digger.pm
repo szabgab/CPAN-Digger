@@ -368,7 +368,7 @@ sub clone_vcs {
         my $meta = read_data($meta_file);
         next if not $meta->{vcs_url};
 
-        $self->clone_one_vcs($meta->{vcs_url}, $meta->{vcs_folder}, $meta->{vcs_name}, $meta->{distribution}, $meta->{release_date}, $self->{force});
+        $self->clone_one_vcs($meta->{vcs_url}, $meta->{vcs_folder}, $meta->{vcs_name}, $meta->{distribution}, $meta->{release_date});
 
         last if ++$counter >= $self->{clone_vcs};
 
@@ -379,12 +379,12 @@ sub clone_vcs {
 }
 
 sub clone_one_vcs {
-    my ($self, $vcs_url, $folder, $name, $distribution, $release_date, $force) = @_;
+    my ($self, $vcs_url, $folder, $name, $distribution, $release_date) = @_;
 
     my $logger = Log::Log4perl::get_logger("digger");
     $logger->info("Cloning $vcs_url to $folder");
 
-    # When we first clone we would like to clone all the repos (we will use the $force)
+    # When we first clone we would like to clone all the repos (we will use the force)
     # Later we would like to attempt to clone only repos of distros that were relesead in the last N minutes.
     # We would also like to pull only repos of distros that were released in the last M days.
     # The problem is that if someone removes travis and adds GitHub Actions (or makes any other change to the git repository)
@@ -412,7 +412,7 @@ sub clone_one_vcs {
         chdir catfile($folder, $name);
         @cmd = ($git, "pull");
     } else {
-        return if not $force and $release_dt lt $self->{start_time} - $TIME_TO_CLONE;
+        return if not $self->{force} and $release_dt lt $self->{start_time} - $TIME_TO_CLONE;
         my $vcs_is_accessible = check_repo($vcs_url, $distribution);
         return if not $vcs_is_accessible;
 

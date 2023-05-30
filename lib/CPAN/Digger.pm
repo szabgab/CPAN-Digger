@@ -699,6 +699,7 @@ sub html_distributions {
         $self->save_page('distribution.tt', "dist/$distribution->{distribution}.html", {
             distro => $distribution,
             distros => \@distros,
+            title => "$distribution->{distribution} on CPAN Digger",
         });
 
         last if $self->{limit} and ++$counter >= $self->{limit};
@@ -713,6 +714,7 @@ sub html_weekly {
 
     $self->save_page('weekly.tt', 'weekly.html', {
         report => $self->perlweekly_report,
+        title => "Weekly report",
     });
 }
 
@@ -725,6 +727,7 @@ sub html_recent {
     $self->save_page('recent.tt', 'recent.html', {
         distros => $distros,
         stats => $stats,
+        title => "Recent releases on CPAN Digger",
     });
 }
 
@@ -752,6 +755,7 @@ sub html_authors {
                 distros => $distros,
                 stats => $stats,
                 author => \%author,
+                title => "$author{id} on CPAN Digger",
             });
 
             push @authors, \%author;
@@ -761,6 +765,7 @@ sub html_authors {
 
     $self->save_page('authors.tt', 'author/index.html', {
         authors => \@authors,
+        title => "List of authors",
     });
 
     $logger->info("Generating HTML pages for authors ended");
@@ -884,6 +889,7 @@ sub save_page {
     my %params = %$params;
     $params{version} = $VERSION;
     $params{timestamp} = "$self->{start_time}+00:00";
+    $params{title} //= "CPAN Digger";
 
     my $tt = Template->new({
         INCLUDE_PATH => './templates',

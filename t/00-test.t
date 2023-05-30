@@ -3,42 +3,47 @@ use warnings;
 
 use Test::More;
 use File::Temp qw(tempdir);
-use File::Spec ();
+use File::Spec::Functions qw(catfile);
 use Capture::Tiny qw(capture);
 
 
-subtest recent => sub {
+subtest downloading_recent_distribtions => sub {
     my $dir = tempdir( CLEANUP => 1 );
     diag "tempdir: $dir";
     my ($out, $err, $exit) = capture {
-        system($^X, '-Ilib', 'bin/cpan-digger', '--data', $dir, '--recent', '2', '--log', 'OFF');
+        system($^X, '-Ilib', 'bin/cpan-digger', '--data', catfile($dir, 'data'), '--repos', catfile($dir, 'repos'), '--recent', '10', '--log', 'OFF');
     };
 
     is $exit, 0;
     is $err, '';
     is $out, '';
+
+    my $distro_folder = catfile($dir, 'data', 'metacpan', 'distributions');
+    ok -e $distro_folder;
+    opendir my $dh, $distro_folder or die;
+    my @folders = readdir $dh;
+    cmp_ok scalar(@folders), '>', 0;
 };
 
-subtest author => sub {
+subtest downloading_authors => sub {
     my $dir = tempdir( CLEANUP => 1 );
     diag "tempdir: $dir";
 
     my ($out, $err, $exit) = capture {
-        system($^X, '-Ilib', 'bin/cpan-digger', '--data', $dir, '--author', 'SZABGAB', '--log', 'OFF');
+        system($^X, '-Ilib', 'bin/cpan-digger', '--data', catfile($dir, 'data'), '--repos', catfile($dir, 'repos'), '--authors', '--log', 'OFF');
     };
 
     is $exit, 0;
     is $err, '';
     is $out, '';
-
-    # run it again
-    ($out, $err, $exit) = capture {
-        system($^X, '-Ilib', 'bin/cpan-digger', '--data', $dir, '--author', 'SZABGAB', '--log', 'OFF');
-    };
-
-    is $exit, 0;
-    is $err, '';
-    is $out, '';
+    # system "tree $dir";
+    my $authors_folder = catfile($dir, 'data', 'metacpan', 'authors');
+    ok -e $authors_folder;
+    opendir my $dh, $authors_folder or die;
+    my @folders = readdir $dh;
+    cmp_ok scalar(@folders), '>', 600;
+    # this is the number of 2-letter prefixes, it was 625 the last time I ran this
+    # the json files are inside those folders
 };
 
 done_testing();

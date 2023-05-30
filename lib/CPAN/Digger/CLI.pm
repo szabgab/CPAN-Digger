@@ -12,6 +12,7 @@ sub run {
     my %args = (
         data     => 'cpan-digger',
         log      => 'INFO',
+        repos    => 'repos',
         sleep    => 0,
     );
 
@@ -31,6 +32,7 @@ sub run {
         'pull',
         'recent=i',
         'releases',
+        'repos=s',
         'sleep=i',
         'clone=i',
         'version',

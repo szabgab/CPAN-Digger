@@ -58,7 +58,7 @@ sub new {
     $self->{start_time} = $dt;
     $self->{data} = $args{data}; # data folder where we store the json files
     mkdir "logs";
-    mkdir "repos";
+    mkdir $self->{repos};
     make_path "$self->{data}/meta";
     make_path "$self->{data}/metacpan/distributions";
     make_path "$self->{data}/metacpan/authors";
@@ -272,7 +272,7 @@ sub update_meta_data_from_releases {
         $meta->{cover_total}  = $coverage->{total};
 
         if ($repository) {
-            my ($real_vcs_url, $folder, $name, $vendor) = get_vcs($repository, $distribution);
+            my ($real_vcs_url, $folder, $name, $vendor) = $self->get_vcs($repository, $distribution);
             if ($vendor) {
                 $meta->{vcs_url} = $real_vcs_url;
                 $meta->{vcs_folder} = $folder;
@@ -452,7 +452,7 @@ sub read_dashboards {
 }
 
 sub get_vcs {
-    my ($repository, $distribution) = @_;
+    my ($self, $repository, $distribution) = @_;
 
     my $logger = Log::Log4perl->get_logger('digger');
 
@@ -481,7 +481,7 @@ sub get_vcs {
         my $name = $3;
         $vendor = substr($vendor_host, 0, -4);
         $git_url = "https://$vendor_host/$owner/$name";
-        my $folder = catfile('repos', $vendor, $owner);
+        my $folder = catfile($self->{repos}, $vendor, $owner);
         return $git_url, $folder, $name, $vendor;
     }
 

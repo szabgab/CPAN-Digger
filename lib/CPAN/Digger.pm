@@ -107,6 +107,15 @@ sub setup_logger {
       log4perl.appender.Logfile.layout.ConversionPattern = %d{yyyy-MM-dd HH:mm:ss} [%r] %F %L %p %m%n
     );
 
+    # avoid creating empty log file when the logger is OFF:
+    if ($log_level eq 'OFF') {
+        $conf = qq(
+          log4perl.category.digger           = $log_level, Screen
+          log4perl.appender.Screen         = Log::Log4perl::Appender::Screen
+          log4perl.appender.Screen.layout = Log::Log4perl::Layout::SimpleLayout
+        );
+    }
+
     Log::Log4perl::init( \$conf );
 
 }

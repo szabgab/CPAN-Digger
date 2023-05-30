@@ -54,6 +54,8 @@ sub new {
     $self->{clone_vcs} = delete $self->{clone};
     $self->{total} = 0;
 
+    $self->{dependencies} = {};
+
     my $dt = DateTime->now;
     $self->{start_time} = $dt;
     $self->{data} = $args{data}; # data folder where we store the json files
@@ -588,39 +590,41 @@ sub get_every_distro {
 sub get_dependencies {
     my ($self, $distro_name) = @_;
 
+    if ($self->{dependencies}{$distro_name}) {
+        return @{$self->{dependencies}{$distro_name}};
+    }
+    $self->{dependencies}{$distro_name} = []; # avoid recursive call for the same distro
+
     my $logger = Log::Log4perl->get_logger('digger');
     $logger->info("Get dependencies of $distro_name");
 
-    my @distributions;
-    # say $distro_name;
-    my %seen;
-    my @dependencies = ($distro_name);
-    while (@dependencies) {
-        my $current_distro_name = shift @dependencies;
-        next if $seen{$current_distro_name};
-        $logger->info("Processing dependencies of $current_distro_name");
+    my %reported;
 
-        push @distributions, $self->{distro_to_meta}{$current_distro_name};
-        $seen{$current_distro_name} = 1;
-        for my $dep (@{ $self->{dependencies}{$current_distro_name} }) {
-            next if $dep->{phase} ne 'runtime';
-            #die Dumper $dep;
-            my $module = $dep->{module};
-            next if $module eq 'perl';
-            next if Module::CoreList->first_release($module);
-            if (not $self->{module_to_distro}{$module}) {
-                if (not $seen{$module}) {
-                    $logger->warn("Module $module is a dependency, but we could not find which distribution provides it. Is it core?");
-                    $seen{$module} = 1;
-                }
-            } else {
-                my $new_distro = $self->{module_to_distro}{$module};
-                # module was utf8
-                #next if $new_distro eq 'perl';
-                push @dependencies, $new_distro;
+    my @distributions;
+    for my $dep (@{ $self->{immediate_dependencies}{$distro_name} }) {
+        next if $dep->{phase} ne 'runtime' or $dep->{relationship} ne 'requires';
+        # 'phase' values: runtime, configure, test, develop, build, x_Dist_Zilla
+        # 'relationship': requires, recommends, suggests
+        my $module = $dep->{module};
+        next if $module eq 'perl';
+        next if Module::CoreList->first_release($module);
+
+        if (not $self->{module_to_distro}{$module}) {
+            if (not $reported{$module}) {
+                $logger->warn("Module $module is a dependency, but we could not find which distribution provides it. Is it core?");
+                $reported{$module} = 1;
             }
+        } else {
+            my $new_distro = $self->{module_to_distro}{$module};
+        #    # module was utf8
+        #    #next if $new_distro eq 'perl';
+            push @distributions, $new_distro, $self->get_dependencies($new_distro);
+            @distributions = sort {$a cmp $b } uniq @distributions;
         }
     }
+
+    $self->{dependencies}{$distro_name} = \@distributions;
+    $logger->info("Dependencies of '$distro_name': " . Dumper \@distributions);
 
     return @distributions;
 }
@@ -631,7 +635,7 @@ sub load_dependencies {
     my $logger = Log::Log4perl->get_logger('digger');
 
     my@distros = $self->get_all_distribution_filenames;
-    my %dependencies;
+    my %immediate_dependencies;
     my %module_to_distro;
     for my $distro_filename (@distros) {
         my $distro =  read_data($distro_filename);
@@ -645,7 +649,7 @@ sub load_dependencies {
         #   },
         # ]
 
-        $dependencies{$distro->{distribution}} = $distro->{data}{dependency};
+        $immediate_dependencies{$distro->{distribution}} = $distro->{data}{dependency};
         for my $module (@{ $distro->{data}{provides} }) {
             if ($module_to_distro{$module}) {
                 if ($module_to_distro{$module} eq $distro->{distribution}) {
@@ -660,7 +664,7 @@ sub load_dependencies {
             $module_to_distro{$module} = $distro->{distribution};
         }
     }
-    $self->{dependencies} = \%dependencies;
+    $self->{immediate_dependencies} = \%immediate_dependencies;
     $self->{module_to_distro} = \%module_to_distro;
 }
 
@@ -694,7 +698,7 @@ sub html {
 }
 
 sub html_distributions {
-    my ($self, $distributions) = @_;
+    my ($self, $distributions_from_meta_files) = @_;
 
     my $logger = Log::Log4perl->get_logger('digger');
     $logger->info("Generating HTML pages for distributions");
@@ -702,9 +706,9 @@ sub html_distributions {
     $self->load_dependencies;
 
     my $counter = 0;
-    for my $distribution (@$distributions) {
-        #say Dumper $distribution;
-        my @distros = $self->get_dependencies($distribution->{distribution});
+    for my $distribution (@$distributions_from_meta_files) {
+        my @distro_names = $self->get_dependencies($distribution->{distribution});
+        my @distros = map { $self->{distro_to_meta}{$_} } @distro_names;
         $self->save_page('distribution.tt', "dist/$distribution->{distribution}.html", {
             distro => $distribution,
             distros => \@distros,

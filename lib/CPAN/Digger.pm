@@ -832,7 +832,7 @@ sub perlweekly_report {
     my $dt = $self->{start_time};
     my $days = 7;
     my $end_date       = $dt->ymd;
-    my $start_date     = $dt->add( days => -$days )->ymd;
+    my $start_date     = $dt->clone->add( days => -$days )->ymd;
 
     my $logger = Log::Log4perl->get_logger('digger');
     $logger->info("Start generating perlweekly report");

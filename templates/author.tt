@@ -1,4 +1,4 @@
-<h1>CPAN Digger</h1>
+<h1>author.id</h1>
     <div>
     Showing the uploads of <a href="https://metacpan.org/author/[% author.id %]">[% author.id %]</a>
     [% INCLUDE short_explanation.tt %]

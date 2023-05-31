@@ -17,4 +17,13 @@ The source of the <a href="https://perlweekly.com/metacpan.html">Perl Weekly Met
 [% report.uploads %]; [% report.distributions %]; [% report.authors %]; [% report.vcs_count %]; [% report.ci_count %]; [% report.bugtracker_count %];
 </pre>
 
+<h2>Authors</h2>
 
+The authors of the 1000 most recently uploaded distributions.
+
+<table>
+    <tr><td>Author</td><td>Count</td></tr>
+    [% FOR author IN authors %]
+      <tr><td><a href="/author/[% author.id %]">[% author.id %]</a></td><td>[% author.count %]</td></tr>
+    [% END %]
+</table>

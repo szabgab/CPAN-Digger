@@ -470,6 +470,9 @@ sub clone_one_vcs {
 sub read_dashboards {
     my ($self) = @_;
 
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Read dashboard");
+
     my $path = 'dashboard';
     if (not -e $path) {
         system "$git clone https://github.com/davorg/dashboard.git";
@@ -479,6 +482,7 @@ sub read_dashboards {
         chdir "..";
     }
     $self->{dashboards} = { map { substr(basename($_), 0, -5) => 1 } glob "$path/authors/*.json" };
+    $logger->info("Read dashboard ended");
 }
 
 sub get_vcs {
@@ -656,6 +660,7 @@ sub load_dependencies {
     my ($self) = @_;
 
     my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Load dependencies");
 
     my@distros = $self->get_all_distribution_filenames;
     my %immediate_dependencies;
@@ -689,15 +694,20 @@ sub load_dependencies {
     }
     $self->{immediate_dependencies} = \%immediate_dependencies;
     $self->{module_to_distro} = \%module_to_distro;
+
+    $logger->info("Load dependencies ended");
 }
 
 # pre-calculate all the dependencies to update the cache
 sub calculate_dependencies {
     my ($self) = @_;
 
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Calculate dependencies");
     for my $distribution (keys %{$self->{distro_to_meta}}) {
         $self->get_dependencies($distribution);
     }
+    $logger->info("Calculate dependencies ended");
 }
 
 
@@ -723,7 +733,7 @@ sub html {
     $self->read_dashboards;
 
     $self->html_recent(\@distros);
-    $self->html_weekly;
+    $self->html_weekly(\@distros);
     $self->html_distributions(\@distros);
     $self->html_authors(\@distros);
 
@@ -759,16 +769,25 @@ sub html_distributions {
 
 
 sub html_weekly {
-    my ($self) = @_;
+    my ($self, $distros) = @_;
+
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("HTML weekly");
 
     $self->save_page('weekly.tt', 'weekly.html', {
         report => $self->perlweekly_report,
         title => "Weekly report",
+        authors => $self->recent_authors($distros),
     });
+
+    $logger->info("HTML ended");
 }
 
 sub html_recent {
     my ($self, $distributions) = @_;
+
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("HTML recent");
 
     my $count = 0;
     my @recent = grep { $count++ < 50 } @$distributions;
@@ -778,6 +797,8 @@ sub html_recent {
         stats => $stats,
         title => "Recent releases on CPAN Digger",
     });
+
+    $logger->info("HTML recent ended");
 }
 
 
@@ -870,6 +891,22 @@ sub prepare_html_report {
     }
 
     return $distros, \%stats;
+}
+
+sub recent_authors {
+    my ($self, $distros) = @_;
+
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Recent authors");
+
+    my %authors;
+    for my $ix (0..999) {
+        my $author = $distros->[$ix]{author};
+        $authors{$author}++;
+    }
+    my @recent_authors = sort {$b->{count} <=> $a->{count} } map { { id => $_, count => $authors{$_}} }  keys %authors;
+    $logger->info("Recent authors ended");
+    return \@recent_authors;
 }
 
 sub perlweekly_report {

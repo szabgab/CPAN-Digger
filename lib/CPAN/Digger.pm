@@ -48,12 +48,14 @@ sub new {
     my ($class, %args) = @_;
     my $self = bless {}, $class;
     for my $key (keys %args) {
+        if ($key eq 'clone') {
+            $self->{clone_vcs} = $args{clone};
+            next;
+        }
         $self->{$key} = $args{$key};
     }
     $self->{log} = uc $self->{log};
-    $self->{clone_vcs} = delete $self->{clone};
     $self->{total} = 0;
-
     $self->{dependencies} = {};
 
     my $dt = DateTime->now;

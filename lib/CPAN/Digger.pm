@@ -676,7 +676,7 @@ sub load_dependencies {
         for my $module (@{ $distro->{data}{provides} }) {
             if ($module_to_distro{$module}) {
                 if ($module_to_distro{$module} eq $distro->{distribution}) {
-                    $logger->warn("Module $module provided twice by $distro->{distribution}");
+                    # $logger->warn("Module $module provided twice by $distro->{distribution}");
                     # Date-Simple' is provided twice by 'Date-Simple'
                 } else {
                     $logger->error("Module $module provided by two different distributions. Both by '$module_to_distro{$module}' and by '$distro->{distribution}'");

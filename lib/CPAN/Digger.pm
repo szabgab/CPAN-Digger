@@ -691,6 +691,16 @@ sub load_dependencies {
     $self->{module_to_distro} = \%module_to_distro;
 }
 
+# pre-calculate all the dependencies to update the cache
+sub calculate_dependencies {
+    my ($self) = @_;
+
+    for my $distribution (keys %{$self->{distro_to_meta}}) {
+        $self->get_dependencies($distribution);
+    }
+}
+
+
 sub html {
     my ($self) = @_;
 
@@ -708,6 +718,7 @@ sub html {
     $self->load_authors;
 
     my @distros = $self->load_meta_data_of_every_distro;
+    $self->calculate_dependencies;
 
     $self->read_dashboards;
 

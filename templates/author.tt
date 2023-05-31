@@ -1,6 +1,11 @@
-<h1>[% author.id %]</h1>
+<h1>[% author.data.name %] ([% author.pauseid %])</h1>
     <div>
-    Showing the uploads of <a href="https://metacpan.org/author/[% author.id %]">[% author.id %]</a>
+    Showing the uploads of <a href="https://metacpan.org/author/[% author.pauseid %]">[% author.pauseid %]</a>
+    <br>
+    [% IF author.data.gravatar_url %]
+        <img src="[% author.data.gravatar_url %]">
+    [% END %]
+
     [% INCLUDE short_explanation.tt %]
     </div>
 

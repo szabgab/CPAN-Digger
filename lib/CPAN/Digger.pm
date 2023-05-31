@@ -61,6 +61,7 @@ sub new {
     $self->{log} = uc $self->{log};
     $self->{total} = 0;
     $self->{dependencies} = {};
+    $self->{authors} = {};
 
     my $dt = DateTime->now;
     $self->{start_time} = $dt;
@@ -150,6 +151,18 @@ sub download_authors_from_metacpan {
         save_data($filename, $author);
     }
     $logger->info("Download authors from MetaCPAN finished");
+}
+
+sub load_authors {
+    my ($self) = @_;
+    my @prefixes = read_dir("$self->{data}/metacpan/authors");
+    for my $prefix (@prefixes) {
+        my @files = read_dir("$self->{data}/metacpan/authors/$prefix");
+        for my $file (@files) {
+            my $author = read_data("$self->{data}/metacpan/authors/$prefix/$file");
+            $self->{authors}{ $author->{pauseid} } = $author;
+        }
+    }
 }
 
 sub metacpan_stats {
@@ -688,6 +701,8 @@ sub html {
     mkdir "$self->{html}/lists";
     rcopy("static", $self->{html});
 
+    $self->load_authors;
+
     my @distros = $self->get_every_distro;
 
     $self->read_dashboards;
@@ -766,18 +781,16 @@ sub html_authors {
         my @filtered = grep { $_->{author} eq $author_id } @$distributions;
         if (@filtered) {
             my ($distros, $stats) = $self->prepare_html_report(\@filtered);
-            my %author = (
-                id => $author_id,
-                count => scalar(@filtered),
-            );
+            $self->{authors}{$author_id}{count} = scalar(@filtered);
+            my $name = $self->{authors}{$author_id}{data}{name} // '';
             $self->save_page('author.tt', "author/$author_id.html", {
                 distros => $distros,
                 stats => $stats,
-                author => \%author,
-                title => "$author{id} on CPAN Digger",
+                author => $self->{authors}{$author_id},
+                title => "$name ($author_id) on CPAN Digger",
             });
 
-            push @authors, \%author;
+            push @authors, $self->{authors}{$author_id};
         }
         last if $self->{limit} and ++$counter >= $self->{limit};
     }

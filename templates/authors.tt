@@ -1,7 +1,13 @@
 <h1>Authors</h1>
 
-<ul>
+<table>
+  <tr>
+    <td>PAUSEID</td><td>count</td>
+  </tr>
   [% FOREACH author IN authors %]
-    <li><a href="/author/[% author.id %]">[% author.id %] ([% author.count %])</a></li>
+    <tr>
+      <td><a href="/author/[% author.pauseid %]">[% author.pauseid %]</a></td>
+      <td>[% author.count %]</td>
+    </tr>
   [% END %]
-</ul>
+</table>

@@ -588,7 +588,7 @@ sub analyze_github {
     $data->{azure_pipeline} = -e "$repo/azure-pipelines.yml";
 }
 
-sub get_every_distro {
+sub load_meta_data_of_every_distro {
     my ($self) = @_;
 
     my @filenames = $self->get_all_meta_filenames;
@@ -703,7 +703,7 @@ sub html {
 
     $self->load_authors;
 
-    my @distros = $self->get_every_distro;
+    my @distros = $self->load_meta_data_of_every_distro;
 
     $self->read_dashboards;
 

@@ -919,9 +919,7 @@ sub save_page {
     my $html;
     $tt->process($template, \%params, \$html) or die $tt->error(), "\n";
     my $html_file = catfile($self->{html}, $file);
-    open(my $fh, '>', $html_file) or die "Could not open '$html_file'";
-    print $fh $html;
-    close $fh;
+    path($html_file)->spew_utf8($html);
 }
 
 sub check_files_on_vcs {
@@ -978,7 +976,6 @@ sub read_data {
 
     my $json = JSON->new->allow_nonref;
     if (-e $data_file) {
-        open my $fh, '<:encoding(utf8)', $data_file or die $!;
         return $json->decode( path($data_file)->slurp_utf8 );
     }
     return {};

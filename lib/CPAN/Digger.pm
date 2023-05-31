@@ -662,7 +662,7 @@ sub load_dependencies {
     my $logger = Log::Log4perl->get_logger('digger');
     $logger->info("Load dependencies");
 
-    my@distros = $self->get_all_distribution_filenames;
+    my @distros = $self->get_all_distribution_filenames;
     my %immediate_dependencies;
     my %module_to_distro;
     for my $distro_filename (@distros) {
@@ -728,6 +728,7 @@ sub html {
     $self->load_authors;
 
     my @distros = $self->load_meta_data_of_every_distro;
+    $self->load_dependencies;
     $self->calculate_dependencies;
 
     $self->read_dashboards;
@@ -748,8 +749,6 @@ sub html_distributions {
 
     my $logger = Log::Log4perl->get_logger('digger');
     $logger->info("Generating HTML pages for distributions");
-
-    $self->load_dependencies;
 
     my $counter = 0;
     for my $distribution (@$distributions_from_meta_files) {

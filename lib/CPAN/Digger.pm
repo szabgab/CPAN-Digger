@@ -593,8 +593,12 @@ sub load_meta_data_of_every_distro {
 
     my @filenames = $self->get_all_meta_filenames;
     my @distros;
-    for my $data_file (@filenames) {
-        my $data = read_data($data_file);
+    for my $meta_data_file (@filenames) {
+        my $data = read_data($meta_data_file);
+        my $basename = basename $meta_data_file;
+        my $prefix = substr($basename, 0, 2);
+        my $metacpan_file = "$self->{data}/metacpan/distributions/$prefix/$basename";
+        $data->{metacpan} = read_data($metacpan_file);
         push @distros, $data;
     }
     @distros = sort { $b->{release_date} cmp $a->{release_date} } @distros;

@@ -52,6 +52,10 @@ sub new {
             $self->{clone_vcs} = $args{clone};
             next;
         }
+        if ($key eq 'authors') {
+            $self->{download_authors} = $args{authors};
+            next;
+        }
         $self->{$key} = $args{$key};
     }
     $self->{log} = uc $self->{log};
@@ -127,7 +131,7 @@ sub setup_logger {
 sub download_authors_from_metacpan {
     my ($self) = @_;
 
-    return if not $self->{authors};
+    return if not $self->{download_authors};
 
     my $logger = Log::Log4perl->get_logger('digger');
     $logger->info("Download authors from MetaCPAN");

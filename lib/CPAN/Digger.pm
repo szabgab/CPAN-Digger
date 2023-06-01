@@ -773,7 +773,7 @@ sub html_weekly {
     my $logger = Log::Log4perl->get_logger('digger');
     $logger->info("HTML weekly");
 
-    $self->save_page('weekly.tt', 'weekly.html', {
+    $self->save_page('weekly.tt', 'reports.html', {
         report => $self->perlweekly_report,
         title => "Weekly report",
         authors => $self->recent_authors($distros),

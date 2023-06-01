@@ -1,6 +1,11 @@
-<h1>Weekly report</h1>
+<h1>Other reports</h1>
 
-The source of the <a href="https://perlweekly.com/metacpan.html">Perl Weekly MetaCPAN report</a>.
+Some other reports that might be interesting that don't have a "place" yet on the web site.
+
+<h2>Weekly report</h2>
+
+Some stats on what is the state of the CPAN distributions uploaded in the last 7 days.
+Once a week this data is stored in a file and displayed in the <a href="https://perlweekly.com/metacpan.html">Perl Weekly MetaCPAN report</a>.
 
 <div>Start Date [% report.start_date %]</div>
 <div>End Date [% report.end_date %]</div>
@@ -13,13 +18,18 @@ The source of the <a href="https://perlweekly.com/metacpan.html">Perl Weekly Met
 
 
 <h2>Text to copy to Perl Weekly:</h2>
+
+The same numbers as above, juts in a format that can be copied to <a href="https://github.com/szabgab/perlweekly/blob/master/src/metacpan.txt">source</a>
+of the report on the Perl Weekly.
+
 <pre>
 [% report.uploads %]; [% report.distributions %]; [% report.authors %]; [% report.vcs_count %]; [% report.ci_count %]; [% report.bugtracker_count %];
 </pre>
 
+
 <h2>Authors</h2>
 
-The authors of the 1000 most recently uploaded distributions.
+The authors of the 1000 most recently uploaded distributions and how many releases they had.
 
 <table>
     <tr><td>Author</td><td>Count</td></tr>

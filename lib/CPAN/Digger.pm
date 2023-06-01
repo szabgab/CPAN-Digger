@@ -27,7 +27,7 @@ use Path::Tiny qw(path);
 use Storable qw(dclone);
 use Template ();
 
-my $RECENT_PAGE_SIZE = 50;
+my $RECENT_PAGE_SIZE = 100;
 my $git = 'git';
 my $root = getcwd();
 

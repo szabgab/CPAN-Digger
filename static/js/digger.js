@@ -1,12 +1,17 @@
 $(document).ready(function()
 {
+    // console.log(window.location.href);
+    let column = 2;
+    if (window.location.href.indexOf('river') > 0) {
+        column = 13;
+    }
     $('#sort_table').DataTable({
       "paging": false,
       "columnDefs": [
-        { "targets": [0, 1, 2, 7], "orderable": true },
+        { "targets": [0, 1, 2, 7, 8, 9, 10, 11], "orderable": true },
         { "targets": "_all", "orderable": false },
       ],
-      "order": [[ 2, "desc" ]]
+      "order": [[ column, "desc" ]]
     });
 
     function set_local_date() {

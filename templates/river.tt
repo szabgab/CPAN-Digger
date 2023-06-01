@@ -1,0 +1,8 @@
+<h1>Most depended on distributions</h1>
+    <div>
+    [% INCLUDE short_explanation.tt %]
+    </div>
+
+    [% INCLUDE table.tt %]
+
+

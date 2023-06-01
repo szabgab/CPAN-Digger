@@ -28,6 +28,7 @@ use Storable qw(dclone);
 use Template ();
 
 my $RECENT_PAGE_SIZE = 100;
+my $TOP_DEPENDENCY_PAGE = 100;
 my $git = 'git';
 my $root = getcwd();
 
@@ -742,6 +743,9 @@ sub add_reverse {
     my ($self, $distros) = @_;
     for my $distro (@$distros) {
         $distro->{reverse} = $self->{reverse_dependency}{$distro->{distribution}};
+        if (not defined $distro->{reverse}) {
+            $distro->{reverse} = [];
+        }
         # die Dumper $distro->{reverse};
     }
 }
@@ -770,6 +774,7 @@ sub html {
 
     $self->read_dashboards;
 
+    $self->html_top_dependencies(\@distros);
     $self->html_recent(\@distros);
     $self->html_weekly(\@distros);
     $self->html_distributions(\@distros);
@@ -819,6 +824,25 @@ sub html_weekly {
 
     $logger->info("HTML ended");
 }
+
+sub html_top_dependencies {
+    my ($self, $distributions) = @_;
+
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("HTML top dependencies");
+
+    my $count = 0;
+    my @top = grep { $count++ < $TOP_DEPENDENCY_PAGE } sort { scalar(@{$b->{reverse}}) <=> scalar(@{$a->{reverse}}) } @$distributions;
+    my ($distros, $stats) = $self->prepare_html_report(\@top);
+    $self->save_page('river.tt', 'river.html', {
+        distros => $distros,
+        stats => $stats,
+        title => "Most depended on releases on CPAN Digger",
+    });
+    exit;
+    $logger->info("HTML top dependencies ended");
+}
+
 
 sub html_recent {
     my ($self, $distributions) = @_;

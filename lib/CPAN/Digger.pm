@@ -752,12 +752,13 @@ sub html_distributions {
 
     my $counter = 0;
     for my $distribution (@$distributions_from_meta_files) {
-        my @distro_names = $self->get_dependencies($distribution->{distribution});
-        my @distros = map { $self->{distro_to_meta}{$_} } @distro_names;
-        $self->save_page('distribution.tt', "dist/$distribution->{distribution}.html", {
+        my $distro_name = $distribution->{distribution};
+        my $distro_names = $self->{dependencies}{$distro_name};
+        my @distros = map { $self->{distro_to_meta}{$_} } @$distro_names;
+        $self->save_page('distribution.tt', "dist/$distro_name.html", {
             distro => $distribution,
             distros => \@distros,
-            title => "$distribution->{distribution} on CPAN Digger",
+            title => "$distro_name on CPAN Digger",
         });
 
         last if $self->{limit} and ++$counter >= $self->{limit};

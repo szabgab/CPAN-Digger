@@ -67,6 +67,7 @@ sub new {
     $self->{dependencies} = {};
     $self->{authors} = {};
     $self->{dashboard_path} = 'dashboard';
+    $self->{reverse_dependency} = {};
 
     my $dt = DateTime->now;
     $self->{start_time} = $dt;
@@ -725,7 +726,23 @@ sub calculate_dependencies {
     for my $distribution (keys %{$self->{distro_to_meta}}) {
         $self->get_dependencies($distribution);
     }
+
+    for my $distribution (keys %{$self->{distro_to_meta}}) {
+        for my $dependency (@{ $self->{dependencies}{$distribution} }) {
+            $self->{reverse_dependency}{$dependency} = [] if not exists $self->{reverse_dependency}{$dependency};
+            push @{ $self->{reverse_dependency}{$dependency} }, $distribution;;
+        }
+    }
+
     $logger->info("Calculate dependencies ended");
+}
+
+sub add_reverse {
+    my ($self, $distros) = @_;
+    for my $distro (@$distros) {
+        $distro->{reverse} = $self->{reverse_dependency}{$distro->{distribution}};
+        # die Dumper $distro->{reverse};
+    }
 }
 
 
@@ -748,6 +765,7 @@ sub html {
     my @distros = $self->load_meta_data_of_every_distro;
     $self->load_dependencies;
     $self->calculate_dependencies;
+    $self->add_reverse(\@distros);
 
     $self->read_dashboards;
 

@@ -1,24 +1,21 @@
 <h1>CPAN Digger</h1>
     <div>
-    The goal of CPAN Digger is to provide a tool to help you find ways to improve CPAN modules. Originally it started with the list of <a href="/recent">packages most recently uploaded to CPAN</a>.
-    The thought behind that was that it is a lot more likely for a Pull-Reqest to be accepted in a project that recently saw activity than something that has not been changed
-    for a long time.
+    The goal of CPAN Digger is to help you find ways to improve CPAN modules. Originally it started with the list of <a href="/recent">packages most recently uploaded to CPAN</a>.
+    We assume that it is a lot more likely for a Pull-Reqest to be accepted in a project that recently saw activity than in a project that has not been changed for a long time.
     </div>
     <div>
-    As an experiement we can show the releases of selected CPAN authors, or information about a list of releases supplied in a file.
-    If you'd like to be added to the list open an <a href="https://github.com/szabgab/CPAN-Digger">issue</a> asking to be added.
-    If you'd like to generate your own report you can do it by cloning the CPAN-Digger repository and running it locally.
+    We also show the releases of individual <a href="/authors">CPAN authors</a> and every distribution on CPAN.
     </div>
 
     <div>
         A number of issues we try to encourage people to fix.
         <ul>
-            <li>Make sure the META data includes a link to the public VCS (Version Control System) of the project. This will let MetaCPAN display the link and it will make it easy for any potential contributor to find the VCS (git, mercurial, etc.) repository of the project. It will make it easier to contribute to the project.</li>
+            <li>Make sure the META files include a link to the public VCS (Version Control System) of the project. This will let MetaCPAN display the link and it will make it easy for any potential contributor to find the VCS (git, mercurial, etc.) repository of the project. It will make it easier to contribute to the project.</li>
             <li>Explicit link to the bug-tracker of the project. If it does not exist in the META-files of the project, MetaCPAN will link to <a href="https://rt.cpan.org/">RT</a> by default even if the project has a GitHub repository with Issues enabled. Even if you would like to use RT, it would be better to state this explicitely in the META files.</li>
-            <li>CI - Most project have test and Perl has the amazing <a href="http://cpantesters.org/">CPAN Testers</a>, but developers can get feedback to their source code from a Continous Integration (CI) system much faster. They can avoid releasing broken versions. So we would like to encourage setting up CI for each project.</li>
+            <li>CI - Most projects have test and Perl has the amazing <a href="http://cpantesters.org/">CPAN Testers</a>, but developers can get feedback to their source code from a Continous Integration (CI) system much faster. They can avoid releasing broken versions. They can also create setups that the CPAN Testers don't support. We would like to encourage setting up CI for each project.</li>
             <li>Have a valid license key in the META files will make it easier for a process to verify that all the packages in a dependency meet the licensing requirements of the project.</li>
-            <li><a href="http://cpancover.com/">CPAN Cover</a> runs the tests of many CPAN uploads and collects the test coverage report of them. Here include the percentages here with a link to the full report. We would like to encourage people to contribute tests to open source Perl projects thereby increasing their quality.</li>
-            <li>Finally, we think that the <a href="https://cpandashboard.com/">CPAN Dashboard</a> could be a great tool for every CPAN developer. We would like to encourage CPAN authors to configure it for themselves.</li>
+            <li><a href="http://cpancover.com/">CPAN Cover</a> runs the tests of many CPAN uploads and collects the test coverage report of them. We include the percentages with a link to the full report. We would like to encourage people to contribute tests to open source Perl projects thereby increasing their quality.</li>
+            <li>We think that the <a href="https://cpandashboard.com/">CPAN Dashboard</a> could be a great tool for every CPAN developer. We would like to encourage CPAN authors to configure it for themselves.</li>
         </ul>
     </div>
 

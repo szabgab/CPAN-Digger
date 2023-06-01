@@ -669,7 +669,7 @@ sub get_dependencies {
     }
 
     $self->{dependencies}{$distro_name} = \@distributions;
-    $logger->info("Dependencies of '$distro_name': " . Dumper \@distributions);
+    # $logger->info("Dependencies of '$distro_name': " . Dumper \@distributions);
 
     return @distributions;
 }

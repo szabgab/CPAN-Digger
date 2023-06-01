@@ -27,6 +27,7 @@ use Path::Tiny qw(path);
 use Storable qw(dclone);
 use Template ();
 
+my $RECENT_PAGE_SIZE = 50;
 my $git = 'git';
 my $root = getcwd();
 
@@ -826,7 +827,7 @@ sub html_recent {
     $logger->info("HTML recent");
 
     my $count = 0;
-    my @recent = grep { $count++ < 50 } @$distributions;
+    my @recent = grep { $count++ < $RECENT_PAGE_SIZE } @$distributions;
     my ($distros, $stats) = $self->prepare_html_report(\@recent);
     $self->save_page('recent.tt', 'recent.html', {
         distros => $distros,

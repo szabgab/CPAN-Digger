@@ -20,6 +20,7 @@ sub run {
         \%args,
         'authors',
         'coverage=i',
+        'dashboard',
         'data=s',
         'distro=s',
         'force',
@@ -70,21 +71,25 @@ Usage: $0
         --force            Try to clone even for old releases
         --pull             Try to git pull even if there was no recent release
 
+    Other networking
+        --dashboard        Pull the dashboard repository
 
     Local processing
         --meta             Generate meta files from releases.json files
         --metavcs          Update the meta files from local VCS clones
 
+    Folders
         --html DIR         Create HTML pages in the given directory.
+        --repos DIR        Folder where we clone all the repositories. Defaults to './repos'
+        --data DIR         Provide the folder where we store the data files, defaults to './cpan-digger'
+
         --log LEVEL        [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF] (default is INFO)
 
-        --data DIR         Provide the folder where we store the data files, defaults to ./cpan-digger
-
+    Help
         --version
         --help
 
-    Sample usage in general:
-        $0 --recent 30 --clone --sleep 3
+    For sample usage look in the 'generate.sh' file.
 };
 }
 

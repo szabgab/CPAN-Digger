@@ -56,12 +56,17 @@ sub new {
             $self->{download_authors} = $args{authors};
             next;
         }
+        if ($key eq 'dashboard') {
+            $self->{pull_dashboard} = $args{dashboard};
+            next;
+        }
         $self->{$key} = $args{$key};
     }
     $self->{log} = uc $self->{log};
     $self->{total} = 0;
     $self->{dependencies} = {};
     $self->{authors} = {};
+    $self->{dashboard_path} = 'dashboard';
 
     my $dt = DateTime->now;
     $self->{start_time} = $dt;
@@ -94,6 +99,8 @@ sub run {
 
     $self->clone_vcs;
     $self->check_files_on_vcs;
+
+    $self->pull_dashboards;
 
     $self->html;
 
@@ -466,6 +473,24 @@ sub clone_one_vcs {
     return;
 }
 
+sub pull_dashboards {
+    my ($self) = @_;
+
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Pull dashboard");
+
+    return if not $self->{pull_dashboard};
+
+    if (not -e $self->{dashboard_path}) {
+        system "$git clone https://github.com/davorg/dashboard.git";
+    } else {
+        chdir $self->{dashboard_path};
+        system "git pull";
+        chdir "..";
+    }
+
+    $logger->info("Pull dashboard ended");
+}
 
 sub read_dashboards {
     my ($self) = @_;
@@ -473,15 +498,8 @@ sub read_dashboards {
     my $logger = Log::Log4perl->get_logger('digger');
     $logger->info("Read dashboard");
 
-    my $path = 'dashboard';
-    if (not -e $path) {
-        system "$git clone https://github.com/davorg/dashboard.git";
-    } else {
-        chdir $path;
-        system "git pull";
-        chdir "..";
-    }
-    $self->{dashboards} = { map { substr(basename($_), 0, -5) => 1 } glob "$path/authors/*.json" };
+    $self->{dashboards} = { map { substr(basename($_), 0, -5) => 1 } glob "$self->{dashboard_path}/authors/*.json" };
+
     $logger->info("Read dashboard ended");
 }
 

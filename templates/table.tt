@@ -3,6 +3,7 @@
       <thead>
         <tr>
           <th>Name</th>
+          <th>MetaCPAN</th>
           <th>Author</th>
           <th>Date</th>
           <th>VCS</th>
@@ -23,6 +24,7 @@
     [% FOREACH item IN distros %]
         <tr>
           <td><a href="/dist/[% item.distribution %]">[% item.distribution %]</a></td>
+          <td><a href="https://metacpan.org/release/[% item.distribution %]"><img class="backup_picture" alt="CPAN version for [% item.distribution %]" src="https://img.shields.io/cpan/v/[% item.distribution %].svg"></a></td>
           <td><a href="/author/[% item.author %]">[% item.author %]</a></td>
           <td>[% item.release_date %]</td>
           <td>

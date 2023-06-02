@@ -839,7 +839,6 @@ sub html_top_dependencies {
         stats => $stats,
         title => "Most depended on releases on CPAN Digger",
     });
-    exit;
     $logger->info("HTML top dependencies ended");
 }
 

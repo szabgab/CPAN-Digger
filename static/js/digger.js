@@ -8,7 +8,7 @@ $(document).ready(function()
     $('#sort_table').DataTable({
       "paging": false,
       "columnDefs": [
-        { "targets": [0, 1, 2, 7, 8, 9, 10, 11], "orderable": true },
+        { "targets": [0, 1, 2, 7, 8, 9, 10, 11, 13], "orderable": true },
         { "targets": "_all", "orderable": false },
       ],
       "order": [[ column, "desc" ]]

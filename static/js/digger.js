@@ -3,7 +3,7 @@ $(document).ready(function()
     // console.log(window.location.href);
     let column = 2;
     if (window.location.href.indexOf('river') > 0) {
-        column = 13;
+        column = 14;
     }
     $('#sort_table').DataTable({
       "paging": false,

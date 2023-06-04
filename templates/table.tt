@@ -58,7 +58,7 @@
           <td>
               [% IF item.has_ci %]
                     [% IF item.travis %]
-                        Travis<br>
+                        <span class="badge badge-warning">Travis</span><br>
                     [% END %]
                     [% IF item.jenkins %]
                         Jenkins<br>

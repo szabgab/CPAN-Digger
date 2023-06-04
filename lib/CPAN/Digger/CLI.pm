@@ -20,6 +20,7 @@ sub run {
         \%args,
         'authors',
         'coverage=i',
+        'cpants',
         'dashboard',
         'data=s',
         'distro=s',
@@ -73,6 +74,7 @@ Usage: $0
 
     Other networking
         --dashboard        Pull the dashboard repository
+        --cpants           Download data from cpants
 
     Local processing
         --meta             Generate meta files from releases.json files

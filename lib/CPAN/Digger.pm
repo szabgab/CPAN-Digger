@@ -15,7 +15,7 @@ use DateTime::Format::ISO8601;
 use Exporter qw(import);
 use File::Copy::Recursive qw(rcopy);
 use File::Spec::Functions qw(catfile);
-use File::Basename qw(basename);
+use File::Basename qw(basename dirname);
 use File::Path qw(make_path);
 use JSON ();
 use List::MoreUtils qw(uniq);
@@ -96,6 +96,8 @@ sub run {
 
     my $rset = $self->search_releases_on_metacpan;
     $self->get_release_data_from_metacpan($rset);
+
+    $self->download_cpants;
 
     $self->get_coverage_data;
     $self->update_meta_data_from_releases;
@@ -336,6 +338,14 @@ sub update_meta_data_from_releases {
         } else {
             $logger->error("distribution $distribution has no repository");
         }
+
+        # update kwalitee from cpants
+        my $cpants_file = catfile($self->{data}, 'cpants', $prefix, basename($distribution_file));
+        my $cpants = read_cpants_file($cpants_file);
+        if (%$cpants) {
+            $meta->{core_kwalitee} = $cpants->{data}{metadata}{kwalitee}{core_kwalitee};
+        }
+
         save_data($meta_filename, $meta);
     }
 
@@ -675,6 +685,63 @@ sub get_dependencies {
     # $logger->info("Dependencies of '$distro_name': " . Dumper \@distributions);
 
     return @distributions;
+}
+
+sub download_cpants {
+    my ($self) = @_;
+
+    return if not $self->{cpants};
+
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Download CPANTS");
+
+    my $folder = catfile($self->{data}, 'cpants');
+    make_path $folder;
+
+    my $ua = LWP::UserAgent->new(timeout => 5);
+    my $json = JSON->new->allow_nonref;
+
+    my @distros = $self->get_all_distribution_filenames;
+    my $counter = 0;
+    for my $distro_filename (@distros) {
+        my $distro =  read_data($distro_filename);
+
+        my $prefix = basename(dirname($distro_filename));
+        make_path(catfile($folder, $prefix));
+        my $cpants_file = catfile($folder, $prefix, basename($distro_filename));
+
+        my $cpants = read_cpants_file($cpants_file);
+        #die Dumper $cpants;
+        if (%$cpants) {
+            if (not defined $distro->{data}{version}) {
+                $logger->error("missing version from distro $distro->{distribution}");
+                next;
+            }
+            if (not defined $cpants->{data}{metadata}{version}) {
+                $logger->error("missing version from cpants of $distro->{distribution}"); # . Dumper $cpants);
+                next;
+            }
+            next if $distro->{data}{version} eq $cpants->{data}{metadata}{version};
+            $logger->info("distro version_numified: '$distro->{data}{version}' cpants version: '$cpants->{data}{metadata}{version}'");
+        }
+
+        #die Dumper $distro;
+        my $url = "https://api.cpanauthors.org/v5/release/$distro->{data}{author}/$distro->{distribution}/metadata";
+        $logger->info("CPANTS: $url");
+        my $response = $ua->get($url);
+        my $status_line = $response->status_line;
+        if ($status_line eq "200 OK") {
+            my $content = $response->decoded_content;
+            path($cpants_file)->spew_utf8($content);
+        } else {
+            $logger->error("CPANTS: $url $status_line " . $response->decoded_content);
+            next;
+        }
+
+        last if $self->{limit} and ++$counter >= $self->{limit};
+    }
+
+    $logger->info("Download CPANTS ended");
 }
 
 sub load_dependencies {
@@ -1094,6 +1161,22 @@ sub save_data {
     my ($data_file, $data) = @_;
     my $json = JSON->new->allow_nonref;
     path($data_file)->spew_utf8($json->pretty->encode( unbless dclone $data ));
+}
+
+sub read_cpants_file {
+    my ($data_file) = @_;
+
+
+    my $data = read_data($data_file);
+    return $data if not %$data;
+
+    my $ref = ref $data->{data}{metadata};
+    if (not defined $ref or $ref eq '') {
+        my $json = JSON->new->allow_nonref;
+        $data->{data}{metadata} = $json->decode($data->{data}{metadata});
+    }
+
+    return $data;
 }
 
 sub read_data {

@@ -904,7 +904,7 @@ sub html_top_dependencies {
     my @top = grep { $count++ < $TOP_DEPENDENCY_PAGE } sort { scalar(@{$b->{reverse}}) <=> scalar(@{$a->{reverse}}) } @$distributions;
     my $stats = $self->get_stats(\@top);
     $self->save_page('river.tt', 'river.html', {
-        distros => $distributions,
+        distros => \@top,
         stats => $stats,
         title => "Most depended on releases on CPAN Digger",
     });
@@ -922,7 +922,7 @@ sub html_recent {
     my @recent = grep { $count++ < $RECENT_PAGE_SIZE } @$distributions;
     my $stats = $self->get_stats(\@recent);
     $self->save_page('recent.tt', 'recent.html', {
-        distros => $distributions,
+        distros => \@recent,
         stats => $stats,
         title => "Recent releases on CPAN Digger",
     });
@@ -949,7 +949,7 @@ sub html_authors {
             $self->{authors}{$author_id}{count} = scalar(@filtered);
             my $name = $self->{authors}{$author_id}{data}{name} // '';
             $self->save_page('author.tt', "author/$author_id.html", {
-                distros => $distributions,
+                distros => \@filtered,
                 stats => $stats,
                 author => $self->{authors}{$author_id},
                 title => "$name ($author_id) on CPAN Digger",

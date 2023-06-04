@@ -16,6 +16,7 @@
           <th>CT NA</th>
           <th>Coverage</th>
           <th>Dashboard</th>
+          <th>Kwalitee</th>
           <th>Reverse</th>
         </tr>
       </thead>
@@ -120,6 +121,7 @@
                   <a class="badge badge-warning" href="https://cpandashboard.com/" title="Adding the dashboard is just a pull-request away and it is awesome!">Add dashboard</a>
               [% END %]
           </td>
+          <td>[% item.core_kwalitee %]</td>
           <td>[% item.reverse.size %]</td>
         </tr>
    [% END %]

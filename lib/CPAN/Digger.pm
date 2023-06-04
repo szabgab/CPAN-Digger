@@ -838,8 +838,10 @@ sub html {
     $self->load_dependencies;
     $self->calculate_dependencies;
     $self->add_reverse(\@distros);
-
     $self->read_dashboards;
+
+    $self->update_distributions(\@distros);
+
 
     $self->html_top_dependencies(\@distros);
     $self->html_recent(\@distros);
@@ -900,9 +902,9 @@ sub html_top_dependencies {
 
     my $count = 0;
     my @top = grep { $count++ < $TOP_DEPENDENCY_PAGE } sort { scalar(@{$b->{reverse}}) <=> scalar(@{$a->{reverse}}) } @$distributions;
-    my ($distros, $stats) = $self->prepare_html_report(\@top);
+    my $stats = $self->get_stats(\@top);
     $self->save_page('river.tt', 'river.html', {
-        distros => $distros,
+        distros => $distributions,
         stats => $stats,
         title => "Most depended on releases on CPAN Digger",
     });
@@ -918,9 +920,9 @@ sub html_recent {
 
     my $count = 0;
     my @recent = grep { $count++ < $RECENT_PAGE_SIZE } @$distributions;
-    my ($distros, $stats) = $self->prepare_html_report(\@recent);
+    my $stats = $self->get_stats(\@recent);
     $self->save_page('recent.tt', 'recent.html', {
-        distros => $distros,
+        distros => $distributions,
         stats => $stats,
         title => "Recent releases on CPAN Digger",
     });
@@ -943,11 +945,11 @@ sub html_authors {
         $logger->info("Creating HTML page for author $author_id");
         my @filtered = grep { $_->{author} eq $author_id } @$distributions;
         if (@filtered) {
-            my ($distros, $stats) = $self->prepare_html_report(\@filtered);
+            my $stats = $self->get_stats(\@filtered);
             $self->{authors}{$author_id}{count} = scalar(@filtered);
             my $name = $self->{authors}{$author_id}{data}{name} // '';
             $self->save_page('author.tt', "author/$author_id.html", {
-                distros => $distros,
+                distros => $distributions,
                 stats => $stats,
                 author => $self->{authors}{$author_id},
                 title => "$name ($author_id) on CPAN Digger",
@@ -966,9 +968,31 @@ sub html_authors {
     $logger->info("Generating HTML pages for authors ended");
 }
 
-sub prepare_html_report {
+sub update_distributions {
     my ($self, $distributions) = @_;
-    my $distros = dclone $distributions;
+
+    for my $dist (@$distributions) {
+        $dist->{dashboard} = $self->{dashboards}{ $dist->{author} };
+
+        if (not $dist->{vcs_name}) {
+            if ($no_vcs_authors{ $dist->{author} }) {
+                $dist->{vcs_not_interested} = 1;
+            }
+        }
+
+        if (not $dist->{has_ci}) {
+            if ($no_ci_authors{ $dist->{author} }) {
+                $dist->{ci_not_interested} = 1;
+            }
+            if ($no_ci_distros{ $dist->{distribution} }) {
+                $dist->{ci_not_interested} = 1;
+            }
+        }
+    }
+}
+
+sub get_stats {
+    my ($self, $distros) = @_;
 
     my %stats = (
         total => scalar @$distros,
@@ -979,34 +1003,26 @@ sub prepare_html_report {
         has_bugz => 0,
         bugz => {},
     );
+
     for my $ci (@ci_names) {
         $stats{ci}{$ci} = 0;
     }
+
     for my $dist (@$distros) {
         #say Dumper $dist;
-        $dist->{dashboard} = $self->{dashboards}{ $dist->{author} };
         if ($dist->{vcs_name}) {
             $stats{has_vcs}++;
             $stats{vcs}{ $dist->{vcs_name} }++;
-        } else {
-            if ($no_vcs_authors{ $dist->{author} }) {
-                $dist->{vcs_not_interested} = 1;
-            }
         }
+
         if ($dist->{issues}) {
             $stats{has_bugz}++;
         }
+
         if ($dist->{has_ci}) {
             $stats{has_ci}++;
             for my $ci (@ci_names) {
                 $stats{ci}{$ci}++ if $dist->{$ci};
-            }
-        } else {
-            if ($no_ci_authors{ $dist->{author} }) {
-                $dist->{ci_not_interested} = 1;
-            }
-            if ($no_ci_distros{ $dist->{distribution} }) {
-                $dist->{ci_not_interested} = 1;
             }
         }
     }
@@ -1017,7 +1033,7 @@ sub prepare_html_report {
         $stats{has_ci_percentage} = int(100 * $stats{has_ci} / $stats{total});
     }
 
-    return $distros, \%stats;
+    return \%stats;
 }
 
 sub recent_authors {

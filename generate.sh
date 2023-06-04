@@ -7,6 +7,7 @@ perl -Ilib bin/cpan-digger --version
 
 perl -Ilib bin/cpan-digger --recent 100
 perl -Ilib bin/cpan-digger --dashboard
+perl -Ilib bin/cpan-digger --cpants --limit 200
 perl -Ilib bin/cpan-digger --coverage 40000
 perl -Ilib bin/cpan-digger --meta
 perl -Ilib bin/cpan-digger --clone 40000 --pull

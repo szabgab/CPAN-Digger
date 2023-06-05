@@ -1,7 +1,7 @@
 $(document).ready(function()
 {
     // console.log(window.location.href);
-    let column = 2;
+    let column = 3;
     if (window.location.href.indexOf('river') > 0) {
         column = 15;
     }

@@ -74,7 +74,7 @@
                         CircleCI<br>
                     [% END %]
                     [% IF item.azure_pipeline %]
-                        Acure Pipelines
+                        Azure Pipelines
                     [% END %]
                     [% IF item.gitlab_pipeline %]
                         Gitlab Pipelines

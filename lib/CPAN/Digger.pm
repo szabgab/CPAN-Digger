@@ -865,7 +865,7 @@ sub html_distributions {
     for my $distribution (@$distributions_from_meta_files) {
         my $distro_name = $distribution->{distribution};
         my $distro_names = $self->{dependencies}{$distro_name};
-        my @distros = map { $self->{distro_to_meta}{$_} } @$distro_names;
+        my @distros = ($distribution, map { $self->{distro_to_meta}{$_} } @$distro_names);
         $self->save_page('distribution.tt', "dist/$distro_name.html", {
             distro => $distribution,
             distros => \@distros,

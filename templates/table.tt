@@ -30,7 +30,7 @@
           <td>[% item.release_date %]</td>
           <td>
               [% IF item.vcs_url %]
-                  <a href="[% item.vcs_url %]">[% item.vcs_name %]</a>
+                  <a href="[% item.vcs_url %]">[% item.vcs_vendor %]</a>
               [% ELSIF item.vcs_not_interested %]
                   <span class="badge badge-danger">No</span>
               [% ELSE %]

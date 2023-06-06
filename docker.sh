@@ -12,5 +12,5 @@ name="cpan-digger-$(date +%s)"
 
 
 docker build -t cpan-digger .
-docker run     --rm -w /opt -v$(pwd):/opt --name $name --user ubuntu cpan-digger $cmd
+docker run   -d  --rm -w /opt -v$(pwd):/opt --name $name --user ubuntu cpan-digger $cmd
 # docker run -it --rm -w /opt -v$(pwd):/opt --name cpan-digger --user ubuntu cpan-digger bash

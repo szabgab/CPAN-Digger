@@ -545,13 +545,16 @@ sub get_vcs {
         my $owner = $2;
         my $name = $3;
         $vendor = substr($vendor_host, 0, -4);
+        $vendor = 'GitHub' if $vendor eq "github";
+        $vendor = 'GitLab' if $vendor eq "gitlab";
+        $vendor = 'Bitbucket' if $vendor eq "bitbucket";
         $git_url = "https://$vendor_host/$owner/$name";
         my $folder = catfile($self->{repos}, $vendor, $owner);
         return $git_url, $folder, $name, $vendor;
     }
 
     $logger->error("Unrecognized vendor for $url in distribution $distribution");
-    return;
+    return $url, '', '', $vendor;
 }
 
 sub get_bugtracker {
@@ -1149,13 +1152,13 @@ sub check_files_on_vcs {
         $logger->info("folder: $vcs_folder");
 
         #next if $data->{vcs_last_checked};
-        if ($meta->{vcs_vendor} eq 'github') {
+        if ($meta->{vcs_vendor} eq 'GitHub') {
             analyze_github($meta, $vcs_folder);
         }
-        if ($meta->{vcs_vendor} eq 'gitlab') {
+        if ($meta->{vcs_vendor} eq 'GitLab') {
             analyze_gitlab($meta, $vcs_folder);
         }
-        if ($meta->{vcs_vendor} eq 'bitbucket') {
+        if ($meta->{vcs_vendor} eq 'Bitbucket') {
             analyze_bitbucket($meta, $vcs_folder);
         }
 

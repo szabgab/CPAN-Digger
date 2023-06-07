@@ -869,9 +869,11 @@ sub html_distributions {
         my $distro_name = $distribution->{distribution};
         my $distro_names = $self->{dependencies}{$distro_name};
         my @distros = ($distribution, map { $self->{distro_to_meta}{$_} } @$distro_names);
+        my $stats = $self->get_stats(\@distros);
         $self->save_page('distribution.tt', "dist/$distro_name.html", {
             distro => $distribution,
             distros => \@distros,
+            stats => $stats,
             title => "$distro_name on CPAN Digger",
         });
 
@@ -1013,9 +1015,9 @@ sub get_stats {
 
     for my $dist (@$distros) {
         #say Dumper $dist;
-        if ($dist->{vcs_name}) {
+        if ($dist->{vcs_vendor}) {
             $stats{has_vcs}++;
-            $stats{vcs}{ $dist->{vcs_name} }++;
+            $stats{vcs}{ $dist->{vcs_vendor} }++;
         }
 
         if ($dist->{issues}) {

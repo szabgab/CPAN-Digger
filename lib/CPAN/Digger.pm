@@ -24,6 +24,7 @@ use LWP::UserAgent ();
 use MetaCPAN::Client ();
 use Module::CoreList;
 use Path::Tiny qw(path);
+use PAUSE::Permissions;
 use Storable qw(dclone);
 use Template ();
 
@@ -157,7 +158,7 @@ sub download_permission {
     my $ua = LWP::UserAgent->new(timeout => 5);
 
     my $perms_uri = "https://cpan.org/modules/06perms.txt";
-    my $response = $ua->mirror($perms_uri, catfile($self->{data}, '06.perms.txt'));
+    my $response = $ua->mirror($perms_uri, catfile($self->{data}, '06perms.txt'));
 
     $logger->info("Download permissions file ended");
 
@@ -842,6 +843,15 @@ sub add_reverse {
     }
 }
 
+sub distributions_from_modules {
+    my ($self, $modules) = @_;
+    my %distros;
+    for my $module (@$modules) {
+        my $name = $self->{module_to_distro}{$module};
+        $distros{$name} = 1 if $name;
+    }
+    return \%distros;
+}
 
 sub html {
     my ($self) = @_;
@@ -857,6 +867,7 @@ sub html {
     mkdir "$self->{html}/lists";
     rcopy("static", $self->{html});
 
+
     $self->load_authors;
 
     my @distros = $self->load_meta_data_of_every_distro;
@@ -865,9 +876,13 @@ sub html {
     $self->add_reverse(\@distros);
     $self->read_dashboards;
 
+    my $modules_to_be_adopted = $self->get_modules_to_be_adopted;
+    $self->{adoption} = $self->distributions_from_modules($modules_to_be_adopted);
+    #die Dumper $self->{adoption};
+
     $self->update_distributions(\@distros);
 
-
+    $self->html_adoption(\@distros);
     $self->html_top_dependencies(\@distros);
     $self->html_recent(\@distros);
     $self->html_weekly(\@distros);
@@ -919,6 +934,19 @@ sub html_weekly {
     });
 
     $logger->info("HTML ended");
+}
+
+sub html_adoption {
+    my ($self, $distributions) = @_;
+
+    my @distros = grep { $self->{adoption}{$_->{distribution}} } @$distributions;
+    my $stats = $self->get_stats(\@distros);
+    $self->save_page('adoption.tt', 'adoption.html', {
+        distros => \@distros,
+        stats => $stats,
+        title => "Distributions to be adopted",
+    });
+
 }
 
 sub html_top_dependencies {
@@ -1077,6 +1105,39 @@ sub recent_authors {
     my @recent_authors = sort {$b->{count} <=> $a->{count} } map { { id => $_, count => $authors{$_}} }  keys %authors;
     $logger->info("Recent authors ended");
     return \@recent_authors;
+}
+
+sub get_modules_to_be_adopted {
+    my ($self) = @_;
+
+    my $perm_file = catfile($self->{data}, '06perms.txt');
+    if (not -e $perm_file) {
+        return;
+    }
+
+    my $pp = PAUSE::Permissions->new(path => $perm_file);
+    my $iterator = $pp->module_iterator();
+
+    my @no_owner;
+    my @adoptme;
+    my @handoff;
+    while (my $mp = $iterator->next_module) {
+        if (not defined $mp->owner) {
+            push @no_owner, $mp->name;
+            next;
+        }
+
+        if ($mp->owner eq 'ADOPTME' or grep { $_ eq 'ADOPTME' } $mp->co_maintainers) {
+            push @adoptme, $mp->name;
+            next;
+        }
+
+        if ($mp->owner eq 'HANDOFF' or grep { $_ eq 'HANDOFF' } $mp->co_maintainers) {
+            push @handoff, $mp->name;
+            next;
+        }
+    }
+    return [uniq @adoptme, @handoff];
 }
 
 sub perlweekly_report {

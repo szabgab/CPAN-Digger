@@ -22,6 +22,7 @@ WriteMakefile(
         'LWP::UserAgent'            => 0,
         'MetaCPAN::Client'          => 2.026,
         'Path::Tiny'                => 0,
+        'PAUSE::Permissions'        => 0,
         'Template'                  => 0,
     },
     TEST_REQUIRES => {

@@ -62,6 +62,10 @@ sub new {
             $self->{pull_dashboard} = $args{dashboard};
             next;
         }
+        if ($key eq 'permissions') {
+            $self->{download_permissions} = $args{permissions};
+            next;
+        }
         $self->{$key} = $args{$key};
     }
     $self->{log} = uc $self->{log};
@@ -93,6 +97,7 @@ sub run {
     $logger->info('CPAN::Digger started');
 
     $self->download_authors_from_metacpan;
+    $self->download_permission;
 
     my $rset = $self->search_releases_on_metacpan;
     $self->get_release_data_from_metacpan($rset);
@@ -138,6 +143,23 @@ sub setup_logger {
     }
 
     Log::Log4perl::init( \$conf );
+
+}
+
+sub download_permission {
+    my ($self) = @_;
+
+    return if not $self->{download_permissions};
+
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Download permissions file");
+
+    my $ua = LWP::UserAgent->new(timeout => 5);
+
+    my $perms_uri = "https://cpan.org/modules/06perms.txt";
+    my $response = $ua->mirror($perms_uri, catfile($self->{data}, '06.perms.txt'));
+
+    $logger->info("Download permissions file ended");
 
 }
 

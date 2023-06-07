@@ -31,6 +31,7 @@ sub run {
         'log=s',
         'meta',
         'metavcs',
+        'permissions',
         'pull',
         'recent=i',
         'releases',
@@ -75,6 +76,7 @@ Usage: $0
     Other networking
         --dashboard        Pull the dashboard repository
         --cpants           Download data from cpants
+        --permissions      Download the persmissions file from cpan.org
 
     Local processing
         --meta             Generate meta files from releases.json files

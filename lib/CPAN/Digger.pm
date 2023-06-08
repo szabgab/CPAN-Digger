@@ -340,7 +340,7 @@ sub update_meta_data_from_releases {
             my ($real_vcs_url, $folder, $name, $vendor) = $self->get_vcs($repository, $distribution);
             if ($vendor) {
                 $meta->{vcs_url} = $real_vcs_url;
-                $meta->{vcs_folder} = $folder;
+                $meta->{vcs_folder} = lc $folder;
                 $meta->{vcs_name} = $name;
                 $meta->{vcs_vendor} = $vendor;
                 $logger->info("VCS: $vendor $real_vcs_url");

@@ -58,29 +58,29 @@
           </td>
           <td>
               [% IF item.has_ci %]
-                    [% IF item.travis %]
-                        <span class="badge badge-warning">Travis</span><br>
-                    [% END %]
-                    [% IF item.jenkins %]
-                        Jenkins<br>
-                    [% END %]
-                    [% IF item.github_actions %]
-                        GitHub Actions<br>
-                    [% END %]
                     [% IF item.appveyor %]
                         Appveyor<br>
-                    [% END %]
-                    [% IF item.circleci %]
-                        CircleCI<br>
                     [% END %]
                     [% IF item.azure_pipeline %]
                         Azure Pipelines
                     [% END %]
+                    [% IF item.bitbucket_pipeline %]
+                        Bitbucket Pipelines
+                    [% END %]
+                    [% IF item.circleci %]
+                        CircleCI<br>
+                    [% END %]
+                    [% IF item.github_actions %]
+                        GitHub Actions<br>
+                    [% END %]
                     [% IF item.gitlab_pipeline %]
                         Gitlab Pipelines
                     [% END %]
-                    [% IF item.bitbucket_pipeline %]
-                        Bitbucket Pipelines
+                    [% IF item.jenkins %]
+                        Jenkins<br>
+                    [% END %]
+                    [% IF item.travis %]
+                        <span class="badge badge-warning">Travis</span><br>
                     [% END %]
               [% ELSIF item.ci_not_interested %]
                   <span class="badge badge-danger">No</span>

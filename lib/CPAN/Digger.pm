@@ -33,7 +33,7 @@ my $TOP_DEPENDENCY_PAGE = 100;
 my $git = 'git';
 my $root = getcwd();
 
-my @ci_names = qw(travis github_actions circleci appveyor azure_pipeline gitlab_pipeline bitbucket_pipeline jenkins);
+my @ci_names = qw(appveyor azure_pipeline bitbucket_pipeline circleci github_actions gitlab_pipeline jenkins travis);
 
 # Authors who indicated (usually in an email exchange with Gabor) that they don't have public VCS and are not
 # interested in adding one. So there is no point in reporting their distributions.

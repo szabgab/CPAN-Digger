@@ -61,7 +61,7 @@ jobs:
         run: |
           cover -test
           mkdir -p _site
-          echo '<a href="/cover_db/">Coverage</a>' > _site/index.html
+          echo '<a href="cover_db/">Coverage</a>' > _site/index.html
           mv cover_db/coverage.html cover_db/index.html
           mv cover_db _site/
 

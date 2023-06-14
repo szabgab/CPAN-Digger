@@ -55,7 +55,7 @@ jobs:
             make
             make test
 
-    - name: Generate coverage
+      - name: Generate coverage
         env:
           RELEASE_TESTING: 1
         run: |

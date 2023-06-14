@@ -1,0 +1,84 @@
+{
+   "data" : {
+      "author" : "TJMATHER",
+      "status" : "latest",
+      "license" : [
+         "unknown"
+      ],
+      "checksum_sha256" : "e618d657530d22ff5c807b794be74ade0524faa8f21e95ef2d674d971f8c6458",
+      "version_numified" : 0.68,
+      "dependency" : [],
+      "provides" : [
+         "XML::XQL",
+         "XML::XQL"
+      ],
+      "authorized" : "",
+      "abstract" : "A perl module for querying XML tree structures with XQL",
+      "archive" : "XML-XQL-0.68.tar.gz",
+      "checksum_md5" : "bb84096fdf8bcc96a35971539ce8c19e",
+      "version" : "0.68",
+      "deprecated" : "",
+      "date" : "2003-01-16T21:59:00",
+      "metadata" : {
+         "no_index" : {
+            "directory" : [
+               "t",
+               "xt",
+               "inc",
+               "local",
+               "perl5",
+               "fatlib",
+               "example",
+               "blib",
+               "examples",
+               "eg"
+            ]
+         },
+         "dynamic_config" : 1,
+         "meta-spec" : {
+            "version" : "2",
+            "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec"
+         },
+         "version" : "0.68",
+         "prereqs" : {},
+         "abstract" : "unknown",
+         "release_status" : "stable",
+         "name" : "XML-XQL",
+         "generated_by" : "CPAN::Meta::Converter version 2.150005",
+         "license" : [
+            "unknown"
+         ],
+         "author" : [
+            "unknown"
+         ]
+      },
+      "maturity" : "released",
+      "download_url" : "https://cpan.metacpan.org/authors/id/T/TJ/TJMATHER/XML-XQL-0.68.tar.gz",
+      "name" : "XML-XQL-0.68",
+      "id" : "EpwbSsEk2V_IRX12Ny5zE0Ip3ZA",
+      "tests" : {
+         "pass" : 2,
+         "na" : 0,
+         "unknown" : 0,
+         "fail" : 1
+      },
+      "first" : "",
+      "main_module" : "XML::XQL",
+      "distribution" : "XML-XQL",
+      "resources" : {},
+      "stat" : {
+         "size" : 120033,
+         "gid" : 1009,
+         "uid" : 1009,
+         "mode" : 33204,
+         "mtime" : 1042754340
+      }
+   },
+   "distribution" : "XML-XQL",
+   "ua_args" : [
+      "agent",
+      "MetaCPAN::Client/2.030000",
+      "verify_SSL",
+      1
+   ]
+}

@@ -10,11 +10,10 @@ use Test::More;
 
 use CPAN::Digger::CLI;
 
+my $dir = path(tempdir( CLEANUP => 1 ));
 
 subtest process_meta => sub {
     plan tests => 3;
-
-    my $dir = path(tempdir( CLEANUP => 1 ));
 
     my $json = JSON->new->allow_nonref;
     diag "tempdir: $dir";
@@ -43,6 +42,17 @@ subtest process_meta => sub {
         my $expected = $json->decode( path($files)->child('meta')->child($prefix)->child($filename)->slurp_utf8 );
         is_deeply($actual, $expected, $path);
     }
+};
+
+subtest process_metavcs => sub {
+    plan tests => 2;
+    my ($out, $err) = capture {
+        local @ARGV = ('--data', $dir->child('cpan-digger'), '--repos', $dir->child('repos'), '--metavcs', '--log', 'OFF');
+        CPAN::Digger::CLI::run();
+    };
+    is $err, '';
+    is $out, '';
+    diag qx{tree $dir};
 };
 
 done_testing();

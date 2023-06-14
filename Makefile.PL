@@ -26,6 +26,7 @@ WriteMakefile(
         'Template'                  => 0,
     },
     TEST_REQUIRES => {
+        'Devel::Cover'  => 0,
         'Test::More'    => 0,
         'Mock::Quick'   => 0,
         'Storable'      => 0,

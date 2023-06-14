@@ -55,6 +55,14 @@ jobs:
             make
             make test
 
+    - name: Generate coverage
+        env:
+          RELEASE_TESTING: 1
+        run: |
+          cover -test
+          mkdir -p _site
+          mv cover_db _site/
+
       #- name: Create pages
       #  if: ${{ github.event_name != 'pull_request' }}
       #  run: ./generate.sh
@@ -64,20 +72,21 @@ jobs:
       #  run: |
       #      perl bin/generate.pl _site/recent 1000
 
-      #- name: Upload artifact
-      #  if: github.ref == 'refs/heads/main'
-      #  uses: actions/upload-pages-artifact@v1
+      - name: Upload artifact
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v1
 
 
   # Deployment job
-  #deploy:
-  #  if: github.ref == 'refs/heads/main'
-  #  environment:
-  #    name: github-pages
-  #    url: ${{ steps.deployment.outputs.page_url }}
-  #  runs-on: ubuntu-latest
-  #  needs: generate
-  #  steps:
-  #    - name: Deploy to GitHub Pages
-  #      id: deployment
-  #      uses: actions/deploy-pages@v1
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: generate
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
+

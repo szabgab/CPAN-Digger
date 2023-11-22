@@ -253,8 +253,12 @@ sub get_release_data_from_metacpan {
 
     my $mcpan = MetaCPAN::Client->new();
 
+    my $skip_releases = 0;
     while ( my $release = $rset->next ) {
-        next if $release->{data}{status} ne 'latest';
+        if ($release->{data}{status} ne 'latest') {
+            $skip_releases++;
+            next;
+        }
         #$logger->info("Release: " . $release->name);
         #$logger->info("Distribution: " . $release->distribution);
         my $distribution =  lc $release->distribution;
@@ -264,6 +268,7 @@ sub get_release_data_from_metacpan {
         $logger->info("data file $data_file");
         save_data($data_file, $release);
     }
+    $logger->info("Skipped releases: $skip_releases") if $skip_releases;
 
     $logger->info("Get releases from metacpan ended");
 }

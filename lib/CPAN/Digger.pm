@@ -1172,6 +1172,7 @@ sub perlweekly_report {
     my $bugtracker_count = 0;
 
     while (my $release = $rset->next) {
+        #$logger->info("release '$release->{data}{distribution}'");
         #die Dumper $release;
         last if $release->{data}{date} lt $start_date;
         next if $end_date le $release->{data}{date};

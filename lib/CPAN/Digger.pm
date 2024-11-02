@@ -27,6 +27,7 @@ use Path::Tiny qw(path);
 use PAUSE::Permissions;
 use Storable qw(dclone);
 use Template ();
+use List::Util qw( min max );
 
 my $RECENT_PAGE_SIZE = 100;
 my $TOP_DEPENDENCY_PAGE = 100;
@@ -938,7 +939,7 @@ sub html_weekly {
         authors => $self->recent_authors($distros),
     });
 
-    $logger->info("HTML ended");
+    $logger->info("HTML weekly ended");
 }
 
 sub html_adoption {
@@ -1103,7 +1104,8 @@ sub recent_authors {
     $logger->info("Recent authors");
 
     my %authors;
-    for my $ix (0..999) {
+    my $max = min(1000, scalar @$distros)-1;
+    for my $ix (0..$max) {
         my $author = $distros->[$ix]{author};
         $authors{$author}++;
     }
@@ -1191,6 +1193,7 @@ sub perlweekly_report {
         $ci_count++ if $meta->{has_ci};
         $bugtracker_count++ if $meta->{issues};
     }
+    $logger->info("Finished generating perlweekly report");
 
     return {
         start_date       => $start_date,

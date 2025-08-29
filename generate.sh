@@ -1,4 +1,5 @@
-#!/usr/bin/bash
+#!/bin/bash
+set -x
 
 perl -Ilib bin/cpan-digger --version
 

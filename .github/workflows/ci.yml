@@ -65,9 +65,9 @@ jobs:
           mv cover_db/coverage.html cover_db/index.html
           mv cover_db _site/
 
-      #- name: Create pages
-      #  if: ${{ github.event_name != 'pull_request' }}
-      #  run: ./generate.sh
+      - name: Create pages
+        if: ${{ github.event_name != 'pull_request' }}
+        run: ./generate.sh
 
       #- name: Generate report
       #  if: ${{ github.event_name != 'pull_request' }}

@@ -159,9 +159,10 @@ sub download_permission {
     my $ua = LWP::UserAgent->new(timeout => 5);
 
     my $perms_uri = "https://cpan.org/modules/06perms.txt";
-    my $response = $ua->mirror($perms_uri, catfile($self->{data}, '06perms.txt'));
+    my $permission_file = catfile($self->{data}, '06perms.txt');
+    my $response = $ua->mirror($perms_uri, $permission_file);
 
-    $logger->info("Download permissions file ended");
+    $logger->info("Download permissions file '$permission_file' ended");
 
 }
 
@@ -518,11 +519,11 @@ sub clone_one_vcs {
 sub pull_dashboards {
     my ($self) = @_;
 
-    my $logger = Log::Log4perl->get_logger('digger');
-    $logger->info("Pull dashboard");
-
     return if not $self->{pull_dashboard};
 
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("Pull dashboard");
+ 
     if (not -e $self->{dashboard_path}) {
         system "$git clone --depth 1 https://github.com/davorg/dashboard.git";
     } else {
@@ -729,6 +730,8 @@ sub download_cpants {
 
     my $folder = catfile($self->{data}, 'cpants');
     make_path $folder;
+
+    $logger->info("Download to '$folder'");
 
     my $ua = LWP::UserAgent->new(timeout => 5);
     my $json = JSON->new->allow_nonref;
@@ -1117,8 +1120,12 @@ sub recent_authors {
 sub get_modules_to_be_adopted {
     my ($self) = @_;
 
+    my $logger = Log::Log4perl->get_logger('digger');
+    $logger->info("get_modules_to_be_adopted");
+
     my $perm_file = catfile($self->{data}, '06perms.txt');
     if (not -e $perm_file) {
+        $logger->warn("Permission file '$perm_file' is missing. Skipping the adoption.");
         return;
     }
 

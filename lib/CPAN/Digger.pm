@@ -524,7 +524,7 @@ sub pull_dashboards {
     return if not $self->{pull_dashboard};
 
     if (not -e $self->{dashboard_path}) {
-        system "$git clone https://github.com/davorg/dashboard.git";
+        system "$git clone --depth 1 https://github.com/davorg/dashboard.git";
     } else {
         chdir $self->{dashboard_path};
         system "git pull";

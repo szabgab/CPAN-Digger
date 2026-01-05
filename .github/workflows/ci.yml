@@ -39,12 +39,12 @@ jobs:
         run: |
             cpanm --installdeps --notest .
 
-      - name: Regular tests
-        run: |
-            perl Makefile.PL
-            make
-            make test
-
+#      - name: Regular tests
+#        run: |
+#            perl Makefile.PL
+#            make
+#            make test
+#
       - name: Release tests
         env:
           RELEASE_TESTING: 1

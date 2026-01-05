@@ -498,7 +498,7 @@ sub clone_one_vcs {
         return if not $vcs_is_accessible;
 
         chdir $folder;
-        @cmd = ($git, "clone", $vcs_url);
+        @cmd = ($git, "clone", "--depth", "1", $vcs_url);
     }
 
     $logger->info("cmd: @cmd");

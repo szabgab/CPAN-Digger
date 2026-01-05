@@ -43,7 +43,9 @@ time perl -Ilib bin/cpan-digger --clone 40000 --pull
 time perl -Ilib bin/cpan-digger --metavcs
 
 
+# Max page size, though it is likely we'll have less to show as we only show the "latest".
 # ~ 6 sec
 mkdir -p _site/
 cp -r static/* _site/
-time perl -Ilib bin/cpan-digger --html _site/
+time perl -Ilib bin/cpan-digger --html _site/ --page 500
+

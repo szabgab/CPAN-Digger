@@ -29,7 +29,6 @@ use Storable qw(dclone);
 use Template ();
 use List::Util qw( min max );
 
-my $RECENT_PAGE_SIZE = 100;
 my $TOP_DEPENDENCY_PAGE = 100;
 my $git = 'git';
 my $root = getcwd();
@@ -983,7 +982,7 @@ sub html_recent {
     $logger->info("HTML recent");
 
     my $count = 0;
-    my @recent = grep { $count++ < $RECENT_PAGE_SIZE } @$distributions;
+    my @recent = grep { $count++ < $self->{page} } @$distributions;
     my $stats = $self->get_stats(\@recent);
     $self->save_page('recent.tt', 'recent.html', {
         distros => \@recent,

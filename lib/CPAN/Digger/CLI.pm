@@ -31,6 +31,7 @@ sub run {
         'log=s',
         'meta',
         'metavcs',
+        'page=i',
         'permissions',
         'pull',
         'recent=i',
@@ -45,6 +46,9 @@ sub run {
         print "CPAN::Digger VERSION $VERSION\n";
         exit();
     }
+
+    # Default values
+    $args{page} //= 100;
 
     my $cd = CPAN::Digger->new(%args);
     $cd->run;
@@ -66,6 +70,8 @@ Usage: $0
         --distro NAME      Get the specific distribution
 
         --coverage N       Get the coverage data of N distributions
+
+        --page N           Size of the recent page
 
     Get from VCS
         --clone NUMBER     Fetch information from GitHub, GitLab, etc. for NUMBER projects.

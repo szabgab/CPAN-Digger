@@ -27,10 +27,10 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Checkout CPAN Dashboard
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: davorg/dashboard
           path: dashboard

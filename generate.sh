@@ -49,3 +49,6 @@ mkdir -p _site/
 cp -r static/* _site/
 time perl -Ilib bin/cpan-digger --html _site/ --page 500
 
+mv logs _site/
+perl bin/logs.pl
+

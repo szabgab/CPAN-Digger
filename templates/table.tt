@@ -10,10 +10,12 @@
           <th>Issues</th>
           <th>CI</th>
           <th>Licenses</th>
+          <!--
           <th>CT Pass</th>
           <th>CT Fail</td>
           <th>CT Unknown</th>
           <th>CT NA</th>
+          -->
           <th>Coverage</th>
           <th>Dashboard</th>
           <th>Kwalitee</th>
@@ -101,10 +103,12 @@
                 <a class="badge badge-warning" href="https://perlmaven.com/how-to-add-the-license-field-to-meta-files-on-cpan">Add license</a>
               [% END %]
           </td>
+          <!--
           <td>[% item.metacpan.data.tests.pass %]</td>
           <td>[% item.metacpan.data.tests.fail %]</td>
           <td>[% item.metacpan.data.tests.unknown %]</td>
           <td>[% item.metacpan.data.tests.na %]</td>
+          -->
           <td>
               [% IF item.cover_total %]
                 <a href="http://cpancover.com/latest/[% item.distribution %]-[% item.version %]/index.html">[% item.cover_total %]</a>

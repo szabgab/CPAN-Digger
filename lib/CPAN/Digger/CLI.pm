@@ -29,6 +29,7 @@ sub run {
         'html=s',
         'limit=i',
         'log=s',
+        'screen',
         'meta',
         'metavcs',
         'page=i',
@@ -94,6 +95,7 @@ Usage: $0
         --data DIR         Provide the folder where we store the data files, defaults to './cpan-digger'
 
         --log LEVEL        [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF] (default is INFO)
+        --screen           Log to the screen as well
 
     Help
         --version

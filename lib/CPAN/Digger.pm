@@ -497,16 +497,30 @@ sub clone_one_vcs {
 
     make_path $folder;
     my @cmd;
-    if (-e catfile($folder, $name)) {
-        return if not $self->{pull} and $release_dt lt $self->{start_time} - $TIME_TO_PULL;
+    my $named_folder = catfile($folder, $name);
+    if (-e $named_folder) {
+        $logger->info("git pull as '$named_folder' already exists");
+        my $time_to_pull = $self->{start_time} - $TIME_TO_PULL;
+        if (not $self->{pull} and $release_dt lt $time_to_pull) {
+            $logger->info("Release date '$release_dt' is less than time_to_pull: '$time_to_pull'. Not pulling.");
+            return;
+        }
         # TODO: check if the vcs_url is the same as our remote or if it has moved; we can update the remote easily
 
-        chdir catfile($folder, $name);
+        chdir $named_folder;
         @cmd = ($git, "pull");
     } else {
-        return if not $self->{force} and $release_dt lt $self->{start_time} - $TIME_TO_CLONE;
+        $logger->info("git clone");
+        my $time_to_clone = $self->{start_time} - $TIME_TO_CLONE;
+        if (not $self->{force} and $release_dt lt $time_to_clone) {
+            $logger->info("Release date '$release_dt' is less than time_to_clone: '$time_to_clone'. Not cloning.");
+            return;
+        }
         my $vcs_is_accessible = check_repo($vcs_url, $distribution);
-        return if not $vcs_is_accessible;
+        if (not $vcs_is_accessible) {
+            $logger->error("VCS is not accessible. Not cloning.");
+            return;
+        }
 
         chdir $folder;
         @cmd = ($git, "clone", "--depth", "1", $vcs_url);

@@ -7,7 +7,7 @@ use Data::Dumper qw(Dumper);
 
 sub main {
     opendir my $dh, "_site/logs" or die;
-    my @logs = grep {/\.log$/} readdir $dh;
+    my @logs = sort {-M "_site/logs/$b" <=> -M "_site/logs/$a"} grep {/\.log$/} readdir $dh;
     close $dh;
 
     say Dumper \@logs;

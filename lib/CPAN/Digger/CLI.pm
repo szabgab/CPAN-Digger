@@ -29,6 +29,7 @@ sub run {
         'html=s',
         'limit=i',
         'log=s',
+        'logname=s',
         'screen',
         'meta',
         'metavcs',
@@ -50,6 +51,8 @@ sub run {
 
     # Default values
     $args{page} //= 100;
+
+    $args{logname} //= 'digger';
 
     my $cd = CPAN::Digger->new(%args);
     $cd->run;
@@ -96,6 +99,7 @@ Usage: $0
 
         --log LEVEL        [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF] (default is INFO)
         --screen           Log to the screen as well
+        --logname PREFIX   The prefix of the logfile. Defaults to 'digger'
 
     Help
         --version

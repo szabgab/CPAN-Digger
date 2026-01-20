@@ -93,7 +93,7 @@ sub run {
     my ($self) = @_;
 
 
-    $self->setup_logger($self->{start_time}, $self->{screen});
+    $self->setup_logger($self->{start_time}, $self->{logname}, $self->{screen});
     my $logger = Log::Log4perl->get_logger('digger');
     $logger->info('CPAN::Digger started');
 
@@ -121,14 +121,14 @@ sub run {
 }
 
 sub setup_logger {
-    my ($self, $start, $screen) = @_;
+    my ($self, $start, $prefix, $screen) = @_;
 
     my $log_level = $self->{log}; # TODO: shall we validate?
     my $logfile = $start->strftime("%Y-%m-%d-%H-%M-%S");
 
     my $conf = qq(
       log4perl.appender.Logfile          = Log::Log4perl::Appender::File
-      log4perl.appender.Logfile.filename = logs/digger-$logfile.log
+      log4perl.appender.Logfile.filename = logs/$prefix-$logfile.log
       log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::PatternLayout
       log4perl.appender.Logfile.layout.ConversionPattern = %d{yyyy-MM-dd HH:mm:ss} [%r] %F %L %p %m%n
     );

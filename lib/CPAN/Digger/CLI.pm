@@ -97,6 +97,7 @@ Usage: $0
         --repos DIR        Folder where we clone all the repositories. Defaults to './repos'
         --data DIR         Provide the folder where we store the data files, defaults to './cpan-digger'
 
+    Logging
         --log LEVEL        [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF] (default is INFO)
         --screen           Log to the screen as well
         --logname PREFIX   The prefix of the logfile. Defaults to 'digger'

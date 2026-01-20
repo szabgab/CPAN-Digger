@@ -36,7 +36,7 @@ time perl -Ilib bin/cpan-digger --meta --screen --logname meta
 # The actual number is impaceted by the number of "latest" distributions we got in the "--recent" request above.
 # Was (38 sec) when using full clone
 # ~22 sec now that we have shallow clone
-time perl -Ilib bin/cpan-digger --clone 40000 --pull --screen --logname git-clone
+time perl -Ilib bin/cpan-digger --clone 40000 --force --screen --logname git-clone
 
 
 # ~ 0.4 sec

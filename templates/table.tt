@@ -18,7 +18,9 @@
           -->
           <th>Coverage</th>
           <th>Dashboard</th>
+          <!--
           <th>Kwalitee</th>
+          -->
           <th>Reverse</th>
         </tr>
       </thead>
@@ -125,7 +127,7 @@
                   <a class="badge badge-warning" href="https://cpandashboard.com/" title="Adding the dashboard is just a pull-request away and it is awesome!">Add dashboard</a>
               [% END %]
           </td>
-          <td><a href="https://cpants.cpanauthors.org/dist/[% item.distribution %]">[% IF item.core_kwalitee %][% item.core_kwalitee %][% ELSE %]??[% END %]</a></td>
+          <!-- <td><a href="https://cpants.cpanauthors.org/dist/[% item.distribution %]">[% IF item.core_kwalitee %][% item.core_kwalitee %][% ELSE %]??[% END %]</a></td>-->
           <td>[% item.reverse.size %]</td>
         </tr>
    [% END %]

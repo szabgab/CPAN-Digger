@@ -21,7 +21,8 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     container:
-      image: perldocker/perl-tester:5.42     # https://hub.docker.com/r/perldocker/perl-tester
+      #image: perldocker/perl-tester:5.42     # https://hub.docker.com/r/perldocker/perl-tester
+      image: szabgab/perl
     name: Perl
     steps:
 

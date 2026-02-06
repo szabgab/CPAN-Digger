@@ -9,14 +9,14 @@ use Capture::Tiny qw(capture);
 
 subtest downloading_recent_distribtions => sub {
     my $dir = tempdir( CLEANUP => 1 );
-    diag "tempdir: $dir";
+    diag "tempdir in downloading_recent_distribtions : $dir";
     my ($out, $err, $exit) = capture {
         system($^X, '-Ilib', 'bin/cpan-digger', '--data', catfile($dir, 'data'), '--repos', catfile($dir, 'repos'), '--recent', '10', '--log', 'OFF');
     };
 
     is $exit, 0;
-    is $err, '';
-    is $out, '';
+    is $err, '', 'STDERR';
+    is $out, '', 'STDOUT';
 
     my $distro_folder = catfile($dir, 'data', 'metacpan', 'distributions');
     ok -e $distro_folder;
@@ -27,15 +27,15 @@ subtest downloading_recent_distribtions => sub {
 
 subtest downloading_authors => sub {
     my $dir = tempdir( CLEANUP => 1 );
-    diag "tempdir: $dir";
+    diag "tempdir in downloading_authors : $dir";
 
     my ($out, $err, $exit) = capture {
         system($^X, '-Ilib', 'bin/cpan-digger', '--data', catfile($dir, 'data'), '--repos', catfile($dir, 'repos'), '--authors', '--log', 'OFF');
     };
 
     is $exit, 0;
-    is $err, '';
-    is $out, '';
+    is $err, '', 'STDERR';
+    is $out, '', 'STDOUT';
     # system "tree $dir";
     my $authors_folder = catfile($dir, 'data', 'metacpan', 'authors');
     ok -e $authors_folder;

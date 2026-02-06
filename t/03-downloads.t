@@ -14,16 +14,17 @@ my $dir = path(tempdir( CLEANUP => 1 ));
 subtest process_meta => sub {
     plan tests => 3;
 
-    # fetch the N most recent releases
+    my $recent = 10;
+    diag "fetch the N = $recent most recent releases";
     # some might be two different releases for the same distribution so we can't know for sure how many will be really downloaded.
     my ($out, $err) = capture {
-        local @ARGV = ('--data', $dir->child('cpan-digger'), '--repos', $dir->child('repos'), '--recent', '10', '--log', 'OFF');
+        local @ARGV = ('--data', $dir->child('cpan-digger'), '--repos', $dir->child('repos'), '--recent', $recent, '--log', 'OFF');
         CPAN::Digger::CLI::run();
     };
 
     is $err, '';
     is $out, '';
-    #diag qx{tree $dir};
+    diag qx{tree $dir};
 
     my $distributions_folder = path($dir)->child('cpan-digger')->child('metacpan')->child('distributions');
     my $iter = $distributions_folder->iterator({
@@ -35,7 +36,7 @@ subtest process_meta => sub {
         next if $path->is_dir;
         push @files, $path;
     }
-    cmp_ok scalar(@files), '>=', 1;
+    cmp_ok scalar(@files), '>=', 1, "no files";
     #diag explain [map {"$_"} @files];
 };
 

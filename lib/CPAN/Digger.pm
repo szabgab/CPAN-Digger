@@ -595,7 +595,7 @@ sub get_vcs {
 
     my $vendor = "repository";
     my $git_url;
-    if ($url =~ m{https://(github\.com|gitlab\.com|bitbucket\.org)/([a-zA-Z0-9-]+)/([a-zA-Z0-9_-]+)}) {
+    if ($url =~ m{https://(github\.com|gitlab\.com|bitbucket\.org)/([a-zA-Z0-9-]+)/([a-zA-Z0-9_.-]+)}) {
         my $vendor_host = $1;
         my $owner = $2;
         my $name = $3;

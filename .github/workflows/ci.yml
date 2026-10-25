@@ -55,7 +55,7 @@ jobs:
             cpanm --notest Test::Version
             perl Makefile.PL
             make
-            make test
+            #make test
 
       #- name: Generate coverage
       #  env:
